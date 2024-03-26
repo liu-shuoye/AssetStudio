@@ -141,6 +141,7 @@ namespace AssetStudio
             }
             else
             {
+                Logger.Info("Processing file with lua script...");
                 luaEnvironment["filepath"] = fullName;
                 luaEnvironment["filename"] = Path.GetFileName(fullName);
                 try

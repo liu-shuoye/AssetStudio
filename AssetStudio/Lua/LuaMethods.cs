@@ -53,4 +53,29 @@ public class LuaMethods
     {
         return new EndianBinaryReader(stream);
     }
+
+    public void Verbose(string message)
+    {
+        Logger.Verbose(message);
+    }
+    
+    public void Error(string message)
+    {
+        Logger.Error(message);
+    }
+    
+    public void Debug(string message)
+    {
+        Logger.Debug(message);
+    }
+    
+    public void Info(string message)
+    {
+        Logger.Info(message);
+    }
+    
+    public void Warning(string message)
+    {
+        Logger.Warning(message);
+    }
 }
