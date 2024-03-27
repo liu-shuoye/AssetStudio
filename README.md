@@ -12,6 +12,7 @@ New Features:
 - Lua Scripting:
     - You can now use Lua scripts to do preprocessing while loading assets.
     - Check the [Issue](https://github.com/RazTools/Studio/pull/83) for more information.
+    - Check [AssetStudio-LuaScripts](https://github.com/AXiX-official/AssetStudio-LuaScripts) for more LuaScripts.
 - Texture2D/Sprite Preview:
     - You can now zoom in/out and move the preview image.
 
