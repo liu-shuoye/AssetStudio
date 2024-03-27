@@ -3007,7 +3007,12 @@ namespace AssetStudio.GUI
         private void loadLuaTemplate_Click(object sender, EventArgs e)
         {
             
-            var openFileDialog = new OpenFileDialog() { Multiselect = false, Filter = "Lua Script|*.lua" };
+            var openFileDialog = new OpenFileDialog()
+            {
+                Multiselect = false, 
+                Filter = "Lua Script|*.lua",
+                InitialDirectory = Path.Combine(Application.StartupPath, "LuaScripts")
+            };
             if (openFileDialog.ShowDialog(this) == DialogResult.OK)
             {
                 var path = openFileDialog.FileName;
