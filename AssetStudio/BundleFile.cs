@@ -408,7 +408,12 @@ namespace AssetStudio
         private void ReadBlocksInfoAndDirectory(FileReader reader)
         {
             byte[] blocksInfoBytes;
+            var version = ParseVersion();
             if (m_Header.version >= 7 && !Game.Type.IsSRGroup())
+            {
+                reader.AlignStream(16);
+            }
+            else if (version[0] == 2019 && version[1] == 4 && m_Header.flags != ArchiveFlags.BlocksAndDirectoryInfoCombined)
             {
                 reader.AlignStream(16);
             }
