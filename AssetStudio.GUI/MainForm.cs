@@ -2391,6 +2391,30 @@ namespace AssetStudio.GUI
             Logger.FileLogging = enableFileLogging.Checked;
         }
 
+        private void openLogFile(object sender, EventArgs e)
+        {
+            if (Logger.FileLogging && Logger.File is FileLogger fileLogger)
+            {
+                if (File.Exists(fileLogger.logPath))
+                {
+                    var psi = new ProcessStartInfo
+                    {
+                        FileName = fileLogger.logPath,
+                        UseShellExecute = true
+                    };
+                    Process.Start(psi);
+                }
+                else
+                {
+                    MessageBox.Show("Log file not found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("File logging is not enabled", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
         private void loggedEventsMenuItem_DropDownClosing(object sender, ToolStripDropDownClosingEventArgs e)
         {
             if (e.CloseReason == ToolStripDropDownCloseReason.ItemClicked)

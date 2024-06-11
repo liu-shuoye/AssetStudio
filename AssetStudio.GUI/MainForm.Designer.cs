@@ -178,6 +178,7 @@ namespace AssetStudio.GUI
             luaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             enableLuaScripts = new System.Windows.Forms.ToolStripMenuItem();
             luaTemplates = new System.Windows.Forms.ToolStripMenuItem();
+            openLogFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -679,7 +680,7 @@ namespace AssetStudio.GUI
             // 
             // debugMenuItem
             // 
-            debugMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripMenuItem15, exportClassStructuresMenuItem, enableConsole, clearConsoleToolStripMenuItem, enableFileLogging, loggedEventsMenuItem });
+            debugMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripMenuItem15, exportClassStructuresMenuItem, enableConsole, clearConsoleToolStripMenuItem, enableFileLogging, loggedEventsMenuItem, openLogFileToolStripMenuItem});
             debugMenuItem.Name = "debugMenuItem";
             debugMenuItem.Size = new System.Drawing.Size(54, 20);
             debugMenuItem.Text = "Debug";
@@ -727,6 +728,13 @@ namespace AssetStudio.GUI
             enableFileLogging.Size = new System.Drawing.Size(191, 22);
             enableFileLogging.Text = "Enable file logging";
             enableFileLogging.CheckedChanged += enableFileLogging_CheckedChanged;
+            // 
+            // openLogFileToolStripMenuItem
+            // 
+            openLogFileToolStripMenuItem.Name = "openLogFileToolStripMenuItem";
+            openLogFileToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            openLogFileToolStripMenuItem.Text = "Open Log File";
+            openLogFileToolStripMenuItem.Click += openLogFile;
             // 
             // loggedEventsMenuItem
             // 
@@ -1599,6 +1607,7 @@ namespace AssetStudio.GUI
         private System.Windows.Forms.ToolStripMenuItem luaToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem enableLuaScripts;
         private System.Windows.Forms.ToolStripMenuItem luaTemplates;
+        private System.Windows.Forms.ToolStripMenuItem openLogFileToolStripMenuItem;
     }
 }
 
