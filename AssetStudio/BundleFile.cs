@@ -430,7 +430,7 @@ namespace AssetStudio
             if ((m_Header.flags & ArchiveFlags.BlocksInfoAtTheEnd) != 0) //kArchiveBlocksInfoAtTheEnd
             {
                 var position = reader.Position;
-                reader.Position = reader.BaseStream.Length - m_Header.compressedBlocksInfoSize;
+                reader.Position = m_Header.size - m_Header.compressedBlocksInfoSize;
                 blocksInfoBytes = reader.ReadBytes((int)m_Header.compressedBlocksInfoSize);
                 reader.Position = position;
             }
