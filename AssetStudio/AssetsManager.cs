@@ -44,7 +44,22 @@ namespace AssetStudio
         internal HashSet<string> importFilesHash = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         internal HashSet<string> noexistFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         internal HashSet<string> assetsFileListHash = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        
+        public void SetSpecifyUnityVersion(string version)
+        {
+            SpecifyUnityVersion = version;
+        }
+        
+        public void SetGame(string game)
+        {
+            Game = GameManager.GetGame(game);
+        }
 
+        public void SetUnityCNKey(string Name, string Key)
+        {
+            UnityCN.SetKey(new UnityCN.Entry(Name, Key));
+        }
+        
         private void InitLuaEnv()
         {
             var luaMethods = new LuaMethods();
@@ -53,6 +68,9 @@ namespace AssetStudio
             {
                 luaEnvironment.RegisterFunction(method.Name, luaMethods, method);
             }
+            luaEnvironment.RegisterFunction("SetUnityVersion", this, GetType().GetMethod("SetSpecifyUnityVersion"));
+            luaEnvironment.RegisterFunction("SetGame", this, GetType().GetMethod("SetGame"));
+            luaEnvironment.RegisterFunction("SetUnityCNKey", this, GetType().GetMethod("SetUnityCNKey"));
         }
 
         public void LoadFiles(params string[] files)

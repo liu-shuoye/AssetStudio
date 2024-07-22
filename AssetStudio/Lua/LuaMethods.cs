@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace AssetStudio;
 
@@ -38,6 +40,18 @@ public class LuaMethods
         }
         return Expression.GetDelegateType(types.ToArray());
     }
+
+    #region IO
+    
+    public byte[] ReadAllBytes(string path)
+    {
+        return File.ReadAllBytes(path);
+    }
+    
+    public void WriteAllBytes(string path, byte[] bytes)
+    {
+        File.WriteAllBytes(path, bytes);
+    }
     
     public FileStream CreateFileStream(string path)
     {
@@ -49,11 +63,36 @@ public class LuaMethods
         return new MemoryStream();
     }
     
+    public MemoryStream CreateMemoryStreamFormByteArray(byte[] src)
+    {
+        return new MemoryStream(src);
+    }
+    
+    #endregion
+
+    #region DataReader
+    
     public EndianBinaryReader CreateEndianBinaryReader(Stream stream)
     {
         return new EndianBinaryReader(stream);
     }
+    
+    public byte[] SliceByteArray(byte[] src, int start, int length)
+    {
+        var buffer = new byte[length];
+        Array.Copy(src, start, buffer, 0, length);
+        return buffer;
+    }
+    
+    public byte[] EncodeStringToBytes(string src)
+    {
+        return Encoding.UTF8.GetBytes(src);
+    }
+    
+    #endregion
 
+    #region Logger
+    
     public void Verbose(string message)
     {
         Logger.Verbose(message);
@@ -78,4 +117,39 @@ public class LuaMethods
     {
         Logger.Warning(message);
     }
+    
+    #endregion
+
+    #region AES
+
+    public static byte[] AES_Decrypt(byte[] data, byte[] key, byte[] iv)
+    {
+        using (AesCryptoServiceProvider aes = new AesCryptoServiceProvider())
+        {
+            aes.Key = key;
+            aes.IV = iv;
+            aes.Mode = CipherMode.CBC;
+            aes.Padding = PaddingMode.PKCS7;
+
+            using (ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
+            {
+                return PerformCryptography(data, decryptor);
+            }
+        }
+    }
+
+    private static byte[] PerformCryptography(byte[] data, ICryptoTransform cryptoTransform)
+    {
+        using (MemoryStream ms = new MemoryStream())
+        {
+            using (CryptoStream cs = new CryptoStream(ms, cryptoTransform, CryptoStreamMode.Write))
+            {
+                cs.Write(data, 0, data.Length);
+                cs.FlushFinalBlock();
+                return ms.ToArray();
+            }
+        }
+    }
+
+    #endregion
 }
