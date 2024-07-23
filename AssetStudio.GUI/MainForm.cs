@@ -1443,6 +1443,8 @@ namespace AssetStudio.GUI
         private void PreviewTexture(DirectBitmap bitmap)
         {
             imgPreviewBox.Visible = true;
+            imgPreviewBox.Size = new Size(768, 605);
+            imgPreviewBox.Location = new Point(0, 0);
             imageTexture?.Dispose();
             imageTexture = bitmap;
             imgPreviewBox.Image = imageTexture.Bitmap;
