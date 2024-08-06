@@ -13,15 +13,34 @@ namespace AssetStudio
 {
     public class AssetsManager
     {
-        public Game Game;
-        private bool enableLuaScript = false;
+        private Game _game;
+        public Game Game
+        {
+            get
+            {
+                return _game;
+            }
+            set
+            {
+                _game = value;
+                switch (value.Type)
+                {
+                    case GameType.ProjectSekai:
+                        SpecifyUnityVersion = "2022.3.32f1";
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        private bool _enableLuaScript = false;
 
         public bool EnableLuaScript
         {
-            get => enableLuaScript; 
+            get => _enableLuaScript; 
             set 
             {
-                enableLuaScript = value;
+                _enableLuaScript = value;
                 if (value)
                 {
                     InitLuaEnv();
