@@ -203,6 +203,7 @@ namespace AssetStudio
         public static bool IsPerpetualNovelty(this GameType type) => type == GameType.PerpetualNovelty;
         public static bool IsGuiLongChao(this GameType type) => type == GameType.GuiLongChao;
         public static bool IsCounterSide(this GameType type) => type == GameType.CounterSide;
+        public static bool IsShiningNikki(this GameType type) => type == GameType.ShiningNikki;
         public static bool IsGIGroup(this GameType type) => type switch
         {
             GameType.GI or GameType.GI_Pack or GameType.GI_CB1 or GameType.GI_CB2 or GameType.GI_CB3 or GameType.GI_CB3Pre => true,
