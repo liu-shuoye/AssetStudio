@@ -179,8 +179,9 @@ namespace AssetStudio
             else
             {
                 Logger.Info("Processing file with lua script...");
-                luaEnvironment["filepath"] = fullName;
-                luaEnvironment["filename"] = Path.GetFileName(fullName);
+                luaEnvironment["filepath"] = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(fullName));
+                luaEnvironment["filename"] = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(Path.GetFileName(fullName)));
+                luaEnvironment["filestream"] = new FileStream(fullName, FileMode.Open, FileAccess.Read, FileShare.Read);
                 try
                 {
                     var result = luaEnvironment.DoString(LuaScript);
