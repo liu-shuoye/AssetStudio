@@ -48,7 +48,7 @@ namespace AssetStudio
             }
         }
         private Lua luaEnvironment = new Lua();
-        public string LuaScript = "local fs = CreateFileStream(filepath)\nreturn fs";
+        public string LuaScript = "";
         public bool Silent = false;
         public bool SkipProcess = false;
         public bool ResolveDependencies = false;        
@@ -172,7 +172,7 @@ namespace AssetStudio
         private void LoadFile(string fullName)
         {
             FileReader reader = null;
-            if (!EnableLuaScript)
+            if (!EnableLuaScript || LuaScript == "")
             {
                 reader = new FileReader(fullName);
             }
