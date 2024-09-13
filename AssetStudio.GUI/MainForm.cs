@@ -205,14 +205,24 @@ namespace AssetStudio.GUI
             ResetForm();
             assetsManager.SpecifyUnityVersion = specifyUnityVersion.Text;
             assetsManager.Game = Studio.Game;
-            if (paths.Length == 1 && Directory.Exists(paths[0]))
+            string[] filesPaths = paths.Where(File.Exists).ToArray();
+            string[] foldersPaths = paths.Where(Directory.Exists).ToArray();
+            if (filesPaths.Length > 0)
+            {
+                await Task.Run(() => assetsManager.LoadFiles(filesPaths));
+            }
+            foreach (var folderPath in foldersPaths)
+            {
+                await Task.Run(() => assetsManager.LoadFolder(folderPath));
+            }
+            /*if (paths.Length == 1 && Directory.Exists(paths[0]))
             {
                 await Task.Run(() => assetsManager.LoadFolder(paths[0]));
             }
             else
             {
                 await Task.Run(() => assetsManager.LoadFiles(paths));
-            }
+            }*/
             BuildAssetStructures();
         }
 
