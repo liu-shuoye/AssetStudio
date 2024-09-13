@@ -28,6 +28,9 @@ namespace AssetStudio
                     case GameType.ProjectSekai:
                         SpecifyUnityVersion = "2022.3.32f1";
                         break;
+                    case GameType.GirlsFrontline:
+                        SpecifyUnityVersion = "2019.4.40f1";
+                        break;
                     default:
                         break;
                 }
