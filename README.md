@@ -7,15 +7,6 @@ How to use:
 
 Check the tutorial [here](https://gist.github.com/Modder4869/0f5371f8879607eb95b8e63badca227e) (Thanks to Modder4869 for the tutorial)
 
-New Features:
-
-- Lua Scripting:
-    - You can now use Lua scripts to do preprocessing while loading assets.
-    - Check the [Issue](https://github.com/RazTools/Studio/pull/83) for more information.
-    - Check [AssetStudio-LuaScripts](https://github.com/AXiX-official/AssetStudio-LuaScripts) for more LuaScripts.
-- Texture2D/Sprite Preview:
-    - You can now zoom in/out and move the preview image.
-
 _____________________________________________________________________________________________________________________________
 CLI Version:
 ```
@@ -58,3 +49,4 @@ Special Thank to:
 - Radioegor146: [Asset-indexes](https://github.com/radioegor146/gi-asset-indexes) for recovered/updated asset_index's.
 - Ds5678: [AssetRipper](https://github.com/AssetRipper/AssetRipper)[[discord](https://discord.gg/XqXa53W2Yh)] for information about Asset Formats & Parsing.
 - mafaca: [uTinyRipper](https://github.com/mafaca/UtinyRipper) for `YAML` and `AnimationClipConverter`. 
+- SiMaLaoShi: [AssetStudio_Tuanjie](https://github.com/SiMaLaoShi/AssetStudio_Tuanjie) for `TuanJie Engine` support.
