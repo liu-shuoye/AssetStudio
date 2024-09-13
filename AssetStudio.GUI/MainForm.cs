@@ -215,14 +215,6 @@ namespace AssetStudio.GUI
             {
                 await Task.Run(() => assetsManager.LoadFolder(folderPath));
             }
-            /*if (paths.Length == 1 && Directory.Exists(paths[0]))
-            {
-                await Task.Run(() => assetsManager.LoadFolder(paths[0]));
-            }
-            else
-            {
-                await Task.Run(() => assetsManager.LoadFiles(paths));
-            }*/
             BuildAssetStructures();
         }
 
