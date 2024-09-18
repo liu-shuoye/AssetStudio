@@ -112,6 +112,7 @@ namespace AssetStudio.GUI
             MiHoYoBinData.Key = Properties.Settings.Default.key;
             AssetsHelper.Minimal = Properties.Settings.Default.minimalAssetMap;
             enableLuaScripts.Checked = Properties.Settings.Default.enableLuaScripts;
+            AutoDetectMultipleBundle.Checked = Properties.Settings.Default.autoDetectMultipleBundle;
         }
 
         private void InitializeLogger()
@@ -471,6 +472,14 @@ namespace AssetStudio.GUI
         private void displayAll_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.displayAll = displayAll.Checked;
+            Properties.Settings.Default.Save();
+        }
+        
+        private void autoDetectMultipleBundle_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.autoDetectMultipleBundle = AutoDetectMultipleBundle.Checked;
+            assetsManager.autoDetectMultipleBundle = AutoDetectMultipleBundle.Checked;
+            Studio.AutoDetectMultipleBundle = AutoDetectMultipleBundle.Checked;
             Properties.Settings.Default.Save();
         }
 

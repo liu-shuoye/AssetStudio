@@ -178,7 +178,7 @@ namespace AssetStudio
     public static class GameTypes
     {
         public static bool IsNormal(this GameType type) => type == GameType.Normal;
-        public static bool IsUnityCN(this GameType type) => type == GameType.UnityCN;
+        public static bool IsUnityCN(this GameType type) => type == GameType.UnityCN || type == GameType.GuiLongChao;
         public static bool IsGI(this GameType type) => type == GameType.GI;
         public static bool IsGIPack(this GameType type) => type == GameType.GI_Pack;
         public static bool IsGICB1(this GameType type) => type == GameType.GI_CB1;
@@ -226,7 +226,7 @@ namespace AssetStudio
 
         public static bool IsBlockFile(this GameType type) => type switch
         {
-            GameType.BH3 or GameType.BH3Pre or GameType.SR or GameType.GI_Pack or GameType.TOT or GameType.ArknightsEndfield => true,
+            GameType.BH3 or GameType.BH3Pre or GameType.SR or GameType.GI_Pack or GameType.TOT or GameType.ArknightsEndfield or GameType.GuiLongChao => true,
             _ => false,
         };
 
