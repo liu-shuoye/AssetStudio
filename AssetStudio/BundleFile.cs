@@ -140,7 +140,7 @@ namespace AssetStudio
                 case "UnityFS":
                 case "ENCR":
                     ReadHeader(reader);
-                    if (game.Type.IsUnityCN())
+                    if (game.Type.IsUnityCN() || game.Type.IsGuiLongChao())
                     {
                         ReadUnityCN(reader);
                     }
@@ -401,7 +401,14 @@ namespace AssetStudio
             if ((m_Header.flags & mask) != 0)
             {
                 Logger.Verbose($"Encryption flag exist, file is encrypted, attempting to decrypt");
-                UnityCN = new UnityCN(reader);
+                if (Game.Type.IsGuiLongChao())
+                {
+                    UnityCN = new UnityCNGuiLongChao(reader);
+                }
+                else
+                {
+                    UnityCN = new UnityCN(reader);
+                }
             }
         }
 
@@ -592,7 +599,7 @@ namespace AssetStudio
                                     Logger.Verbose($"Block encrypted with mr0k, decrypting...");
                                     compressedBytesSpan = Mr0kUtils.Decrypt(compressedBytesSpan, (Mr0k)Game);
                                 }
-                                if (Game.Type.IsUnityCN() && ((int)blockInfo.flags & 0x100) != 0)
+                                if ((Game.Type.IsUnityCN() || Game.Type.IsGuiLongChao()) && ((int)blockInfo.flags & 0x100) != 0)
                                 {
                                     Logger.Verbose($"Decrypting block with UnityCN...");
                                     UnityCN.DecryptBlock(compressedBytes, compressedSize, i);

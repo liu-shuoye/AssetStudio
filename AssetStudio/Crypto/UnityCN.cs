@@ -13,6 +13,10 @@ namespace AssetStudio
         public byte[] Index = new byte[0x10];
         public byte[] Sub = new byte[0x10];
 
+        public UnityCN()
+        {
+        }
+        
         public UnityCN(EndianBinaryReader reader)
         {
             reader.ReadUInt32();
@@ -67,7 +71,7 @@ namespace AssetStudio
             return true;
         }
 
-        public void DecryptBlock(Span<byte> bytes, int size, int index)
+        public virtual void DecryptBlock(Span<byte> bytes, int size, int index)
         {
             var offset = 0;
             while (offset < size)
@@ -86,7 +90,7 @@ namespace AssetStudio
             }
         }
 
-        private int DecryptByte(Span<byte> bytes, ref int offset, ref int index)
+        protected virtual int DecryptByte(Span<byte> bytes, ref int offset, ref int index)
         {
             var b = Sub[((index >> 2) & 3) + 4] + Sub[index & 3] + Sub[((index >> 4) & 3) + 8] + Sub[((byte)index >> 6) + 12];
             bytes[offset] = (byte)((Index[bytes[offset] & 0xF] - b) & 0xF | 0x10 * (Index[bytes[offset] >> 4] - b));
@@ -96,7 +100,7 @@ namespace AssetStudio
             return b;
         }
 
-        private int Decrypt(Span<byte> bytes, int index, int remaining)
+        protected int Decrypt(Span<byte> bytes, int index, int remaining)
         {
             var offset = 0;
 
