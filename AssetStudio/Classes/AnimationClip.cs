@@ -1974,9 +1974,12 @@ namespace AssetStudio
                     if (reader.IsTuanJie)
                     {
                         m_MuscleClipSize = reader.ReadUInt32();
-                        var muscleClipSize = reader.ReadInt32();
-                        m_MuscleClip = new ClipMuscleConstant(reader);
-                        m_StreamData = new StreamingInfo(reader);
+                        if (m_MuscleClipSize > 0)
+                        {
+                            reader.ReadUInt32(); // not needed
+                            m_MuscleClip = new ClipMuscleConstant(reader);
+                            m_StreamData = new StreamingInfo(reader);
+                        }
                     }
                     else
                     {

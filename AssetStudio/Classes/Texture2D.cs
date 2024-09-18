@@ -2,6 +2,20 @@
 
 namespace AssetStudio
 {
+    public class DataStreamingInfo
+    {
+        public uint size;
+        public string path;
+
+        public DataStreamingInfo(ObjectReader reader)
+        {
+            var version = reader.version;
+
+            size = reader.ReadUInt32();
+            path = reader.ReadAlignedString();
+        }
+    }
+    
     public class StreamingInfo
     {
         public long offset; //ulong
@@ -66,6 +80,7 @@ namespace AssetStudio
         public GLTextureSettings m_TextureSettings;
         public ResourceReader image_data;
         public StreamingInfo m_StreamData;
+        public DataStreamingInfo m_DataStreamData;
 
         private static bool HasGNFTexture(SerializedType type) => type.Match("1D52BB98AA5F54C67C22C39E8B2E400F");
         private static bool HasExternalMipRelativeOffset(SerializedType type) => type.Match("1D52BB98AA5F54C67C22C39E8B2E400F", "5390A985F58D5524F95DB240E8789704");
@@ -81,13 +96,12 @@ namespace AssetStudio
             
             if (reader.IsTuanJie)
             {
-                var m_WebStreaming = reader.ReadInt32();
-                var m_PriorityLevel = reader.ReadInt32();
+                var m_WebStreaming = reader.ReadBoolean();
+                reader.AlignStream();
 
+                var m_PriorityLevel = reader.ReadInt32();
                 var m_UploadedMode = reader.ReadInt32();
-                ////m_DataStreamData  (DataStreamingInfo)
-                var size = reader.ReadInt32();
-                var path = reader.ReadAlignedString();
+                m_DataStreamData = new DataStreamingInfo(reader);
             }
             
             m_TextureFormat = (TextureFormat)reader.ReadInt32();
