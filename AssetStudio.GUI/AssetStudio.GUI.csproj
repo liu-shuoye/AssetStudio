@@ -5,9 +5,9 @@
 		<TargetFramework>net8.0-windows</TargetFramework>
 		<UseWindowsForms>true</UseWindowsForms>
 		<ApplicationIcon>Resources\as.ico</ApplicationIcon>
-		<Version>1.38.00</Version>
-		<AssemblyVersion>1.38.00</AssemblyVersion>
-		<FileVersion>1.38.00</FileVersion>
+		<Version>1.38.01</Version>
+		<AssemblyVersion>1.38.01</AssemblyVersion>
+		<FileVersion>1.38.01</FileVersion>
 		<Copyright>Copyright © Razmoth 2022; Copyright © Perfare 2018-2022</Copyright>
 		<DebugType>embedded</DebugType>
 		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>

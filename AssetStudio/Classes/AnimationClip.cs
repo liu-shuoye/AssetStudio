@@ -1889,7 +1889,7 @@ namespace AssetStudio
                 var m_aclType = reader.ReadInt32();
             }
 
-            if (reader.IsTuanJie())
+            if (reader.IsTuanJie)
             {
                 m_EulerCurves = new List<Vector3Curve>();
                 m_PositionCurves = new List<Vector3Curve>();
@@ -1971,7 +1971,7 @@ namespace AssetStudio
                 }
                 else
                 {
-                    if (reader.IsTuanJie())
+                    if (reader.IsTuanJie)
                     {
                         m_MuscleClipSize = reader.ReadUInt32();
                         var muscleClipSize = reader.ReadInt32();

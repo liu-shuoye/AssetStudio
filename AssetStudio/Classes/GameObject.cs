@@ -34,7 +34,7 @@ namespace AssetStudio
             }
 
             var m_Layer = reader.ReadInt32();
-            if (reader.IsTuanJie())
+            if (reader.IsTuanJie)
             {
                 bool m_HasEditorInfo = reader.ReadBoolean();
                 reader.AlignStream();

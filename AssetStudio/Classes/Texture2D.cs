@@ -79,7 +79,7 @@ namespace AssetStudio
                 var m_MipsStripped = reader.ReadInt32();
             }
             
-            if (reader.IsTuanJie())
+            if (reader.IsTuanJie)
             {
                 var m_WebStreaming = reader.ReadInt32();
                 var m_PriorityLevel = reader.ReadInt32();
@@ -152,13 +152,13 @@ namespace AssetStudio
                 var m_ColorSpace = reader.ReadInt32();
             }
             if (version[0] > 2020 || (version[0] == 2020 && version[1] >= 2)
-                || (reader.IsTuanJie() && version[0] == 2022 && version[3] >= 13)) //2020.2 and up
+                || (reader.IsTuanJie && version[0] == 2022 && version[3] >= 13)) //2020.2 and up
             {
                 var m_PlatformBlob = reader.ReadUInt8Array();
                 reader.AlignStream();
             }
             var image_data_size = reader.ReadInt32();
-            if (image_data_size == 0 && ((version[0] == 5 && version[1] >= 3) || version[0] > 5 || reader.IsTuanJie()))//5.3.0 and up
+            if (image_data_size == 0 && ((version[0] == 5 && version[1] >= 3) || version[0] > 5 || reader.IsTuanJie))//5.3.0 and up
             {
                 if (reader.Game.Type.IsGI() && HasExternalMipRelativeOffset(reader.serializedType))
                 {
