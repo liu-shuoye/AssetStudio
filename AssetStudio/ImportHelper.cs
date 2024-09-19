@@ -1135,5 +1135,51 @@ namespace AssetStudio
             ms.Position = 0;
             return new FileReader(reader.FullPath, ms);
         }
+        
+        public static FileReader DecryptCounterSide(FileReader reader)
+        {
+            Logger.Verbose($"Attempting to decrypt file {reader.FileName} with CounterSide encryption");
+
+            var data = reader.ReadBytes((int)reader.Remaining);
+
+            var decryptSize = Math.Min(data.Length, 212);
+            string filename = Path.GetFileNameWithoutExtension(reader.FileName);
+            var md5 = MD5.Create();
+            var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(filename.ToLower()));
+            string hex = BitConverter.ToString(hash).Replace("-", string.Empty);
+            ulong[] MaskList = new[] { 0UL, 0UL, 0UL, 0UL };
+            MaskList[0] = UInt64.Parse(hex.Substring(0, 16), System.Globalization.NumberStyles.HexNumber);
+            MaskList[1] = UInt64.Parse(hex.Substring(16, 16), System.Globalization.NumberStyles.HexNumber);
+            MaskList[2] = UInt64.Parse( hex.Substring(0, 8) + hex.Substring(16, 8), System.Globalization.NumberStyles.HexNumber);
+            MaskList[3] = UInt64.Parse(hex.Substring(8, 8) + hex.Substring(24, 8), System.Globalization.NumberStyles.HexNumber);
+            var pos = 0;
+            var maskPos = 0;
+            while (pos < decryptSize)
+            {
+                if (decryptSize - pos > 7)
+                {
+                    var value = BitConverter.ToUInt64(data, pos);
+                    value ^= MaskList[maskPos];
+                    Buffer.BlockCopy(BitConverter.GetBytes(value), 0, data, pos, 8);
+                    pos += 8;
+                }
+                else
+                {
+                    var p = 0;
+                    while (pos + p < decryptSize)
+                    {
+                        data[pos + p] ^= (byte)((0xFFFFFFFFFFFFFFFF >> p) & MaskList[maskPos]);
+                        p += 1;
+                    }
+                    pos = decryptSize;
+                }
+                maskPos = (maskPos + 1) % 4;
+            }
+            
+            MemoryStream ms = new();
+            ms.Write(data);
+            ms.Position = 0;
+            return new FileReader(reader.FullPath, ms);
+        }
     }
 }
