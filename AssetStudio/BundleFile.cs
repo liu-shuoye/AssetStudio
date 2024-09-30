@@ -474,14 +474,6 @@ namespace AssetStudio
                         try
                         {
                             var uncompressedBytesSpan = uncompressedBytes.AsSpan(0, (int)uncompressedSize);
-                            if (Game.Type.IsPerpetualNovelty())
-                            {
-                                var key = blocksInfoBytesSpan[1];
-                                for (int j = 0; j < 78; j++)
-                                {
-                                    blocksInfoBytesSpan[j] ^= key;
-                                }
-                            }
                             var numWrite = LZ4.Instance.Decompress(blocksInfoBytesSpan, uncompressedBytesSpan);
                             if (numWrite != uncompressedSize)
                             {
