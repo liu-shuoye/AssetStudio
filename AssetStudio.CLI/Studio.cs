@@ -76,7 +76,7 @@ namespace AssetStudio.CLI
 
         private static int ExtractBundleFile(FileReader reader, string savePath)
         {
-            Logger.Info($"Decompressing {reader.FileName} ...");
+            Logger.Info($"正在解压缩 {reader.FileName}...");
             try
             {
                 var bundleFile = new BundleFile(reader, Game);
@@ -89,14 +89,14 @@ namespace AssetStudio.CLI
             }
             catch (InvalidCastException)
             {
-                Logger.Error($"Game type mismatch, Expected {nameof(Mr0k)} but got {Game.Name} ({Game.GetType().Name}) !!");
+                Logger.Error($"游戏类型不匹配，预期为 {nameof(Mr0k)}，但得到 {Game.Name} ({Game.GetType().Name})！！");
             }
             return 0;
         }
 
         private static int ExtractWebDataFile(FileReader reader, string savePath)
         {
-            Logger.Info($"Decompressing {reader.FileName} ...");
+            Logger.Info($"正在解压缩 {reader.FileName}...");
             var webFile = new WebFile(reader);
             reader.Dispose();
             if (webFile.fileList.Count > 0)
@@ -110,7 +110,7 @@ namespace AssetStudio.CLI
         private static int ExtractBlkFile(FileReader reader, string savePath)
         {
             int total = 0;
-            Logger.Info($"Decompressing {reader.FileName} ...");
+            Logger.Info($"正在解压缩 {reader.FileName}...");
             try
             {
                 using var stream = BlkUtils.Decrypt(reader, (Blk)Game);
@@ -133,7 +133,7 @@ namespace AssetStudio.CLI
             }
             catch (InvalidCastException)
             {
-                Logger.Error($"Game type mismatch, Expected {nameof(Blk)} but got {Game.Name} ({Game.GetType().Name}) !!");
+                Logger.Error($"游戏类型不匹配，预期为 {nameof(Blk)}，但得到 {Game.Name} ({Game.GetType().Name})！！");
             }
             return total;
         }
@@ -141,7 +141,7 @@ namespace AssetStudio.CLI
         private static int ExtractBlockFile(FileReader reader, string savePath)
         {
             int total = 0;
-            Logger.Info($"Decompressing {reader.FileName} ...");
+            Logger.Info($"正在解压缩 {reader.FileName}...");
             using var stream = new OffsetStream(reader.BaseStream, 0);
             do
             {
@@ -156,7 +156,7 @@ namespace AssetStudio.CLI
 
         private static int ExtractMhyFile(FileReader reader, string savePath)
         {
-            Logger.Info($"Decompressing {reader.FileName} ...");
+            Logger.Info($"正在解压缩 {reader.FileName}...");
             try
             {
                 var mhy0File = new MhyFile(reader, (Mhy)Game);
@@ -169,7 +169,7 @@ namespace AssetStudio.CLI
             }
             catch (InvalidCastException)
             {
-                Logger.Error($"Game type mismatch, Expected {nameof(Mhy)} but got {Game.Name} ({Game.GetType().Name}) !!");
+                Logger.Error($"游戏类型不匹配，预期为 {nameof(Mhy)}，但得到 {Game.Name} ({Game.GetType().Name})！！");
             }
             return 0;
         }
@@ -202,7 +202,7 @@ namespace AssetStudio.CLI
         {
             if (exportableAssets.Count > 0)
             {
-                Logger.Info("Updating Containers...");
+                Logger.Info("正在更新容器...");
                 foreach (var asset in exportableAssets)
                 {
                     if (int.TryParse(asset.Container, out var value))
@@ -223,7 +223,7 @@ namespace AssetStudio.CLI
                         }
                     }
                 }
-                Logger.Info("Updated !!");
+                Logger.Info("已更新！！");
             }
         }
 
@@ -399,7 +399,7 @@ namespace AssetStudio.CLI
                         break;
                 }
                 exportPath += Path.DirectorySeparatorChar;
-                Logger.Info($"[{exportedCount}/{toExportCount}] Exporting {asset.TypeString}: {asset.Text}");
+                Logger.Info($"[{exportedCount}/{toExportCount}] 正在导出 {asset.TypeString}: {asset.Text}");
                 try
                 {
                     switch (exportType)
@@ -432,7 +432,7 @@ namespace AssetStudio.CLI
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"Export {asset.Type}:{asset.Text} error\r\n{ex.Message}\r\n{ex.StackTrace}");
+                    Logger.Error($"导出 {asset.Type}:{asset.Text} 错误\r\n{ex.Message}\r\n{ex.StackTrace}");
                 }
             }
 
@@ -492,7 +492,7 @@ namespace AssetStudio.CLI
 
             Logger.Info(statusText);
 
-            Logger.Info($"AssetMap build successfully !!");
+            Logger.Info($"AssetMap 构建成功！！");
         }
 
         public static TypeTree MonoBehaviourToTypeTree(MonoBehaviour m_MonoBehaviour)

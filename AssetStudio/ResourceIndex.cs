@@ -37,11 +37,11 @@ namespace AssetStudio
                 }
                 catch (Exception e)
                 {
-                    Logger.Error("AssetIndex was not loaded");
+                    Logger.Error("资产索引未加载");
                     Console.WriteLine(e.ToString());
                     return;
                 }
-                Logger.Info("Loaded !!");
+                Logger.Info("加载完成！！");
             }
         }
         private static void BuildBundleMap()

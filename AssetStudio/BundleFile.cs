@@ -158,7 +158,7 @@ namespace AssetStudio
         {
             Header header = new Header();
             header.signature = reader.ReadStringToNull(20);
-            Logger.Verbose($"Parsed signature {header.signature}");
+            Logger.Verbose($"解析的签名 {header.signature}。");
             switch (header.signature)
             {
                 case "UnityFS":
@@ -172,12 +172,12 @@ namespace AssetStudio
                                 reader.Position -= 4;
                                 goto default;
                             }
-                            Logger.Verbose($"Encrypted bundle header with key {key}");
+                            Logger.Verbose($"使用密钥 {key} 加密的包头");
                             XORShift128.InitSeed(key);
                         }
                         else if (Game.Type.IsBH3PrePre())
                         {
-                            Logger.Verbose($"Encrypted bundle header with key {reader.Length}");
+                            Logger.Verbose($"使用密钥 {reader.Length} 加密的包头");
                             XORShift128.InitSeed((uint)reader.Length);
                         }
 
@@ -253,7 +253,7 @@ namespace AssetStudio
         {
             Stream blocksStream;
             var uncompressedSizeSum = m_BlocksInfo.Sum(x => x.uncompressedSize);
-            Logger.Verbose($"Total size of decompressed blocks: {uncompressedSizeSum}");
+            Logger.Verbose($"解压块的总大小: {uncompressedSizeSum}");
             if (uncompressedSizeSum >= int.MaxValue)
             {
                 /*var memoryMappedFile = MemoryMappedFile.CreateNew(null, uncompressedSizeSum);
@@ -269,7 +269,7 @@ namespace AssetStudio
 
         private void ReadBlocksAndDirectory(FileReader reader, Stream blocksStream)
         {
-            Logger.Verbose($"Writing block and directory to blocks stream...");
+            Logger.Verbose($"正在将块和目录写入块流...");
 
             var isCompressed = m_Header.signature == "UnityWeb";
             foreach (var blockInfo in m_BlocksInfo)
@@ -287,7 +287,7 @@ namespace AssetStudio
             var blocksReader = new EndianBinaryReader(blocksStream);
             var nodesCount = blocksReader.ReadInt32();
             m_DirectoryInfo = new List<Node>();
-            Logger.Verbose($"Directory count: {nodesCount}");
+            Logger.Verbose($"目录计数: {nodesCount}");
             for (int i = 0; i < nodesCount; i++)
             {
                 m_DirectoryInfo.Add(new Node
@@ -301,7 +301,7 @@ namespace AssetStudio
 
         public void ReadFiles(Stream blocksStream, string path)
         {
-            Logger.Verbose($"Writing files from blocks stream...");
+            Logger.Verbose($"正在从块流中写入文件...");
 
             fileList = new List<StreamFile>();
             for (int i = 0; i < m_DirectoryInfo.Count; i++)
@@ -350,7 +350,7 @@ namespace AssetStudio
                 }
 
                 XORShift128.Init = false;
-                Logger.Verbose($"Bundle header decrypted");
+                Logger.Verbose($"包头已解密");
                
                 var encUnityVersion = reader.ReadStringToNull();
                 var encUnityRevision = reader.ReadStringToNull();
@@ -372,12 +372,12 @@ namespace AssetStudio
                 m_Header.uncompressedBlocksInfoSize -= 0xCA;
             }
 
-            Logger.Verbose($"Bundle header Info: {m_Header}");
+            Logger.Verbose($"包头信息: {m_Header}");
         }
 
         private void ReadUnityCN(FileReader reader)
         {
-            Logger.Verbose($"Attempting to decrypt file {reader.FileName} with UnityCN encryption");
+            Logger.Verbose($"正在尝试使用 UnityCN 加密解密文件 {reader.FileName}");
             ArchiveFlags mask;
 
             var version = ParseVersion();
@@ -396,11 +396,11 @@ namespace AssetStudio
                 HasBlockInfoNeedPaddingAtStart = true;
             }
 
-            Logger.Verbose($"Mask set to {mask}");
+            Logger.Verbose($"掩码设置为 {mask}");
 
             if ((m_Header.flags & mask) != 0)
             {
-                Logger.Verbose($"Encryption flag exist, file is encrypted, attempting to decrypt");
+                Logger.Verbose($"存在加密标志，文件已加密，尝试解密中");
                 if (Game.Type.IsGuiLongChao())
                 {
                     UnityCN = new UnityCNGuiLongChao(reader);
@@ -449,7 +449,7 @@ namespace AssetStudio
             var blocksInfoBytesSpan = blocksInfoBytes.AsSpan(0, (int)m_Header.compressedBlocksInfoSize);
             var uncompressedSize = m_Header.uncompressedBlocksInfoSize;
             var compressionType = (CompressionType)(m_Header.flags & ArchiveFlags.CompressionTypeMask);
-            Logger.Verbose($"BlockInfo compression type: {compressionType}");
+            Logger.Verbose($"BlockInfo 压缩类型: {compressionType}");
             switch (compressionType) //kArchiveCompressionTypeMask
             {
                 case CompressionType.None: //None
@@ -490,7 +490,7 @@ namespace AssetStudio
                 case CompressionType.Lz4Mr0k: //Lz4Mr0k
                     if (Mr0kUtils.IsMr0k(blocksInfoBytesSpan))
                     {
-                        Logger.Verbose($"Header encrypted with mr0k, decrypting...");
+                        Logger.Verbose($"头部被 mr0k 加密，正在解密...");
                         blocksInfoBytesSpan = Mr0kUtils.Decrypt(blocksInfoBytesSpan, (Mr0k)Game).ToArray();
                     }
                     goto case CompressionType.Lz4HC;
@@ -505,7 +505,7 @@ namespace AssetStudio
                 }
                 var blocksInfoCount = blocksInfoReader.ReadInt32();
                 m_BlocksInfo = new List<StorageBlock>();
-                Logger.Verbose($"Blocks count: {blocksInfoCount}");
+                Logger.Verbose($"块数量: {blocksInfoCount}");
                 for (int i = 0; i < blocksInfoCount; i++)
                 {
                     m_BlocksInfo.Add(new StorageBlock
@@ -515,12 +515,12 @@ namespace AssetStudio
                         flags = (StorageBlockFlags)blocksInfoReader.ReadUInt16()
                     });
 
-                    Logger.Verbose($"Block {i} Info: {m_BlocksInfo[i]}");
+                    Logger.Verbose($"块 {i} 信息: {m_BlocksInfo[i]}");
                 }
 
                 var nodesCount = blocksInfoReader.ReadInt32();
                 m_DirectoryInfo = new List<Node>();
-                Logger.Verbose($"Directory count: {nodesCount}");
+                Logger.Verbose($"目录计数: {nodesCount}");
                 for (int i = 0; i < nodesCount; i++)
                 {
                     m_DirectoryInfo.Add(new Node
@@ -531,7 +531,7 @@ namespace AssetStudio
                         path = blocksInfoReader.ReadStringToNull(),
                     });
 
-                    Logger.Verbose($"Directory {i} Info: {m_DirectoryInfo[i]}");
+                    Logger.Verbose($"目录 {i} 信息: {m_DirectoryInfo[i]}");
                 }
             }
             if (HasBlockInfoNeedPaddingAtStart && (m_Header.flags & ArchiveFlags.BlockInfoNeedPaddingAtStart) != 0)
@@ -542,14 +542,14 @@ namespace AssetStudio
 
         private void ReadBlocks(FileReader reader, Stream blocksStream)
         {
-            Logger.Verbose($"Writing block to blocks stream...");
+            Logger.Verbose($"正在将块写入块流...");
 
             for (int i = 0; i < m_BlocksInfo.Count; i++)
             {
-                Logger.Verbose($"Reading block {i}...");
+                Logger.Verbose($"正在读取块 {i}...");
                 var blockInfo = m_BlocksInfo[i];
                 var compressionType = (CompressionType)(blockInfo.flags & StorageBlockFlags.CompressionTypeMask);
-                Logger.Verbose($"Block compression type {compressionType}");
+                Logger.Verbose($"块压缩类型 {compressionType}");
                 switch (compressionType) //kStorageBlockCompressionTypeMask
                 {
                     case CompressionType.None: //None
@@ -588,12 +588,12 @@ namespace AssetStudio
                                 reader.Read(compressedBytesSpan);
                                 if (compressionType == CompressionType.Lz4Mr0k && Mr0kUtils.IsMr0k(compressedBytes))
                                 {
-                                    Logger.Verbose($"Block encrypted with mr0k, decrypting...");
+                                    Logger.Verbose($"块使用 mr0k 加密，正在解密...");
                                     compressedBytesSpan = Mr0kUtils.Decrypt(compressedBytesSpan, (Mr0k)Game);
                                 }
                                 if (Game.Type.IsUnityCN() && ((int)blockInfo.flags & 0x100) != 0)
                                 {
-                                    Logger.Verbose($"Decrypting block with UnityCN...");
+                                    Logger.Verbose($"使用 UnityCN 解密块中...");
                                     UnityCN.DecryptBlock(compressedBytes, compressedSize, i);
                                 }
                                 if (Game.Type.IsNetEase() && i == 0)

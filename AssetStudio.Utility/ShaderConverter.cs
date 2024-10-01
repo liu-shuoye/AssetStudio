@@ -1096,8 +1096,8 @@ namespace AssetStudio
                             }
                             catch (Exception e)
                             {
-                                Logger.Verbose($"Decompile error {e.Message}");
-                                Logger.Verbose($"Attempting to disassemble...");
+                                Logger.Verbose($"反编译错误 {e.Message}");
+                                Logger.Verbose($"正在尝试反汇编...");
 
                                 try
                                 {

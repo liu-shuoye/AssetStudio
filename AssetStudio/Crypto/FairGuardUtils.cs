@@ -8,14 +8,14 @@ namespace AssetStudio
     {
         public static void Decrypt(Span<byte> bytes)
         {
-            Logger.Verbose($"Attempting to decrypt block with FairGuard encryption...");
+            Logger.Verbose($"正在尝试使用 FairGuard 加密解密块...");
 
             var encryptedOffset = 0;
             var encryptedSize = bytes.Length > 0x500 ? 0x500 : bytes.Length;
 
             if (encryptedSize < 0x20)
             {
-                Logger.Verbose($"block size is less that minimum, skipping...");
+                Logger.Verbose($"块大小小于最小值，跳过...");
                 return;
             }
 

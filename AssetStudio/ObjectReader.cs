@@ -44,7 +44,7 @@ namespace AssetStudio
 
             IsTuanJie = unityVersion.Contains("t");
 
-            Logger.Verbose($"Initialized reader for {type} object with {m_PathID} in file {assetsFile.fileName} !!");
+            Logger.Verbose($"为文件 {assetsFile.fileName} 中具有 {m_PathID} 的 {type} 对象初始化读取器！！");
         }
 
         public override int Read(byte[] buffer, int index, int count)
@@ -59,7 +59,7 @@ namespace AssetStudio
 
         public void Reset()
         {
-            Logger.Verbose($"Resetting reader position to object offset 0x{byteStart:X8}...");
+            Logger.Verbose($"重置读取器位置到对象偏移量 0x{byteStart:X8}...");
             Position = byteStart;
         }
 

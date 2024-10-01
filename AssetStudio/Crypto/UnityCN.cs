@@ -32,7 +32,7 @@ namespace AssetStudio
             DecryptKey(signatureKey, signatureBytes);
 
             var str = Encoding.UTF8.GetString(signatureBytes);
-            Logger.Verbose($"Decrypted signature is {str}");
+            Logger.Verbose($"解密后的签名是 {str}");
             if (str != Signature)
             {
                 throw new Exception($"Invalid Signature, Expected {Signature} but found {str} instead");
@@ -53,7 +53,7 @@ namespace AssetStudio
 
         public static bool SetKey(Entry entry)
         {
-            Logger.Verbose($"Initializing decryptor with key {entry.Key}");
+            Logger.Verbose($"使用密钥 {entry.Key} 初始化解密器。");
             try
             {
                 using var aes = Aes.Create();
@@ -61,11 +61,11 @@ namespace AssetStudio
                 aes.Key = Convert.FromHexString(entry.Key);
 
                 Encryptor = aes.CreateEncryptor();
-                Logger.Verbose($"Decryptor initialized !!");
+                Logger.Verbose($"解密器初始化完成!!");
             }
             catch (Exception e)
             {
-                Logger.Error($"[UnityCN] Invalid key !!\n{e.Message}");
+                Logger.Error($"[UnityCN] 密钥无效！！\n{e.Message}");
                 return false;
             }
             return true;
@@ -153,7 +153,7 @@ namespace AssetStudio
                 var bytes = Convert.FromHexString(Key);
                 if (bytes.Length != 0x10)
                 {
-                    Logger.Warning($"[UnityCN] {this} has invalid key, size should be 16 bytes, skipping...");
+                    Logger.Warning($"[UnityCN] {this} 的密钥无效，大小应为 16 字节，跳过...");
                     return false;
                 }
 

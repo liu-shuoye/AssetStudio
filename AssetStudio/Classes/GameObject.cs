@@ -71,7 +71,7 @@ namespace AssetStudio
             }
             catch(Exception e)
             {
-                Logger.Warning($"Unable to verify if {m_Transform?.Name} has meshes, skipping...");
+                Logger.Warning($"无法验证 {m_Transform?.Name} 是否有网格，跳过...");
                 return false;
             }
         }
