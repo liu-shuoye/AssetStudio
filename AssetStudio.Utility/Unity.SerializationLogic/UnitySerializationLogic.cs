@@ -125,7 +125,7 @@ namespace Unity.SerializationLogic
 
             var funcPtrType = typeReference as FunctionPointerType;
             if (funcPtrType != null)
-                throw new NotSupportedException("Function pointer types are not supported by the SerializationWeaver");
+                throw new NotSupportedException("SerializationWeaver 不支持函数指针类型");
 
             if (typeReference is TypeSpecification)
                 throw new NotSupportedException();
@@ -180,7 +180,7 @@ namespace Unity.SerializationLogic
                 var storedValue = (MemberReference)oldValue.GenericInstance;
 
                 if (storedValue.FullName != memberReference.FullName)
-                    throw new ArgumentException("Duplicate key!", "key");
+                    throw new ArgumentException("重复的键！", "key");
 
                 oldValue.Count++;
                 return;
@@ -202,7 +202,7 @@ namespace Unity.SerializationLogic
                 var storedValue = (MemberReference)oldValue.GenericInstance;
 
                 if (storedValue.FullName != memberReference.FullName)
-                    throw new ArgumentException("Invalid value!", "value");
+                    throw new ArgumentException("无效的值！", "value");
 
                 oldValue.Count--;
                 if (oldValue.Count == 0)
@@ -211,7 +211,7 @@ namespace Unity.SerializationLogic
                 return;
             }
 
-            throw new ArgumentException("Invalid key!", "key");
+            throw new ArgumentException("无效的键！", "key");
         }
     }
 
@@ -477,7 +477,7 @@ namespace Unity.SerializationLogic
             var fixedBufferAttribute = GetFixedBufferAttribute(fieldDefinition);
 
             if (fixedBufferAttribute == null)
-                throw new ArgumentException(string.Format("Field '{0}' is not a fixed buffer field.", fieldDefinition.FullName));
+                throw new ArgumentException(string.Format("字段 '{0}' 不是固定缓冲区字段。", fieldDefinition.FullName));
 
             var size = (Int32)fixedBufferAttribute.ConstructorArguments[1].Value;
 
@@ -509,7 +509,7 @@ namespace Unity.SerializationLogic
                     return 8;
 
                 default:
-                    throw new ArgumentException(string.Format("Unsupported {0}", type.MetadataType));
+                    throw new ArgumentException(string.Format("不支持 {0}", type.MetadataType));
             }
         }
 

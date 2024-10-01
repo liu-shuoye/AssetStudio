@@ -18,7 +18,7 @@ namespace AssetStudio
 			}
 			if (m_documents.Contains(document))
 			{
-				throw new ArgumentException($"Document {document} is added already", nameof(document));
+				throw new ArgumentException($"文档 {document} 已添加", nameof(document));
 			}
 #endif
 			m_documents.Add(document);
@@ -28,7 +28,7 @@ namespace AssetStudio
 		{
 			if(m_tags.Any(t => t.Handle == handle))
 			{
-				throw new Exception($"Writer already contains tag {handle}");
+				throw new Exception($"写入器已包含标签 {handle}");
 			}
 			YAMLTag tag = new YAMLTag(handle, content);
 			m_tags.Add(tag);

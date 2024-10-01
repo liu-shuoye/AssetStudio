@@ -911,7 +911,7 @@ namespace AssetStudio
             var aclTracksCurveCount = reader.ReadUInt32();
             if (aclTracksOffset > reader.Length)
             {
-                throw new IOException("Offset outside of range");
+                throw new IOException("偏移量超出范围");
             }
 
             var pos = reader.Position;
@@ -933,7 +933,7 @@ namespace AssetStudio
             var aclDatabaseCurveCount = (uint)reader.ReadUInt64();
             if (aclDatabaseOffset > reader.Length)
             {
-                throw new IOException("Offset outside of range");
+                throw new IOException("偏移量超出范围");
             }
 
             pos = reader.Position;
@@ -971,7 +971,7 @@ namespace AssetStudio
             var streamedClipCurveCount = (uint)reader.ReadUInt64();
             if (streamedClipOffset > reader.Length)
             {
-                throw new IOException("Offset outside of range");
+                throw new IOException("偏移量超出范围");
             }
 
             var pos = reader.Position;
@@ -1105,7 +1105,7 @@ namespace AssetStudio
             var denseClipOffset = reader.Position + reader.ReadInt64();
             if (denseClipOffset > reader.Length)
             {
-                throw new IOException("Offset outside of range");
+                throw new IOException("偏移量超出范围");
             }
 
             var pos = reader.Position;
@@ -1253,7 +1253,7 @@ namespace AssetStudio
             var constantClipOffset = reader.Position + reader.ReadInt64();
             if (constantClipOffset > reader.Length)
             {
-                throw new IOException("Offset outside of range");
+                throw new IOException("偏移量超出范围");
             }
 
             var pos = reader.Position;
@@ -1353,7 +1353,7 @@ namespace AssetStudio
             var clipOffset = reader.Position + reader.ReadInt64();
             if (clipOffset > reader.Length)
             {
-                throw new IOException("Offset outside of range");
+                throw new IOException("偏移量超出范围");
             }
 
             var pos = reader.Position;
@@ -1569,7 +1569,7 @@ namespace AssetStudio
 
             if (valueArrayDeltaOffset > reader.Length)
             {
-                throw new IOException("Offset outside of range");
+                throw new IOException("偏移量超出范围");
             }
 
             var valueArrayReferencePoseCount = (int)reader.ReadUInt64();
@@ -1577,7 +1577,7 @@ namespace AssetStudio
 
             if (valueArrayReferencePoseOffset > reader.Length)
             {
-                throw new IOException("Offset outside of range");
+                throw new IOException("偏移量超出范围");
             }
 
             clipMuscleConstant.m_Mirror = reader.ReadBoolean();

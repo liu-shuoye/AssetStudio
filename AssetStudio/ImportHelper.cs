@@ -205,7 +205,7 @@ namespace AssetStudio
                         continue;
                     }
                     
-                    throw new InvalidOperationException($"Expected signature {PackSignature} or {UnityFSSignature}, got {signature} instead !!");
+                    throw new InvalidOperationException($"预期签名为 {PackSignature} 或 {UnityFSSignature}，但得到 {signature} !!");
                 }
             }
             catch (InvalidCastException)
@@ -974,14 +974,14 @@ namespace AssetStudio
             var signature = Encoding.UTF8.GetString(signatureBytes);
             if (signature != "_GhostAssets_")
             {
-                throw new Exception("Invalid signature");
+                throw new Exception("无效签名");
             }
 
             generation ^= (byte)(key[0] ^ key[1]);
 
             if (generation != 1)
             {
-                throw new Exception("Invalid generation");
+                throw new Exception("无效的生成");
             }
 
             long value = 0;

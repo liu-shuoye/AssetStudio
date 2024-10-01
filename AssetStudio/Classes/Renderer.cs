@@ -145,7 +145,7 @@ namespace AssetStudio
                 var m_LightmapIndexDynamic = reader.ReadUInt16();
                 if (reader.Game.Type.IsGIGroup() && (m_LightmapIndex != 0xFFFF || m_LightmapIndexDynamic != 0xFFFF))
                 {
-                    throw new Exception("Not Supported !! skipping....");
+                    throw new Exception("不支持 !! 跳过....");
                 }
             }
 

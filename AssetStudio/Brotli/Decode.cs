@@ -75,7 +75,7 @@ namespace Org.Brotli.Dec
 				state.isMetadata = true;
 				if (Org.Brotli.Dec.BitReader.ReadBits(br, 1) != 0)
 				{
-					throw new Org.Brotli.Dec.BrotliRuntimeException("Corrupted reserved bit");
+					throw new Org.Brotli.Dec.BrotliRuntimeException("保留位损坏");
 				}
 				int sizeBytes = Org.Brotli.Dec.BitReader.ReadBits(br, 2);
 				if (sizeBytes == 0)
@@ -87,7 +87,7 @@ namespace Org.Brotli.Dec
 					int bits = Org.Brotli.Dec.BitReader.ReadBits(br, 8);
 					if (bits == 0 && i + 1 == sizeBytes && sizeBytes > 1)
 					{
-						throw new Org.Brotli.Dec.BrotliRuntimeException("Exuberant nibble");
+						throw new Org.Brotli.Dec.BrotliRuntimeException("过大的半字节");
 					}
 					state.metaBlockLength |= bits << (i * 8);
 				}
@@ -99,7 +99,7 @@ namespace Org.Brotli.Dec
 					int bits = Org.Brotli.Dec.BitReader.ReadBits(br, 4);
 					if (bits == 0 && i + 1 == sizeNibbles && sizeNibbles > 4)
 					{
-						throw new Org.Brotli.Dec.BrotliRuntimeException("Exuberant nibble");
+						throw new Org.Brotli.Dec.BrotliRuntimeException("过大的半字节");
 					}
 					state.metaBlockLength |= bits << (i * 4);
 				}
@@ -226,7 +226,7 @@ namespace Org.Brotli.Dec
 					int repeatDelta = repeat - oldRepeat;
 					if (symbol + repeatDelta > numSymbols)
 					{
-						throw new Org.Brotli.Dec.BrotliRuntimeException("symbol + repeatDelta > numSymbols");
+						throw new Org.Brotli.Dec.BrotliRuntimeException("符号 + 重复增量 > 符号数量");
 					}
 					// COV_NF_LINE
 					for (int i = 0; i < repeatDelta; i++)
@@ -241,7 +241,7 @@ namespace Org.Brotli.Dec
 			}
 			if (space != 0)
 			{
-				throw new Org.Brotli.Dec.BrotliRuntimeException("Unused space");
+				throw new Org.Brotli.Dec.BrotliRuntimeException("未使用的空间");
 			}
 			// COV_NF_LINE
 			// TODO: Pass max_symbol to Huffman table builder instead?
@@ -340,7 +340,7 @@ namespace Org.Brotli.Dec
 			}
 			if (!ok)
 			{
-				throw new Org.Brotli.Dec.BrotliRuntimeException("Can't readHuffmanCode");
+				throw new Org.Brotli.Dec.BrotliRuntimeException("无法读取 Huffman 编码");
 			}
 			// COV_NF_LINE
 			Org.Brotli.Dec.Huffman.BuildHuffmanTable(table, offset, HuffmanTableBits, codeLengths, alphabetSize);
@@ -380,7 +380,7 @@ namespace Org.Brotli.Dec
 					{
 						if (i >= contextMapSize)
 						{
-							throw new Org.Brotli.Dec.BrotliRuntimeException("Corrupted context map");
+							throw new Org.Brotli.Dec.BrotliRuntimeException("上下文映射损坏");
 						}
 						// COV_NF_LINE
 						contextMap[i] = 0;
@@ -662,11 +662,11 @@ namespace Org.Brotli.Dec
 		{
 			if (state.runningState == Org.Brotli.Dec.RunningState.Uninitialized)
 			{
-				throw new System.InvalidOperationException("Can't decompress until initialized");
+				throw new System.InvalidOperationException("初始化之前无法解压缩");
 			}
 			if (state.runningState == Org.Brotli.Dec.RunningState.Closed)
 			{
-				throw new System.InvalidOperationException("Can't decompress after close");
+				throw new System.InvalidOperationException("关闭后无法解压缩");
 			}
 			Org.Brotli.Dec.BitReader br = state.br;
 			int ringBufferMask = state.ringBufferSize - 1;
@@ -680,7 +680,7 @@ namespace Org.Brotli.Dec
 						// TODO: extract cases to methods for the better readability.
 						if (state.metaBlockLength < 0)
 						{
-							throw new Org.Brotli.Dec.BrotliRuntimeException("Invalid metablock length");
+							throw new Org.Brotli.Dec.BrotliRuntimeException("无效的元块长度");
 						}
 						ReadMetablockInfo(state);
 						/* Ring-buffer would be reallocated here. */
@@ -817,7 +817,7 @@ namespace Org.Brotli.Dec
 						state.distance = TranslateShortCodes(state.distanceCode, state.distRb, state.distRbIdx);
 						if (state.distance < 0)
 						{
-							throw new Org.Brotli.Dec.BrotliRuntimeException("Negative distance");
+							throw new Org.Brotli.Dec.BrotliRuntimeException("负距离");
 						}
 						// COV_NF_LINE
 						if (state.maxDistance != state.maxBackwardDistance && state.pos < state.maxBackwardDistance)
@@ -841,7 +841,7 @@ namespace Org.Brotli.Dec
 						}
 						if (state.copyLength > state.metaBlockLength)
 						{
-							throw new Org.Brotli.Dec.BrotliRuntimeException("Invalid backward reference");
+							throw new Org.Brotli.Dec.BrotliRuntimeException("无效的后向引用");
 						}
 						// COV_NF_LINE
 						state.j = 0;
@@ -917,13 +917,13 @@ namespace Org.Brotli.Dec
 							}
 							else
 							{
-								throw new Org.Brotli.Dec.BrotliRuntimeException("Invalid backward reference");
+								throw new Org.Brotli.Dec.BrotliRuntimeException("无效的后向引用");
 							}
 						}
 						else
 						{
 							// COV_NF_LINE
-							throw new Org.Brotli.Dec.BrotliRuntimeException("Invalid backward reference");
+							throw new Org.Brotli.Dec.BrotliRuntimeException("无效的后向引用");
 						}
 						// COV_NF_LINE
 						state.runningState = Org.Brotli.Dec.RunningState.MainLoop;
@@ -974,7 +974,7 @@ namespace Org.Brotli.Dec
 
 					default:
 					{
-						throw new Org.Brotli.Dec.BrotliRuntimeException("Unexpected state " + state.runningState);
+						throw new Org.Brotli.Dec.BrotliRuntimeException("意外状态" + state.runningState);
 					}
 				}
 			}
@@ -982,7 +982,7 @@ namespace Org.Brotli.Dec
 			{
 				if (state.metaBlockLength < 0)
 				{
-					throw new Org.Brotli.Dec.BrotliRuntimeException("Invalid metablock length");
+					throw new Org.Brotli.Dec.BrotliRuntimeException("无效的元块长度");
 				}
 				Org.Brotli.Dec.BitReader.JumpToByteBoundary(br);
 				Org.Brotli.Dec.BitReader.CheckHealth(state.br, true);

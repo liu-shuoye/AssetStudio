@@ -397,7 +397,7 @@ namespace SpirV
 						}
 						else
 						{
-							throw new Exception("Cannot construct floating point literal.");
+							throw new Exception("无法构造浮点字面量。");
 						}
 					}
 			}

@@ -91,7 +91,7 @@ namespace AssetStudio
             var index = bytes.Search(Signature);
             if (index == -1 || index >= 0x40)
             {
-                throw new Exception("Header not found !!");
+                throw new Exception("未找到头文件 !!");
             }
 
             var info = bytes[index..];
@@ -135,7 +135,7 @@ namespace AssetStudio
             var version = BinaryPrimitives.ReadUInt16LittleEndian(bytes[2..]);
             if (version < 0x2017 || version > 0x2025)
             {
-                throw new Exception("Unsupported version");
+                throw new Exception("不支持的版本");
             }
             var versionString = version.ToString("X4");
             Logger.Verbose($"包版本: {versionString}");

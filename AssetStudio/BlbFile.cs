@@ -24,7 +24,7 @@ namespace AssetStudio
             var signature = reader.ReadStringToNull(4);
             Logger.Verbose($"解析的签名 {signature}。");
             if (signature != "Blb\x02")
-                throw new Exception("not a Blb file");
+                throw new Exception("不是 Blb 文件");
 
             var size = reader.ReadUInt32();
             m_Header = new BundleFile.Header
@@ -163,7 +163,7 @@ namespace AssetStudio
                                 var numWrite = LZ4.Instance.Decompress(compressedBytesSpan, uncompressedBytesSpan);
                                 if (numWrite != uncompressedSize)
                                 {
-                                    throw new IOException($"Lz4 decompression error, write {numWrite} bytes but expected {uncompressedSize} bytes");
+                                    throw new IOException($"Lz4 解压缩错误，写入 {numWrite} 字节，但预期为 {uncompressedSize} 字节");
                                 }
                                 blocksStream.Write(uncompressedBytesSpan);
                             }
@@ -175,7 +175,7 @@ namespace AssetStudio
                             break;
                         }
                     default:
-                        throw new IOException($"Unsupported compression type {compressionType}");
+                        throw new IOException($"不支持的压缩类型 {compressionType}");
                 }
             }
         }

@@ -180,12 +180,12 @@ namespace AssetStudio
                 if (assetsManager.assetsFileList.Count > 0)
                 {
                     yield return file;
-                    msg = $"Processed {Path.GetFileName(file)}";
+                    msg = $"已处理 {Path.GetFileName(file)}";
                 }
                 else
                 {
                     filesList.Remove(file);
-                    msg = $"Removed {Path.GetFileName(file)}, no assets found";
+                    msg = $"已移除 {Path.GetFileName(file)}，未找到资源";
                 }
 
                 Logger.Info($"[{filesList.Count - i + 1}/{filesList.Count}] {msg}");
@@ -446,7 +446,7 @@ namespace AssetStudio
                     catch (Exception e)
                     {
                         var sb = new StringBuilder();
-                        sb.AppendLine("Unable to load object")
+                        sb.AppendLine("无法加载对象")
                             .AppendLine($"Assets {assetsFile.fileName}")
                             .AppendLine($"Path {assetsFile.originalPath}")
                             .AppendLine($"Type {objectReader.type}")

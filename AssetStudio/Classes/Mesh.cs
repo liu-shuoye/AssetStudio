@@ -1340,7 +1340,7 @@ namespace AssetStudio
                 }
                 else
                 {
-                    throw new NotSupportedException("Failed getting triangles. Submesh topology is lines or points.");
+                    throw new NotSupportedException("获取三角形失败。子网格拓扑是线或点。");
                 }
             }
         }

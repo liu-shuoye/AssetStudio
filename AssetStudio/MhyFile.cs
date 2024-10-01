@@ -24,7 +24,7 @@ namespace AssetStudio
             signature = reader.ReadStringToNull(4);
             Logger.Verbose($"解析的签名 {signature}。");
             if (signature != "mhy0")
-                throw new Exception("not a mhy file");
+                throw new Exception("不是 mhy 文件");
 
             m_Header = new BundleFile.Header
             {
@@ -66,7 +66,7 @@ namespace AssetStudio
                 var numWrite = LZ4.Instance.Decompress(compressedBlocksInfo, uncompressedBlocksInfoSpan);
                 if (numWrite != m_Header.uncompressedBlocksInfoSize)
                 {
-                    throw new IOException($"Lz4 decompression error, write {numWrite} bytes but expected {m_Header.uncompressedBlocksInfoSize} bytes");
+                    throw new IOException($"Lz4 解压缩错误，写入 {numWrite} 字节，但预期为 {m_Header.uncompressedBlocksInfoSize} 字节");
                 }
 
                 Logger.Verbose($"正在将块和目录写入块流...");
@@ -129,7 +129,7 @@ namespace AssetStudio
                 var uncompressedSize = (int)blockInfo.uncompressedSize;
                 if (compressedSize < 0x10)
                 {
-                    throw new Exception($"Wrong compressed length: {compressedSize}");
+                    throw new Exception($"错误的压缩长度: {compressedSize}");
                 }
 
                 var compressedBytes = ArrayPool<byte>.Shared.Rent(compressedSize);
@@ -147,7 +147,7 @@ namespace AssetStudio
                     var numWrite = LZ4.Instance.Decompress(compressedBytesSpan[0xC..], uncompressedBytesSpan);
                     if (numWrite != uncompressedSize)
                     {
-                        throw new IOException($"Lz4 decompression error, write {numWrite} bytes but expected {uncompressedSize} bytes");
+                        throw new IOException($"Lz4 解压缩错误，写入 {numWrite} 字节，但预期为 {uncompressedSize} 字节");
                     }
 
                     blocksStream.Write(uncompressedBytesSpan);

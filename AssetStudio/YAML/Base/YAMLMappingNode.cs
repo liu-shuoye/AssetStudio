@@ -186,7 +186,7 @@ namespace AssetStudio
 		{
 			if (key.NodeType != YAMLNodeType.Scalar)
 			{
-				throw new Exception($"Only {YAMLNodeType.Scalar} node as a key supported");
+				throw new Exception($"仅支持将 {YAMLNodeType.Scalar} 节点作为键");
 			}
 
 			InsertEnd(key, value);

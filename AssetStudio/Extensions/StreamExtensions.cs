@@ -37,7 +37,7 @@ namespace AssetStudio
                 {
                     if (!stream.CanWrite)
                     {
-                        throw new IOException("End of stream");
+                        throw new IOException("流结束");
                     }
 
                     stream.WriteByte(0);

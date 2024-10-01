@@ -24,7 +24,7 @@ namespace AssetStudio
             {
                 if (value < 0 || value > _baseStream.Length)
                 {
-                    throw new IOException($"{nameof(Offset)} is out of stream bound");
+                    throw new IOException($"{nameof(Offset)} 超出流范围");
                 }
                 _offset = value;
                 Seek(0, SeekOrigin.Begin);
@@ -51,7 +51,7 @@ namespace AssetStudio
         {
             if (offset > _baseStream.Length)
             {
-                throw new IOException("Unable to seek beyond stream bound");
+                throw new IOException("无法在流界限之外查找");
             }
 
             var target = origin switch

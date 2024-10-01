@@ -661,7 +661,7 @@ namespace AssetStudio
         {
             if (assetsFile.IsVersionStripped && string.IsNullOrEmpty(SpecifyUnityVersion))
             {
-                throw new Exception("The Unity version has been stripped, please set the version in the options");
+                throw new Exception("Unity 版本已被剥离，请在选项中设置版本");
             }
             if (!string.IsNullOrEmpty(SpecifyUnityVersion))
             {
@@ -753,7 +753,7 @@ namespace AssetStudio
                     catch (Exception e)
                     {
                         var sb = new StringBuilder();
-                        sb.AppendLine("Unable to load object")
+                        sb.AppendLine("无法加载对象")
                             .AppendLine($"Assets {assetsFile.fileName}")
                             .AppendLine($"Path {assetsFile.originalPath}")
                             .AppendLine($"Type {objectReader.type}")

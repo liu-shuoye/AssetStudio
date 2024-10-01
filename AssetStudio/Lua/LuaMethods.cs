@@ -16,13 +16,13 @@ public class LuaMethods
         var type = Type.GetType(className);
         if (type == null)
         {
-            throw new Exception($"Class {className} not found.");
+            throw new Exception($"未找到类 {className}。");
         }
 
         var method = type.GetMethod(methodName);
         if (method == null)
         {
-            throw new Exception($"Method {methodName} not found in class {className}.");
+            throw new Exception($"类 {className} 中未找到方法 {methodName}。");
         }
 
         var delegateType = GetDelegateType(method);

@@ -13,7 +13,7 @@ namespace AssetStudio
         {
             if (!string.IsNullOrEmpty(path))
             {
-                Logger.Info(string.Format("Parsing...."));
+                Logger.Info(string.Format("正在解析...."));
                 try
                 {
                     using var stream = File.OpenRead(path);

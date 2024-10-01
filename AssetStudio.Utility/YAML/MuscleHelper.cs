@@ -434,7 +434,7 @@ namespace AssetStudio
                     return 4;
 
                 default:
-                    throw new NotImplementedException($"Binding type {_this} is not implemented");
+                    throw new NotImplementedException($"绑定类型 {_this} 未实现");
             }
         }
     }

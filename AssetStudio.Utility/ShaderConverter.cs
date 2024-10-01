@@ -23,7 +23,7 @@ namespace AssetStudio
                 var numWrite = LZ4.Instance.Decompress(shader.m_SubProgramBlob, decompressedBytes);
                 if (numWrite != shader.decompressedSize)
                 {
-                    throw new IOException($"Lz4 decompression error, write {numWrite} bytes but expected {shader.decompressedSize} bytes");
+                    throw new IOException($"Lz4 解压缩错误，写入 {numWrite} 字节，但预期为 {shader.decompressedSize} 字节");
                 }
                 using (var blobReader = new EndianBinaryReader(new MemoryStream(decompressedBytes), EndianType.LittleEndian))
                 {
@@ -62,7 +62,7 @@ namespace AssetStudio
                         var numWrite = LZ4.Instance.Decompress(shader.compressedBlob.AsSpan().Slice((int)offset, (int)compressedLength), decompressedBytes.AsSpan().Slice(0, (int)decompressedLength));
                         if (numWrite != decompressedLength)
                         {
-                            throw new IOException($"Lz4 decompression error, write {numWrite} bytes but expected {decompressedLength} bytes");
+                            throw new IOException($"Lz4 解压缩错误，写入 {numWrite} 字节，但预期为 {decompressedLength} 字节");
                         }
                     }
                     using (var blobReader = new EndianBinaryReader(new MemoryStream(decompressedBytes), EndianType.LittleEndian))
@@ -1179,7 +1179,7 @@ namespace AssetStudio
             var code = Decompile(shaderByteCode, shaderByteCodeSize, out var shaderText, out var shaderTextSize);
             if (code != 0)
             {
-                throw new Exception($"Unable to decompile shader, Error code: {code}");
+                throw new Exception($"无法反编译着色器，错误代码：{code}");
             }
 
             hlslText = Marshal.PtrToStringAnsi(shaderText, shaderTextSize);

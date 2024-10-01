@@ -66,7 +66,7 @@ namespace Org.Brotli.Dec
 				}
 				if (sum != Data.Length)
 				{
-					throw new System.Exception("Corrupted brotli dictionary");
+					throw new System.Exception("Brotli 字典损坏");
 				}
 				sum = 0;
 				foreach (string chunk in chunks)

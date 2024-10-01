@@ -14,7 +14,7 @@ namespace AssetStudio
         {
             if (!string.IsNullOrEmpty(path))
             {
-                Logger.Info(string.Format("Parsing...."));
+                Logger.Info(string.Format("正在解析...."));
                 try
                 {
                     Clear();
@@ -25,7 +25,7 @@ namespace AssetStudio
                         var count = stream.Read(bytes, 0, bytes.Length);
 
                         if (count != bytes.Length)
-                            throw new Exception("Error While Reading AssetIndex");
+                            throw new Exception("读取资产索引时出错");
 
                         var json = Encoding.UTF8.GetString(bytes);
 

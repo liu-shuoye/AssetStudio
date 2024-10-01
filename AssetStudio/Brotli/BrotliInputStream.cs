@@ -90,11 +90,11 @@ namespace Org.Brotli.Dec
 		{
 			if (byteReadBufferSize <= 0)
 			{
-				throw new System.ArgumentException("Bad buffer size:" + byteReadBufferSize);
+				throw new System.ArgumentException("缓冲区大小错误:" + byteReadBufferSize);
 			}
 			else if (source == null)
 			{
-				throw new System.ArgumentException("source is null");
+				throw new System.ArgumentException("源为空");
 			}
 			this.buffer = new byte[byteReadBufferSize];
 			this.remainingBufferBytes = 0;
@@ -105,7 +105,7 @@ namespace Org.Brotli.Dec
 			}
 			catch (Org.Brotli.Dec.BrotliRuntimeException ex)
 			{
-				throw new System.IO.IOException("Brotli decoder initialization failed", ex);
+				throw new System.IO.IOException("Brotli 解码器初始化失败", ex);
 			}
 			if (customDictionary != null)
 			{
@@ -142,15 +142,15 @@ namespace Org.Brotli.Dec
 		{
 			if (destOffset < 0)
 			{
-				throw new System.ArgumentException("Bad offset: " + destOffset);
+				throw new System.ArgumentException("偏移量错误:" + destOffset);
 			}
 			else if (destLen < 0)
 			{
-				throw new System.ArgumentException("Bad length: " + destLen);
+				throw new System.ArgumentException("长度错误:" + destLen);
 			}
 			else if (destOffset + destLen > destBuffer.Length)
 			{
-				throw new System.ArgumentException("Buffer overflow: " + (destOffset + destLen) + " > " + destBuffer.Length);
+				throw new System.ArgumentException("缓冲区溢出:" + (destOffset + destLen) + " > " + destBuffer.Length);
 			}
 			else if (destLen == 0)
 			{
@@ -184,7 +184,7 @@ namespace Org.Brotli.Dec
 			}
 			catch (Org.Brotli.Dec.BrotliRuntimeException ex)
 			{
-				throw new System.IO.IOException("Brotli stream decoding failed", ex);
+				throw new System.IO.IOException("Brotli 流解码失败", ex);
 			}
 		}
 		// <{[INJECTED CODE]}>
