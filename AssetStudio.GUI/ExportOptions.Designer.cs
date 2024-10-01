@@ -101,7 +101,7 @@ namespace AssetStudio.GUI
             OKbutton.Name = "OKbutton";
             OKbutton.Size = new System.Drawing.Size(88, 26);
             OKbutton.TabIndex = 6;
-            OKbutton.Text = "OK";
+            OKbutton.Text = "确定";
             OKbutton.UseVisualStyleBackColor = true;
             OKbutton.Click += OKbutton_Click;
             // 
@@ -113,7 +113,7 @@ namespace AssetStudio.GUI
             Cancel.Name = "Cancel";
             Cancel.Size = new System.Drawing.Size(88, 26);
             Cancel.TabIndex = 7;
-            Cancel.Text = "Cancel";
+            Cancel.Text = "取消";
             Cancel.UseVisualStyleBackColor = true;
             Cancel.Click += Cancel_Click;
             // 
@@ -150,7 +150,7 @@ namespace AssetStudio.GUI
             groupBox1.Size = new System.Drawing.Size(271, 433);
             groupBox1.TabIndex = 9;
             groupBox1.TabStop = false;
-            groupBox1.Text = "Export";
+            groupBox1.Text = "导出";
             // 
             // removeTexNameButton
             // 
@@ -158,7 +158,7 @@ namespace AssetStudio.GUI
             removeTexNameButton.Name = "removeTexNameButton";
             removeTexNameButton.Size = new System.Drawing.Size(71, 23);
             removeTexNameButton.TabIndex = 41;
-            removeTexNameButton.Text = "Remove";
+            removeTexNameButton.Text = "移除";
             removeTexNameButton.UseVisualStyleBackColor = true;
             removeTexNameButton.Click += RemoveTexNameButton_Click;
             // 
@@ -168,7 +168,7 @@ namespace AssetStudio.GUI
             addTexNameButton.Name = "addTexNameButton";
             addTexNameButton.Size = new System.Drawing.Size(42, 23);
             addTexNameButton.TabIndex = 13;
-            addTexNameButton.Text = "Add";
+            addTexNameButton.Text = "添加";
             addTexNameButton.UseVisualStyleBackColor = true;
             addTexNameButton.Click += AddTexNameButton_Click;
             // 
@@ -189,7 +189,7 @@ namespace AssetStudio.GUI
             label10.Name = "label10";
             label10.Size = new System.Drawing.Size(142, 15);
             label10.TabIndex = 36;
-            label10.Text = "Texture mapping options:";
+            label10.Text = "纹理映射选项：";
             // 
             // texTypeComboBox
             // 
@@ -221,7 +221,7 @@ namespace AssetStudio.GUI
             uvEnabledCheckBox.Name = "uvEnabledCheckBox";
             uvEnabledCheckBox.Size = new System.Drawing.Size(60, 19);
             uvEnabledCheckBox.TabIndex = 33;
-            uvEnabledCheckBox.Text = "Export";
+            uvEnabledCheckBox.Text = "导出";
             uvEnabledCheckBox.UseVisualStyleBackColor = true;
             uvEnabledCheckBox.CheckedChanged += uvEnabledCheckBox_CheckedChanged;
             // 
@@ -244,7 +244,7 @@ namespace AssetStudio.GUI
             canExportCheckBox.Name = "canExportCheckBox";
             canExportCheckBox.Size = new System.Drawing.Size(60, 19);
             canExportCheckBox.TabIndex = 31;
-            canExportCheckBox.Text = "Export";
+            canExportCheckBox.Text = "导出";
             canExportCheckBox.UseVisualStyleBackColor = true;
             canExportCheckBox.CheckedChanged += CanExportCheckBox_CheckedChanged;
             // 
@@ -256,7 +256,7 @@ namespace AssetStudio.GUI
             label8.Name = "label8";
             label8.Size = new System.Drawing.Size(132, 15);
             label8.TabIndex = 30;
-            label8.Text = "Selected unity type can:";
+            label8.Text = "选定的Unity类型可以：";
             // 
             // canParseCheckBox
             // 
@@ -265,7 +265,7 @@ namespace AssetStudio.GUI
             canParseCheckBox.Name = "canParseCheckBox";
             canParseCheckBox.Size = new System.Drawing.Size(54, 19);
             canParseCheckBox.TabIndex = 29;
-            canParseCheckBox.Text = "Parse";
+            canParseCheckBox.Text = "解析";
             canParseCheckBox.UseVisualStyleBackColor = true;
             canParseCheckBox.CheckedChanged += CanParseCheckBox_CheckedChanged;
             // 
@@ -289,7 +289,7 @@ namespace AssetStudio.GUI
             label6.Name = "label6";
             label6.Size = new System.Drawing.Size(119, 15);
             label6.TabIndex = 27;
-            label6.Text = "UV mapping options:";
+            label6.Text = "UV映射选项：";
             // 
             // minimalAssetMap
             // 
@@ -298,7 +298,7 @@ namespace AssetStudio.GUI
             minimalAssetMap.Name = "minimalAssetMap";
             minimalAssetMap.Size = new System.Drawing.Size(125, 19);
             minimalAssetMap.TabIndex = 17;
-            minimalAssetMap.Text = "Minimal AssetMap";
+            minimalAssetMap.Text = "最小资产映射";
             minimalAssetMap.UseVisualStyleBackColor = true;
             // 
             // assetGroupOptions
@@ -320,7 +320,7 @@ namespace AssetStudio.GUI
             label7.Name = "label7";
             label7.Size = new System.Drawing.Size(140, 15);
             label7.TabIndex = 11;
-            label7.Text = "Group exported assets by";
+            label7.Text = "按组导出资产";
             // 
             // openAfterExport
             // 
@@ -332,7 +332,7 @@ namespace AssetStudio.GUI
             openAfterExport.Name = "openAfterExport";
             openAfterExport.Size = new System.Drawing.Size(153, 19);
             openAfterExport.TabIndex = 10;
-            openAfterExport.Text = "Open folder after export";
+            openAfterExport.Text = "导出后打开文件夹";
             openAfterExport.UseVisualStyleBackColor = true;
             // 
             // restoreExtensionName
@@ -345,7 +345,7 @@ namespace AssetStudio.GUI
             restoreExtensionName.Name = "restoreExtensionName";
             restoreExtensionName.Size = new System.Drawing.Size(204, 19);
             restoreExtensionName.TabIndex = 9;
-            restoreExtensionName.Text = "Restore TextAsset extension name";
+            restoreExtensionName.Text = "恢复TextAsset扩展名";
             restoreExtensionName.UseVisualStyleBackColor = true;
             // 
             // key
@@ -369,7 +369,7 @@ namespace AssetStudio.GUI
             encrypted.Name = "encrypted";
             encrypted.Size = new System.Drawing.Size(166, 19);
             encrypted.TabIndex = 12;
-            encrypted.Text = "Encrypted MiHoYoBinData\r\n";
+            encrypted.Text = "加密的MiHoYoBinData\r\n";
             encrypted.UseVisualStyleBackColor = true;
             // 
             // convertAudio
@@ -382,7 +382,7 @@ namespace AssetStudio.GUI
             convertAudio.Name = "convertAudio";
             convertAudio.Size = new System.Drawing.Size(200, 19);
             convertAudio.TabIndex = 6;
-            convertAudio.Text = "Convert AudioClip to WAV(PCM)";
+            convertAudio.Text = "将音频剪辑转换为WAV(PCM)";
             convertAudio.UseVisualStyleBackColor = true;
             // 
             // panel1
@@ -453,7 +453,7 @@ namespace AssetStudio.GUI
             converttexture.Name = "converttexture";
             converttexture.Size = new System.Drawing.Size(123, 19);
             converttexture.TabIndex = 1;
-            converttexture.Text = "Convert Texture2D";
+            converttexture.Text = "转换Texture2D";
             converttexture.UseVisualStyleBackColor = true;
             // 
             // collectAnimations
@@ -466,7 +466,7 @@ namespace AssetStudio.GUI
             collectAnimations.Name = "collectAnimations";
             collectAnimations.Size = new System.Drawing.Size(125, 19);
             collectAnimations.TabIndex = 24;
-            collectAnimations.Text = "Collect animations";
+            collectAnimations.Text = "收集动画";
             collectAnimations.UseVisualStyleBackColor = true;
             // 
             // groupBox2
@@ -507,7 +507,7 @@ namespace AssetStudio.GUI
             exportMaterials.Name = "exportMaterials";
             exportMaterials.Size = new System.Drawing.Size(111, 19);
             exportMaterials.TabIndex = 25;
-            exportMaterials.Text = "Export materials";
+            exportMaterials.Text = "导出材质";
             exportMaterials.UseVisualStyleBackColor = true;
             // 
             // exportBlendShape
@@ -520,7 +520,7 @@ namespace AssetStudio.GUI
             exportBlendShape.Name = "exportBlendShape";
             exportBlendShape.Size = new System.Drawing.Size(124, 19);
             exportBlendShape.TabIndex = 22;
-            exportBlendShape.Text = "Export blendshape";
+            exportBlendShape.Text = "导出混合形状";
             exportBlendShape.UseVisualStyleBackColor = true;
             // 
             // exportAnimations
@@ -533,7 +533,7 @@ namespace AssetStudio.GUI
             exportAnimations.Name = "exportAnimations";
             exportAnimations.Size = new System.Drawing.Size(122, 19);
             exportAnimations.TabIndex = 21;
-            exportAnimations.Text = "Export animations";
+            exportAnimations.Text = "导出动画";
             exportAnimations.UseVisualStyleBackColor = true;
             // 
             // scaleFactor
@@ -556,7 +556,7 @@ namespace AssetStudio.GUI
             label5.Name = "label5";
             label5.Size = new System.Drawing.Size(67, 15);
             label5.TabIndex = 19;
-            label5.Text = "ScaleFactor";
+            label5.Text = "缩放因子";
             // 
             // fbxFormat
             // 
@@ -577,7 +577,7 @@ namespace AssetStudio.GUI
             label4.Name = "label4";
             label4.Size = new System.Drawing.Size(65, 15);
             label4.TabIndex = 17;
-            label4.Text = "FBXFormat";
+            label4.Text = "FBX格式";
             // 
             // fbxVersion
             // 
@@ -598,7 +598,7 @@ namespace AssetStudio.GUI
             label3.Name = "label3";
             label3.Size = new System.Drawing.Size(65, 15);
             label3.TabIndex = 15;
-            label3.Text = "FBXVersion";
+            label3.Text = "FBX版本";
             // 
             // boneSize
             // 
@@ -617,7 +617,7 @@ namespace AssetStudio.GUI
             label2.Name = "label2";
             label2.Size = new System.Drawing.Size(54, 15);
             label2.TabIndex = 10;
-            label2.Text = "BoneSize";
+            label2.Text = "骨骼大小";
             // 
             // exportSkins
             // 
@@ -629,7 +629,7 @@ namespace AssetStudio.GUI
             exportSkins.Name = "exportSkins";
             exportSkins.Size = new System.Drawing.Size(89, 19);
             exportSkins.TabIndex = 8;
-            exportSkins.Text = "Export skins";
+            exportSkins.Text = "导出蒙皮";
             exportSkins.UseVisualStyleBackColor = true;
             // 
             // label1
@@ -640,7 +640,7 @@ namespace AssetStudio.GUI
             label1.Name = "label1";
             label1.Size = new System.Drawing.Size(81, 15);
             label1.TabIndex = 7;
-            label1.Text = "FilterPrecision";
+            label1.Text = "过滤精度";
             // 
             // filterPrecision
             // 
@@ -661,7 +661,7 @@ namespace AssetStudio.GUI
             castToBone.Name = "castToBone";
             castToBone.Size = new System.Drawing.Size(143, 19);
             castToBone.TabIndex = 5;
-            castToBone.Text = "All nodes cast to bone";
+            castToBone.Text = "所有节点转换为骨骼";
             castToBone.UseVisualStyleBackColor = true;
             // 
             // exportAllNodes
@@ -674,7 +674,7 @@ namespace AssetStudio.GUI
             exportAllNodes.Name = "exportAllNodes";
             exportAllNodes.Size = new System.Drawing.Size(110, 19);
             exportAllNodes.TabIndex = 4;
-            exportAllNodes.Text = "Export all nodes";
+            exportAllNodes.Text = "导出所有节点";
             exportAllNodes.UseVisualStyleBackColor = true;
             // 
             // eulerFilter
@@ -687,7 +687,7 @@ namespace AssetStudio.GUI
             eulerFilter.Name = "eulerFilter";
             eulerFilter.Size = new System.Drawing.Size(78, 19);
             eulerFilter.TabIndex = 3;
-            eulerFilter.Text = "EulerFilter";
+            eulerFilter.Text = "欧拉过滤器";
             eulerFilter.UseVisualStyleBackColor = true;
             // 
             // toolTip
@@ -702,7 +702,7 @@ namespace AssetStudio.GUI
             Reset.Name = "Reset";
             Reset.Size = new System.Drawing.Size(88, 26);
             Reset.TabIndex = 12;
-            Reset.Text = "Reset";
+            Reset.Text = "重置";
             Reset.UseVisualStyleBackColor = true;
             Reset.Click += Reset_Click;
             // 
@@ -726,7 +726,7 @@ namespace AssetStudio.GUI
             ShowIcon = false;
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Export options";
+            Text = "导出选项";
             TopMost = true;
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
