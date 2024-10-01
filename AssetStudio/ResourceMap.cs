@@ -21,11 +21,11 @@ namespace AssetStudio
                 }
                 catch (Exception e)
                 {
-                    Logger.Error("AssetMap was not loaded");
+                    Logger.Error("资产映射未加载");
                     Console.WriteLine(e.ToString());
                     return;
                 }
-                Logger.Info("Loaded !!");
+                Logger.Info("加载完成！！");
             }
         }
 

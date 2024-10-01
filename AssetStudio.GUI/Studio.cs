@@ -94,7 +94,7 @@ namespace AssetStudio.GUI
             }
             catch (InvalidCastException)
             {
-                Logger.Error($"Game type mismatch, Expected {nameof(Mr0k)} but got {Game.Name} ({Game.GetType().Name}) !!");
+                Logger.Error($"游戏类型不匹配，预期为 {nameof(Mr0k)}，但得到 {Game.Name} ({Game.GetType().Name})！！");
             }
             return 0;
         }
@@ -138,7 +138,7 @@ namespace AssetStudio.GUI
             }
             catch (InvalidCastException)
             {
-                Logger.Error($"Game type mismatch, Expected {nameof(Blk)} but got {Game.Name} ({Game.GetType().Name}) !!");
+                Logger.Error($"游戏类型不匹配，预期为 {nameof(Blk)}，但得到 {Game.Name} ({Game.GetType().Name})！！");
             }
             return total;
         }
@@ -174,7 +174,7 @@ namespace AssetStudio.GUI
             }
             catch (InvalidCastException)
             {
-                Logger.Error($"Game type mismatch, Expected {nameof(Mhy)} but got {Game.Name} ({Game.GetType().Name}) !!");
+                Logger.Error($"游戏类型不匹配，预期为 {nameof(Mhy)}，但得到 {Game.Name} ({Game.GetType().Name})！！");
             }
             return 0;
         }
@@ -207,7 +207,7 @@ namespace AssetStudio.GUI
         {
             if (exportableAssets.Count > 0)
             {
-                Logger.Info("Updating Containers...");
+                Logger.Info("正在更新容器...");
                 foreach (var asset in exportableAssets)
                 {
                     if (int.TryParse(asset.Container, out var value))
@@ -228,7 +228,7 @@ namespace AssetStudio.GUI
                         }
                     }
                 }
-                Logger.Info("Updated !!");
+                Logger.Info("已更新！！");
             }
         }
 
@@ -249,7 +249,7 @@ namespace AssetStudio.GUI
                 {
                     if (assetsManager.tokenSource.IsCancellationRequested)
                     {
-                        Logger.Info("Building asset list has been cancelled !!");
+                        Logger.Info("构建资产列表已取消！！");
                         return (string.Empty, Array.Empty<TreeNode>().ToList());
                     }
                     var assetItem = new AssetItem(asset);
@@ -339,7 +339,7 @@ namespace AssetStudio.GUI
             {
                 if (assetsManager.tokenSource.IsCancellationRequested)
                 {
-                    Logger.Info("Processing asset namnes has been cancelled !!");
+                    Logger.Info("处理资产名称已取消！！");
                     return (string.Empty, Array.Empty<TreeNode>().ToList());
                 }
                 if (pptr.TryGet<MiHoYoBinData>(out var obj))
@@ -359,7 +359,7 @@ namespace AssetStudio.GUI
                 {
                     if (assetsManager.tokenSource.IsCancellationRequested)
                     {
-                        Logger.Info("Processing containers been cancelled !!");
+                        Logger.Info("处理容器已取消！！");
                         return (string.Empty, Array.Empty<TreeNode>().ToList());
                     }
                     if (pptr.TryGet(out var obj))
@@ -377,7 +377,7 @@ namespace AssetStudio.GUI
             {
                 if (assetsManager.tokenSource.IsCancellationRequested)
                 {
-                    Logger.Info("Processing subitems been cancelled !!");
+                    Logger.Info("处理子项已取消！！");
                     return (string.Empty, Array.Empty<TreeNode>().ToList());
                 }
                 tmp.SetSubItems();
@@ -404,7 +404,7 @@ namespace AssetStudio.GUI
                     {
                         if (assetsManager.tokenSource.IsCancellationRequested)
                         {
-                            Logger.Info("Building tree structure been cancelled !!");
+                            Logger.Info("构建树结构已取消！！");
                             return (string.Empty, Array.Empty<TreeNode>().ToList());
                         }
 
@@ -494,7 +494,7 @@ namespace AssetStudio.GUI
             {
                 if (assetsManager.tokenSource.IsCancellationRequested)
                 {
-                    Logger.Info("Processing class structure been cancelled !!");
+                    Logger.Info("处理类结构已取消！！");
                     return new Dictionary<string, SortedDictionary<int, TypeTreeItem>>();
                 }
                 if (typeMap.TryGetValue(assetsFile.unityVersion, out var curVer))
@@ -604,7 +604,7 @@ namespace AssetStudio.GUI
                     }
                     catch (Exception ex)
                     {
-                        Logger.Error($"Export {asset.Type}:{asset.Text} error\r\n{ex.Message}\r\n{ex.StackTrace}");
+                        Logger.Error($"导出 {asset.Type}:{asset.Text} 错误\r\n{ex.Message}\r\n{ex.StackTrace}");
                     }
 
                     Progress.Report(++i, toExportCount);
@@ -727,7 +727,7 @@ namespace AssetStudio.GUI
                         }
                         catch (Exception ex)
                         {
-                            Logger.Error($"Export GameObject:{j.Text} error\r\n{ex.Message}\r\n{ex.StackTrace}");
+                            Logger.Error($"导出游戏对象:{j.Text} 错误\r\n{ex.Message}\r\n{ex.StackTrace}");
                         }
 
                         Progress.Report(++k, count);
@@ -788,7 +788,7 @@ namespace AssetStudio.GUI
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"Export Animator:{animator.Text} error\r\n{ex.Message}\r\n{ex.StackTrace}");
+                    Logger.Error($"导出动画器:{animator.Text} 错误\r\n{ex.Message}\r\n{ex.StackTrace}");
                     StatusStripUpdate("Error in export");
                 }
             });
@@ -816,7 +816,7 @@ namespace AssetStudio.GUI
                         }
                         catch (Exception ex)
                         {
-                            Logger.Error($"Export GameObject:{gameObject.m_Name} error\r\n{ex.Message}\r\n{ex.StackTrace}");
+                            Logger.Error($"导出游戏对象:{gameObject.m_Name} 错误\r\n{ex.Message}\r\n{ex.StackTrace}");
                             StatusStripUpdate("Error in export");
                         }
 
@@ -849,7 +849,7 @@ namespace AssetStudio.GUI
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"Export Model:{name} error\r\n{ex.Message}\r\n{ex.StackTrace}");
+                    Logger.Error($"导出模型:{name} 错误\r\n{ex.Message}\r\n{ex.StackTrace}");
                     StatusStripUpdate("Error in export");
                 }
                 if (Properties.Settings.Default.openAfterExport)
@@ -882,7 +882,7 @@ namespace AssetStudio.GUI
                         }
                         catch (Exception ex)
                         {
-                            Logger.Error($"Export Model:{name} error\r\n{ex.Message}\r\n{ex.StackTrace}");
+                            Logger.Error($"导出模型:{name} 错误\r\n{ex.Message}\r\n{ex.StackTrace}");
                             StatusStripUpdate("Error in export");
                         }
                     }

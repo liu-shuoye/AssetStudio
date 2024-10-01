@@ -28,14 +28,14 @@ namespace AssetStudio
             FullPath = Path.GetFullPath(path);
             FileName = Path.GetFileName(path);
             FileType = CheckFileType();
-            Logger.Verbose($"File {path} type is {FileType}");
+            Logger.Verbose($"文件 {path} 类型是 {FileType}");
         }
 
         private FileType CheckFileType()
         {
             var signature = this.ReadStringToNull(20);
             Position = 0;
-            Logger.Verbose($"Parsed signature is {signature}");
+            Logger.Verbose($"解析的签名为 {signature}。");
             switch (signature)
             {
                 case "UnityWeb":
@@ -53,64 +53,64 @@ namespace AssetStudio
                     return FileType.ENCRFile;
                 default:
                     {
-                        Logger.Verbose("signature does not match any of the supported string signatures, attempting to check bytes signatures");
+                        Logger.Verbose("签名与任何支持的字符串签名不匹配，正在尝试检查字节签名");
                         byte[] magic = ReadBytes(2);
                         Position = 0;
-                        Logger.Verbose($"Parsed signature is {Convert.ToHexString(magic)}");
+                        Logger.Verbose($"解析的签名为 {Convert.ToHexString(magic)}。");
                         if (gzipMagic.SequenceEqual(magic))
                         {
                             return FileType.GZipFile;
                         }
-                        Logger.Verbose($"Parsed signature does not match with expected signature {Convert.ToHexString(gzipMagic)}");
+                        Logger.Verbose($"解析的签名与预期签名 {Convert.ToHexString(gzipMagic)} 不匹配。");
                         Position = 0x20;
                         magic = ReadBytes(6);
                         Position = 0;
-                        Logger.Verbose($"Parsed signature is {Convert.ToHexString(magic)}");
+                        Logger.Verbose($"解析的签名为 {Convert.ToHexString(magic)}。");
                         if (brotliMagic.SequenceEqual(magic))
                         {
                             return FileType.BrotliFile;
                         }
-                        Logger.Verbose($"Parsed signature does not match with expected signature {Convert.ToHexString(brotliMagic)}");
+                        Logger.Verbose($"解析的签名与预期签名 {Convert.ToHexString(brotliMagic)} 不匹配。");
                         if (IsSerializedFile())
                         {
                             return FileType.AssetsFile;
                         }
                         magic = ReadBytes(4);
                         Position = 0;
-                        Logger.Verbose($"Parsed signature is {Convert.ToHexString(magic)}");
+                        Logger.Verbose($"解析的签名为 {Convert.ToHexString(magic)}。");
                         if (zipMagic.SequenceEqual(magic) || zipSpannedMagic.SequenceEqual(magic))
                         {
                             return FileType.ZipFile;
                         }
-                        Logger.Verbose($"Parsed signature does not match with expected signature {Convert.ToHexString(zipMagic)} or {Convert.ToHexString(zipSpannedMagic)}");
+                        Logger.Verbose($"解析的签名与预期签名 {Convert.ToHexString(zipMagic)} 或 {Convert.ToHexString(zipSpannedMagic)} 不匹配。");
                         if (mhy0Magic.SequenceEqual(magic))
                         {
                             return FileType.MhyFile;
                         }
-                        Logger.Verbose($"Parsed signature does not match with expected signature {Convert.ToHexString(mhy0Magic)}");
+                        Logger.Verbose($"解析的签名与预期签名 {Convert.ToHexString(mhy0Magic)} 不匹配。");
                         if (blbMagic.SequenceEqual(magic))
                         {
                             return FileType.BlbFile;
                         }
-                        Logger.Verbose($"Parsed signature does not match with expected signature {Convert.ToHexString(mhy0Magic)}");
+                        Logger.Verbose($"解析的签名与预期签名 {Convert.ToHexString(mhy0Magic)} 不匹配。");
                         magic = ReadBytes(7);
                         Position = 0;
-                        Logger.Verbose($"Parsed signature is {Convert.ToHexString(magic)}");
+                        Logger.Verbose($"解析的签名为 {Convert.ToHexString(magic)}。");
                         if (narakaMagic.SequenceEqual(magic))
                         {
                             return FileType.BundleFile;
                         }
-                        Logger.Verbose($"Parsed signature does not match with expected signature {Convert.ToHexString(narakaMagic)}");
+                        Logger.Verbose($"解析的签名与预期签名 {Convert.ToHexString(narakaMagic)} 不匹配。");
                         magic = ReadBytes(9);
                         Position = 0;
-                        Logger.Verbose($"Parsed signature is {Convert.ToHexString(magic)}");
+                        Logger.Verbose($"解析的签名为 {Convert.ToHexString(magic)}。");
                         if (gunfireMagic.SequenceEqual(magic))
                         {
                             Position = 0x32;
                             return FileType.BundleFile;
                         }
-                        Logger.Verbose($"Parsed signature does not match with expected signature {Convert.ToHexString(gunfireMagic)}");
-                        Logger.Verbose($"Parsed signature does not match any of the supported signatures, assuming resource file");
+                        Logger.Verbose($"解析的签名与预期签名 {Convert.ToHexString(gunfireMagic)} 不匹配。");
+                        Logger.Verbose($"解析的签名不匹配任何支持的签名，假定为资源文件。");
                         return FileType.ResourceFile;
                     }
             }
@@ -118,12 +118,12 @@ namespace AssetStudio
 
         private bool IsSerializedFile()
         {
-            Logger.Verbose($"Attempting to check if the file is serialized file...");
+            Logger.Verbose($"正在尝试检查文件是否为序列化文件...");
 
             var fileSize = BaseStream.Length;
             if (fileSize < 20)
             {
-                Logger.Verbose($"File size 0x{fileSize:X8} is too small, minimal acceptable size is 0x14, aborting...");
+                Logger.Verbose($"文件大小 0x{fileSize:X8} 太小，最小可接受大小为 0x14，中止操作...");
                 return false;
             }
             var m_MetadataSize = ReadUInt32();
@@ -136,7 +136,7 @@ namespace AssetStudio
             {
                 if (fileSize < 48)
                 {
-                    Logger.Verbose($"File size 0x{fileSize:X8} for version {m_Version} is too small, minimal acceptable size is 0x30, aborting...");
+                    Logger.Verbose($"版本 {m_Version} 的文件大小 0x{fileSize:X8} 过小，最小可接受大小为 0x30，操作中止...");
                     Position = 0;
                     return false;
                 }
@@ -147,15 +147,15 @@ namespace AssetStudio
             Position = 0;
             if (m_FileSize != fileSize)
             {
-                Logger.Verbose($"Parsed file size 0x{m_FileSize:X8} does not match stream size {fileSize}, file might be corrupted, aborting...");
+                Logger.Verbose($"解析的文件大小 0x{m_FileSize:X8} 与流大小 {fileSize} 不匹配，文件可能已损坏，中止操作...");
                 return false;
             }
             if (m_DataOffset > fileSize)
             {
-                Logger.Verbose($"Parsed data offset 0x{m_DataOffset:X8} is outside the stream of the size {fileSize}, file might be corrupted, aborting...");
+                Logger.Verbose($"解析的数据偏移量 0x{m_DataOffset:X8} 超出了流大小 {fileSize}，文件可能已损坏，中止操作...");
                 return false;
             }
-            Logger.Verbose($"Valid serialized file !!");
+            Logger.Verbose($"有效的序列化文件！！");
             return true;
         }
     }
@@ -164,10 +164,10 @@ namespace AssetStudio
     {
         public static FileReader PreProcessing(this FileReader reader, Game game, bool autoDetectMultipleBundle = false)
         {
-            Logger.Verbose($"Applying preprocessing to file {reader.FileName}");
+            Logger.Verbose($"正在对文件 {reader.FileName} 进行预处理");
             if (reader.FileType == FileType.ResourceFile || !game.Type.IsNormal())
             {
-                Logger.Verbose("File is encrypted !!");
+                Logger.Verbose("文件已加密！！");
                 switch (game.Type)
                 {
                     case GameType.GI_Pack:
@@ -242,7 +242,7 @@ namespace AssetStudio
             }
             if (autoDetectMultipleBundle || reader.FileType == FileType.BundleFile && game.Type.IsBlockFile() || reader.FileType == FileType.ENCRFile || reader.FileType == FileType.BlbFile)
             {
-                Logger.Verbose("File might have multiple bundles !!");
+                Logger.Verbose("文件可能包含多个包！！");
                 try
                 {
                     var signature = reader.ReadStringToNull();
@@ -252,8 +252,8 @@ namespace AssetStudio
                     var size = reader.ReadInt64();
                     if (size != reader.BaseStream.Length)
                     {
-                        Logger.Verbose($"Found signature {signature}, expected bundle size is 0x{size:X8}, found 0x{reader.BaseStream.Length} instead !!");
-                        Logger.Verbose("Loading as block file !!");
+                        Logger.Verbose($"找到签名 {signature}，预期包大小为 0x{size:X8}，实际为 0x{reader.BaseStream.Length}！！");
+                        Logger.Verbose("作为块文件加载！！");
                         reader.FileType = FileType.BlockFile;
                     }
                 }
@@ -261,7 +261,7 @@ namespace AssetStudio
                 reader.Position = 0;
             }
 
-            Logger.Verbose("No preprocessing is needed");
+            Logger.Verbose("不需要预处理");
             return reader;
         }
     } 

@@ -30,19 +30,19 @@ namespace AssetStudio
             var signature = reader.ReadStringToNull();
             var headLength = reader.ReadInt32();
             var dataList = new List<WebData>();
-            Logger.Verbose($"Header size: 0x{headLength:X8}");
+            Logger.Verbose($"头部大小: 0x{headLength:X8}");
             while (reader.BaseStream.Position < headLength)
             {
                 var data = new WebData();
                 data.dataOffset = reader.ReadInt32();
                 data.dataLength = reader.ReadInt32();
                 var pathLength = reader.ReadInt32();
-                Logger.Verbose($"Path length: {pathLength}");
+                Logger.Verbose($"路径长度: {pathLength}");
                 data.path = Encoding.UTF8.GetString(reader.ReadBytes(pathLength));
-                Logger.Verbose($"Web data Info: {data}");
+                Logger.Verbose($"网络数据信息: {data}");
                 dataList.Add(data);
             }
-            Logger.Verbose("Writing files to streams...");
+            Logger.Verbose("正在将文件写入流...");
             fileList = new List<StreamFile>();
             for (int i = 0; i < dataList.Count; i++)
             {

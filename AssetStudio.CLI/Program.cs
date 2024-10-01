@@ -36,7 +36,7 @@ namespace AssetStudio.CLI
                     }
 
                     UnityCN.SetKey(unityCN);
-                    Logger.Info($"[UnityCN] Selected Key is {unityCN}");
+                    Logger.Info($"[UnityCN] 选择的密钥是 {unityCN}");
                 }
 
                 Studio.Game = game;
@@ -89,7 +89,7 @@ namespace AssetStudio.CLI
                         }
                         catch(Exception e)
                         {
-                            Logger.Error($"{typeStr} has invalid format, skipping...");
+                            Logger.Error($"{typeStr} 格式无效，跳过...");
                             continue;
                         }
                     }
@@ -143,9 +143,9 @@ namespace AssetStudio.CLI
                     assemblyLoader.Load(o.DummyDllFolder.FullName);
                 }
 
-                Logger.Info("Scanning for files...");
+                Logger.Info("扫描文件...");
                 var files = o.Input.Attributes.HasFlag(FileAttributes.Directory) ? Directory.GetFiles(o.Input.FullName, "*.*", SearchOption.AllDirectories).OrderBy(x => x.Length).ToArray() : new string[] { o.Input.FullName };
-                Logger.Info($"Found {files.Length} files");
+                Logger.Info($"找到 {files.Length} 个文件。");
 
                 if (o.MapOp.HasFlag(MapOpType.CABMap))
                 {

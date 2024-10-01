@@ -413,7 +413,7 @@ namespace AssetStudio.GUI
 
             if (convert.MeshList.Count == 0)
             {
-                Logger.Info($"GameObject {gameObject.m_Name} has no mesh, skipping...");
+                Logger.Info($"游戏对象 {gameObject.m_Name} 没有网格，跳过...");
                 return false;
             }
             if (options.exportMaterials)

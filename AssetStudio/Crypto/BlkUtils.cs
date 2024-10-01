@@ -16,13 +16,13 @@ namespace AssetStudio
             reader.Endian = EndianType.LittleEndian;
 
             var signature = reader.ReadStringToNull();
-            Logger.Verbose($"Signature: {signature}");
+            Logger.Verbose($"签名: {signature}");
             var count = reader.ReadInt32();
-            Logger.Verbose($"Key size: {count}");
+            Logger.Verbose($"密钥大小: {count}");
             var key = reader.ReadBytes(count);
             reader.Position += count;
             var seedSize = Math.Min(reader.ReadInt16(), blk.SBox.IsNullOrEmpty() ? SeedBlockSize : SeedBlockSize * 2);
-            Logger.Verbose($"Seed size: 0x{seedSize:X8}");
+            Logger.Verbose($"种子大小: 0x{seedSize:X8}");
 
             if (!blk.SBox.IsNullOrEmpty() && blk.Type.IsGI())
             {
@@ -52,7 +52,7 @@ namespace AssetStudio
             var keyHigh = BinaryPrimitives.ReadUInt64LittleEndian(key.AsSpan(8, 8));
             var seed = keyLow ^ keyHigh ^ keySeed ^ blk.InitSeed;
 
-            Logger.Verbose($"Seed: 0x{seed:X8}");
+            Logger.Verbose($"种子: 0x{seed:X8}");
 
             var mt64 = new MT19937_64(seed);
             var xorpad = new byte[KeySize];

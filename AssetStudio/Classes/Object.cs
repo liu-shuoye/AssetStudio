@@ -39,7 +39,7 @@ namespace AssetStudio
             serializedType = reader.serializedType;
             byteSize = reader.byteSize;
 
-            Logger.Verbose($"Attempting to read object {type} with {m_PathID} in file {assetsFile.fileName}, starting from offset 0x{reader.byteStart:X8} with size of 0x{byteSize:X8} !!");
+            Logger.Verbose($"正在尝试读取文件 {assetsFile.fileName} 中类型为 {type} 的对象 {m_PathID}，从偏移量 0x{reader.byteStart:X8} 开始，大小为 0x{byteSize:X8}！！");
 
             if (platform == BuildTarget.NoTarget)
             {
@@ -85,7 +85,7 @@ namespace AssetStudio
 
         public byte[] GetRawData()
         {
-            Logger.Verbose($"Dumping raw bytes of the object with {m_PathID} in file {assetsFile.fileName}...");
+            Logger.Verbose($"正在转储文件 {assetsFile.fileName} 中对象 {m_PathID} 的原始字节...");
             reader.Reset();
             return reader.ReadBytes((int)byteSize);
         }
