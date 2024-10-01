@@ -437,7 +437,7 @@ namespace AssetStudio
                 }
                 else
                 {
-                    throw new ArgumentException("Object must be of type Half.");
+                    throw new ArgumentException("对象必须为 Half 类型。");
                 }
             }
 
@@ -558,7 +558,7 @@ namespace AssetStudio
             {
                 if (value != 0)
                 {
-                    throw new ArithmeticException("Function does not accept floating point Not-a-Number values.");
+                    throw new ArithmeticException("函数不接受浮点 NaN 值。");
                 }
             }
 

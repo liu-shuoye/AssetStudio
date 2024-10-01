@@ -1102,7 +1102,7 @@ namespace AssetStudio
         private void DeoptimizeTransformHierarchy()
         {
             if (avatar == null)
-                throw new Exception("Transform hierarchy has been optimized, but can't find Avatar to deoptimize.");
+                throw new Exception("变换层次结构已优化，但无法找到 Avatar 进行反优化。");
             // 1. Figure out the skeletonPaths from the unstripped avatar
             var skeletonPaths = new List<string>();
             foreach (var id in avatar.m_Avatar.m_AvatarSkeleton.m_ID)

@@ -52,7 +52,7 @@ namespace AssetStudio
             var pos = Position - byteStart;
             if (pos + count > byteSize)
             {
-                throw new EndOfStreamException("Unable to read beyond the end of the stream.");
+                throw new EndOfStreamException("无法读取超过流末端的数据。");
             }
             return base.Read(buffer, index, count);
         }

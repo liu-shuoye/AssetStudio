@@ -140,7 +140,7 @@ namespace AssetStudio
                 case 1: return new Vector4(M01, M11, M21, M31);
                 case 2: return new Vector4(M02, M12, M22, M32);
                 case 3: return new Vector4(M03, M13, M23, M33);
-                default: throw new IndexOutOfRangeException("Invalid column index!");
+                default: throw new IndexOutOfRangeException("无效的列索引！");
             }
         }
 
@@ -152,7 +152,7 @@ namespace AssetStudio
                 case 1: return new Vector4(M10, M11, M12, M13);
                 case 2: return new Vector4(M20, M21, M22, M23);
                 case 3: return new Vector4(M30, M31, M32, M33);
-                default: throw new IndexOutOfRangeException("Invalid row index!");
+                default: throw new IndexOutOfRangeException("无效的行索引！");
             }
         }
 

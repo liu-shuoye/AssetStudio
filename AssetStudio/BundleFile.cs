@@ -477,7 +477,7 @@ namespace AssetStudio
                             var numWrite = LZ4.Instance.Decompress(blocksInfoBytesSpan, uncompressedBytesSpan);
                             if (numWrite != uncompressedSize)
                             {
-                                throw new IOException($"Lz4 decompression error, write {numWrite} bytes but expected {uncompressedSize} bytes");
+                                throw new IOException($"Lz4 解压缩错误，写入 {numWrite} 字节，但预期为 {uncompressedSize} 字节");
                             }
                             blocksInfoUncompresseddStream = new MemoryStream(uncompressedBytesSpan.ToArray());
                         }
@@ -495,7 +495,7 @@ namespace AssetStudio
                     }
                     goto case CompressionType.Lz4HC;
                 default:
-                    throw new IOException($"Unsupported compression type {compressionType}");
+                    throw new IOException($"不支持的压缩类型 {compressionType}");
             }
             using (var blocksInfoReader = new EndianBinaryReader(blocksInfoUncompresseddStream))
             {
@@ -611,7 +611,7 @@ namespace AssetStudio
                                 var numWrite = LZ4.Instance.Decompress(compressedBytesSpan, uncompressedBytesSpan);
                                 if (numWrite != uncompressedSize)
                                 {
-                                    throw new IOException($"Lz4 decompression error, write {numWrite} bytes but expected {uncompressedSize} bytes");
+                                    throw new IOException($"Lz4 解压缩错误，写入 {numWrite} 字节，但预期为 {uncompressedSize} 字节");
                                 }
                                 blocksStream.Write(uncompressedBytesSpan);
                             }
@@ -644,7 +644,7 @@ namespace AssetStudio
                                 var numWrite = LZ4Inv.Instance.Decompress(compressedBytesSpan, uncompressedBytesSpan);
                                 if (numWrite != uncompressedSize)
                                 {
-                                    throw new IOException($"Lz4 decompression error, write {numWrite} bytes but expected {uncompressedSize} bytes");
+                                    throw new IOException($"Lz4 解压缩错误，写入 {numWrite} 字节，但预期为 {uncompressedSize} 字节");
                                 }
                                 blocksStream.Write(uncompressedBytesSpan);
                             }
@@ -672,7 +672,7 @@ namespace AssetStudio
                                 var numWrite = LZ4Lit.Instance.Decompress(compressedBytesSpan, uncompressedBytesSpan);
                                 if (numWrite != uncompressedSize)
                                 {
-                                    throw new IOException($"Lz4 decompression error, write {numWrite} bytes but expected {uncompressedSize} bytes");
+                                    throw new IOException($"Lz4 解压缩错误，写入 {numWrite} 字节，但预期为 {uncompressedSize} 字节");
                                 }
                                 blocksStream.Write(uncompressedBytesSpan);
                             }
@@ -698,7 +698,7 @@ namespace AssetStudio
                                 var numWrite = decompressor.Unwrap(compressedBytes, 0, compressedSize, uncompressedBytes, 0, uncompressedSize);
                                 if (numWrite != uncompressedSize)
                                 {
-                                    throw new IOException($"Zstd decompression error, write {numWrite} bytes but expected {uncompressedSize} bytes");
+                                    throw new IOException($"Zstd 解压缩错误，写入 {numWrite} 字节，但预期为 {uncompressedSize} 字节");
                                 }
                                 blocksStream.Write(uncompressedBytes.ToArray(), 0, uncompressedSize);
                             }
@@ -714,7 +714,7 @@ namespace AssetStudio
                             break;
                         }
                     default:
-                        throw new IOException($"Unsupported compression type {compressionType}");
+                        throw new IOException($"不支持的压缩类型 {compressionType}");
                 }
             }
             blocksStream.Position = 0;

@@ -59,7 +59,7 @@ namespace AssetStudio
         {
             if (!Games.TryGetValue(index, out var format))
             {
-                throw new ArgumentException("Invalid format !!");
+                throw new ArgumentException("无效格式 !!");
             }
 
             return format;

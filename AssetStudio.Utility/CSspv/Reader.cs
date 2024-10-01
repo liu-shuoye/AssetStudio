@@ -20,7 +20,7 @@ namespace SpirV
 			}
 			else
 			{
-				throw new Exception("Invalid magic number");
+				throw new Exception("无效的魔术数字");
 			}
 		}
 

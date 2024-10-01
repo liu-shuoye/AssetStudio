@@ -84,7 +84,7 @@ namespace AssetStudio
             }
             catch (Exception ex)
             {
-                throw new Exception(string.Format("Exception while processing {0} {1}, error {2}", fieldDefinition.FieldType.FullName, fieldDefinition.FullName, ex.Message));
+                throw new Exception(string.Format("处理 {0} {1} 时出现异常，错误 {2}", fieldDefinition.FieldType.FullName, fieldDefinition.FullName, ex.Message));
             }
         }
 

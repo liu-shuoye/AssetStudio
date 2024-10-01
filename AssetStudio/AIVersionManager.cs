@@ -56,7 +56,7 @@ namespace AssetStudio
                 }
                 if (!await StoreCommit(VersionIndexKey, VersionIndexName))
                 {
-                    throw new Exception("Failed to store version list !!");
+                    throw new Exception("存储版本列表失败 !!");
                 }
                 File.WriteAllText(path, versions);
             }
@@ -86,7 +86,7 @@ namespace AssetStudio
                     }
                     if (!await StoreCommit(version, versionIndex.MappedPath))
                     {
-                        throw new Exception("Failed to store AI !!");
+                        throw new Exception("存储 AI 失败 !!");
                     }
                     File.WriteAllText(path, json);
                 }

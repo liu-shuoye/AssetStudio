@@ -99,7 +99,7 @@ namespace SevenZip.CommandLineParser
 				SwitchResult matchedSwitch = _switches[matchedSwitchIndex];
 				SwitchForm switchForm = switchForms[matchedSwitchIndex];
 				if ((!switchForm.Multi) && matchedSwitch.ThereIs)
-					throw new Exception("switch must be single");
+					throw new Exception("开关必须为单一");
 				matchedSwitch.ThereIs = true;
 				pos += maxLen;
 				int tailSize = len - pos;
@@ -121,7 +121,7 @@ namespace SevenZip.CommandLineParser
 					case SwitchType.PostChar:
 						{
 							if (tailSize < switchForm.MinLen)
-								throw new Exception("switch is not full");
+								throw new Exception("开关未满");
 							string charSet = switchForm.PostCharSet;
 							const int kEmptyCharValue = -1;
 							if (tailSize == 0)
@@ -144,7 +144,7 @@ namespace SevenZip.CommandLineParser
 						{
 							int minLen = switchForm.MinLen;
 							if (tailSize < minLen)
-								throw new Exception("switch is not full");
+								throw new Exception("开关未满");
 							if (type == SwitchType.UnLimitedPostString)
 							{
 								matchedSwitch.PostStrings.Add(srcString.Substring(pos));

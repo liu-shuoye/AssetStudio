@@ -35,7 +35,7 @@ namespace AssetStudio
             Logger.Verbose($"解密后的签名是 {str}");
             if (str != Signature)
             {
-                throw new Exception($"Invalid Signature, Expected {Signature} but found {str} instead");
+                throw new Exception($"无效签名，预期为 {Signature}，但找到的是 {str}");
             }
 
             DecryptKey(infoKey, infoBytes);

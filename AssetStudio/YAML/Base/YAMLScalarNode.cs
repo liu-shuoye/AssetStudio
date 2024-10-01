@@ -297,7 +297,7 @@ namespace AssetStudio
 					break;
 
 				default:
-					throw new Exception($"Unsupported scalar style {Style}");
+					throw new Exception($"不支持的标量样式 {Style}");
 			}
 		}
 

@@ -15,7 +15,7 @@ namespace Unity.CecilTools
             if (refType != null)
                 return refType.ElementType;
 
-            throw new ArgumentException(string.Format("TypeReference isn't a TypeSpecification {0} ", byRefType));
+            throw new ArgumentException(string.Format("TypeReference 不是 TypeSpecification {0}", byRefType));
         }
     }
 }

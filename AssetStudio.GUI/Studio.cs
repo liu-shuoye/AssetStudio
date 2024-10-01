@@ -81,7 +81,7 @@ namespace AssetStudio.GUI
 
         private static int ExtractBundleFile(FileReader reader, string savePath)
         {
-            StatusStripUpdate($"Decompressing {reader.FileName} ...");
+            StatusStripUpdate($"正在解压缩 {reader.FileName} ...");
             try
             {
                 var bundleFile = new BundleFile(reader, Game);
@@ -101,7 +101,7 @@ namespace AssetStudio.GUI
 
         private static int ExtractWebDataFile(FileReader reader, string savePath)
         {
-            StatusStripUpdate($"Decompressing {reader.FileName} ...");
+            StatusStripUpdate($"正在解压缩 {reader.FileName} ...");
             var webFile = new WebFile(reader);
             reader.Dispose();
             if (webFile.fileList.Count > 0)
@@ -115,7 +115,7 @@ namespace AssetStudio.GUI
         private static int ExtractBlkFile(FileReader reader, string savePath)
         {
             int total = 0;
-            StatusStripUpdate($"Decompressing {reader.FileName} ...");
+            StatusStripUpdate($"正在解压缩 {reader.FileName} ...");
             try
             {
                 using var stream = BlkUtils.Decrypt(reader, (Blk)Game);
@@ -146,7 +146,7 @@ namespace AssetStudio.GUI
         private static int ExtractBlockFile(FileReader reader, string savePath)
         {
             int total = 0;
-            StatusStripUpdate($"Decompressing {reader.FileName} ...");
+            StatusStripUpdate($"正在解压缩 {reader.FileName} ...");
             using var stream = new OffsetStream(reader.BaseStream, 0);
             do
             {
@@ -161,7 +161,7 @@ namespace AssetStudio.GUI
 
         private static int ExtractMhyFile(FileReader reader, string savePath)
         {
-            StatusStripUpdate($"Decompressing {reader.FileName} ...");
+            StatusStripUpdate($"正在解压缩 {reader.FileName} ...");
             try
             {
                 var mhy0File = new MhyFile(reader, (Mhy)Game);
@@ -234,7 +234,7 @@ namespace AssetStudio.GUI
 
         public static (string, List<TreeNode>) BuildAssetData()
         {
-            StatusStripUpdate("Building asset list...");
+            StatusStripUpdate("正在构建资源列表...");
 
             int i = 0;
             string productName = null;
@@ -385,7 +385,7 @@ namespace AssetStudio.GUI
 
             visibleAssets = exportableAssets;
 
-            StatusStripUpdate("Building tree structure...");
+            StatusStripUpdate("正在构建树形结构...");
 
             var treeNodeCollection = new List<TreeNode>();
             var treeNodeDictionary = new Dictionary<GameObject, GameObjectTreeNode>();
@@ -571,7 +571,7 @@ namespace AssetStudio.GUI
                             break;
                     }
                     exportPath += Path.DirectorySeparatorChar;
-                    StatusStripUpdate($"[{exportedCount}/{toExportCount}] Exporting {asset.TypeString}: {asset.Text}");
+                    StatusStripUpdate($"[{exportedCount}/{toExportCount}] 正在导出 {asset.TypeString}: {asset.Text}");
                     try
                     {
                         switch (exportType)
@@ -720,7 +720,7 @@ namespace AssetStudio.GUI
                         }
                         Directory.CreateDirectory(targetPath);
                         //导出FBX
-                        StatusStripUpdate($"Exporting {filename}.fbx");
+                        StatusStripUpdate($"正在导出 {filename}.fbx");
                         try
                         {
                             ExportGameObject(j.gameObject, targetPath);
@@ -731,14 +731,14 @@ namespace AssetStudio.GUI
                         }
 
                         Progress.Report(++k, count);
-                        StatusStripUpdate($"Finished exporting {filename}.fbx");
+                        StatusStripUpdate($"已完成导出 {filename}.fbx");
                     }
                 }
                 if (Properties.Settings.Default.openAfterExport)
                 {
                     OpenFolderInExplorer(savePath);
                 }
-                StatusStripUpdate("Finished");
+                StatusStripUpdate("已完成");
 
                 IEnumerable<TreeNode> GetNodes(TreeNodeCollection nodes)
                 {
@@ -775,7 +775,7 @@ namespace AssetStudio.GUI
             return Task.Run(() =>
             {
                 Progress.Reset();
-                StatusStripUpdate($"Exporting {animator.Text}");
+                StatusStripUpdate($"正在导出 {animator.Text}");
                 try
                 {
                     ExportAnimator(animator, exportPath, animationList);
@@ -784,12 +784,12 @@ namespace AssetStudio.GUI
                         OpenFolderInExplorer(exportPath);
                     }
                     Progress.Report(1, 1);
-                    StatusStripUpdate($"Finished exporting {animator.Text}");
+                    StatusStripUpdate($"已完成导出 {animator.Text}");
                 }
                 catch (Exception ex)
                 {
                     Logger.Error($"导出动画器:{animator.Text} 错误\r\n{ex.Message}\r\n{ex.StackTrace}");
-                    StatusStripUpdate("Error in export");
+                    StatusStripUpdate("导出时出错");
                 }
             });
         }
@@ -807,17 +807,17 @@ namespace AssetStudio.GUI
                     Progress.Reset();
                     foreach (var gameObject in gameObjects)
                     {
-                        StatusStripUpdate($"Exporting {gameObject.m_Name}");
+                        StatusStripUpdate($"正在导出 {gameObject.m_Name}");
                         try
                         {
                             var subExportPath = Path.Combine(exportPath, gameObject.m_Name) + Path.DirectorySeparatorChar;
                             ExportGameObject(gameObject, subExportPath, animationList);
-                            StatusStripUpdate($"Finished exporting {gameObject.m_Name}");
+                            StatusStripUpdate($"已完成导出 {gameObject.m_Name}");
                         }
                         catch (Exception ex)
                         {
                             Logger.Error($"导出游戏对象:{gameObject.m_Name} 错误\r\n{ex.Message}\r\n{ex.StackTrace}");
-                            StatusStripUpdate("Error in export");
+                            StatusStripUpdate("导出时出错");
                         }
 
                         Progress.Report(++i, count);
@@ -829,7 +829,7 @@ namespace AssetStudio.GUI
                 }
                 else
                 {
-                    StatusStripUpdate("No Object selected for export.");
+                    StatusStripUpdate("没有选择要导出的对象。");
                 }
             });
         }
@@ -840,17 +840,17 @@ namespace AssetStudio.GUI
             {
                 var name = Path.GetFileName(exportPath);
                 Progress.Reset();
-                StatusStripUpdate($"Exporting {name}");
+                StatusStripUpdate($"正在导出 {name}");
                 try
                 {
                     ExportGameObjectMerge(gameObjects, exportPath, animationList);
                     Progress.Report(1, 1);
-                    StatusStripUpdate($"Finished exporting {name}");
+                    StatusStripUpdate($"已完成导出 {name}");
                 }
                 catch (Exception ex)
                 {
                     Logger.Error($"导出模型:{name} 错误\r\n{ex.Message}\r\n{ex.StackTrace}");
-                    StatusStripUpdate("Error in export");
+                    StatusStripUpdate("导出时出错");
                 }
                 if (Properties.Settings.Default.openAfterExport)
                 {
@@ -868,7 +868,7 @@ namespace AssetStudio.GUI
                 foreach (var node in nodes)
                 {
                     var name = node.Text;
-                    StatusStripUpdate($"Exporting {name}");
+                    StatusStripUpdate($"正在导出 {name}");
                     var gameObjects = new List<GameObject>();
                     GetSelectedParentNode(node.Nodes, gameObjects);
                     if (gameObjects.Count > 0)
@@ -878,17 +878,17 @@ namespace AssetStudio.GUI
                         {
                             ExportGameObjectMerge(gameObjects, subExportPath, animationList);
                             Progress.Report(++i, nodes.Count);
-                            StatusStripUpdate($"Finished exporting {name}");
+                            StatusStripUpdate($"已完成导出 {name}");
                         }
                         catch (Exception ex)
                         {
                             Logger.Error($"导出模型:{name} 错误\r\n{ex.Message}\r\n{ex.StackTrace}");
-                            StatusStripUpdate("Error in export");
+                            StatusStripUpdate("导出时出错");
                         }
                     }
                     else
                     {
-                        StatusStripUpdate("Empty node selected for export.");
+                        StatusStripUpdate("选择了空节点进行导出。");
                     }
                 }
                 if (Properties.Settings.Default.openAfterExport)
@@ -918,7 +918,7 @@ namespace AssetStudio.GUI
             if (!assemblyLoader.Loaded)
             {
                 var openFolderDialog = new OpenFolderDialog();
-                openFolderDialog.Title = "Select Assembly Folder";
+                openFolderDialog.Title = "选择程序集文件夹";
                 if (openFolderDialog.ShowDialog() == DialogResult.OK)
                 {
                     assemblyLoader.Load(openFolderDialog.Folder);

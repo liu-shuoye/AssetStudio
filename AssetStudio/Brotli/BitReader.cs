@@ -65,7 +65,7 @@ namespace Org.Brotli.Dec
 				{
 					return;
 				}
-				throw new Org.Brotli.Dec.BrotliRuntimeException("No more input");
+				throw new Org.Brotli.Dec.BrotliRuntimeException("没有更多输入");
 			}
 			int readOffset = br.intOffset << 2;
 			int bytesRead = ByteReadSize - readOffset;
@@ -89,7 +89,7 @@ namespace Org.Brotli.Dec
 			}
 			catch (System.IO.IOException e)
 			{
-				throw new Org.Brotli.Dec.BrotliRuntimeException("Failed to read input", e);
+				throw new Org.Brotli.Dec.BrotliRuntimeException("读取输入失败", e);
 			}
 			Org.Brotli.Dec.IntReader.Convert(br.intReader, bytesRead >> 2);
 		}
@@ -103,11 +103,11 @@ namespace Org.Brotli.Dec
 			int byteOffset = (br.intOffset << 2) + ((br.bitOffset + 7) >> 3) - 8;
 			if (byteOffset > br.tailBytes)
 			{
-				throw new Org.Brotli.Dec.BrotliRuntimeException("Read after end");
+				throw new Org.Brotli.Dec.BrotliRuntimeException("读取已结束");
 			}
 			if (endOfStream && (byteOffset != br.tailBytes))
 			{
-				throw new Org.Brotli.Dec.BrotliRuntimeException("Unused bytes after end");
+				throw new Org.Brotli.Dec.BrotliRuntimeException("结束后未使用的字节");
 			}
 		}
 
@@ -142,7 +142,7 @@ namespace Org.Brotli.Dec
 		{
 			if (br.input != null)
 			{
-				throw new System.InvalidOperationException("Bit reader already has associated input stream");
+				throw new System.InvalidOperationException("位读取器已关联输入流");
 			}
 			Org.Brotli.Dec.IntReader.Init(br.intReader, br.byteBuffer, br.intBuffer);
 			br.input = input;
@@ -188,7 +188,7 @@ namespace Org.Brotli.Dec
 				int paddingBits = Org.Brotli.Dec.BitReader.ReadBits(br, padding);
 				if (paddingBits != 0)
 				{
-					throw new Org.Brotli.Dec.BrotliRuntimeException("Corrupted padding bits");
+					throw new Org.Brotli.Dec.BrotliRuntimeException("填充位损坏");
 				}
 			}
 		}
@@ -207,7 +207,7 @@ namespace Org.Brotli.Dec
 		{
 			if ((br.bitOffset & 7) != 0)
 			{
-				throw new Org.Brotli.Dec.BrotliRuntimeException("Unaligned copyBytes");
+				throw new Org.Brotli.Dec.BrotliRuntimeException("未对齐的复制字节");
 			}
 			// Drain accumulator.
 			while ((br.bitOffset != 64) && (length != 0))
@@ -256,7 +256,7 @@ namespace Org.Brotli.Dec
 					int len = br.input.Read(data, offset, length);
 					if (len == -1)
 					{
-						throw new Org.Brotli.Dec.BrotliRuntimeException("Unexpected end of input");
+						throw new Org.Brotli.Dec.BrotliRuntimeException("意外的输入结束");
 					}
 					offset += len;
 					length -= len;
@@ -264,7 +264,7 @@ namespace Org.Brotli.Dec
 			}
 			catch (System.IO.IOException e)
 			{
-				throw new Org.Brotli.Dec.BrotliRuntimeException("Failed to read input", e);
+				throw new Org.Brotli.Dec.BrotliRuntimeException("读取输入失败", e);
 			}
 		}
 	}
