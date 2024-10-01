@@ -23,6 +23,7 @@ namespace AssetStudio
 
         private static string BaseFolder = "";
         private static Dictionary<string, Entry> CABMap = new Dictionary<string, Entry>(StringComparer.OrdinalIgnoreCase);
+        ///  <summary> 依赖文件的缓存文件路径与偏移量 </summary>
         private static Dictionary<string, HashSet<long>> Offsets = new Dictionary<string, HashSet<long>>();
         private static AssetsManager assetsManager = new AssetsManager() { SkipProcess = true, ResolveDependencies = false };
 
@@ -78,6 +79,11 @@ namespace AssetStudio
             return false;
         }
 
+        /// <summary>
+        /// 添加 依赖文件在 CAB 文件的偏移量
+        /// </summary>
+        /// <param name="paths"></param>
+        /// <param name="cabs"></param>
         public static void AddCABOffsets(string[] paths, List<string> cabs)
         {
             for (int i = 0; i < cabs.Count; i++)
@@ -98,10 +104,13 @@ namespace AssetStudio
                         if (!cabs.Contains(dep))
                             cabs.Add(dep);
                     }
+                    continue;
                 }
+                Logger.Warning($"未找到 {cab}，请检查 CABMap 是否正确和完整！");
             }
         }
 
+        /// <summary> 尝试获取 CAB 文件 </summary>
         public static bool FindCAB(string path, out List<string> cabs)
         {
             var relativePath = Path.GetRelativePath(BaseFolder, path);
@@ -110,6 +119,7 @@ namespace AssetStudio
             return cabs.Count != 0;
         }
 
+        /// <summary> 处理依赖文件 </summary>
         public static string[] ProcessFiles(string[] files)
         {
             foreach (var file in files)
@@ -125,6 +135,7 @@ namespace AssetStudio
             return Offsets.Keys.ToArray();
         }
 
+        /// <summary> 处理依赖项 </summary>
         public static string[] ProcessDependencies(string[] files)
         {
             if (CABMap.Count == 0)

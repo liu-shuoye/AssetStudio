@@ -5,10 +5,14 @@ using static AssetStudio.ImportHelper;
 
 namespace AssetStudio
 {
+    /// <summary> 文件读取器 </summary>
     public class FileReader : EndianBinaryReader
     {
+        /// <summary> 文件全路径 </summary>
         public string FullPath;
+        /// <summary> 文件名 </summary>
         public string FileName;
+        /// <summary> 文件类型 </summary>
         public FileType FileType;
 
         private static readonly byte[] gzipMagic = { 0x1f, 0x8b };
@@ -31,6 +35,7 @@ namespace AssetStudio
             Logger.Verbose($"文件 {path} 类型是 {FileType}");
         }
 
+        /// <summary> 检查文件类型 </summary>
         private FileType CheckFileType()
         {
             var signature = this.ReadStringToNull(20);
@@ -160,8 +165,11 @@ namespace AssetStudio
         }
     }
 
+    /// <summary> 文件读取器静态扩展方法 </summary>
     public static class FileReaderExtensions
     {
+
+        /// <summary> 预处理文件 将加密的文件解密到内存中 </summary>
         public static FileReader PreProcessing(this FileReader reader, Game game, bool autoDetectMultipleBundle = false)
         {
             Logger.Verbose($"正在对文件 {reader.FileName} 进行预处理");

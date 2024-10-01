@@ -79,6 +79,9 @@ namespace AssetStudio.GUI
 
         private string openDirectoryBackup = string.Empty;
         private string saveDirectoryBackup = string.Empty;
+        
+        // 打开文件目录
+        private string _openFileDirectory = string.Empty; 
 
         private GUILogger logger;
 
@@ -219,7 +222,7 @@ namespace AssetStudio.GUI
 
         private async void loadFile_Click(object sender, EventArgs e)
         {
-            openFileDialog1.InitialDirectory = openDirectoryBackup;
+            openFileDialog1.InitialDirectory = _openFileDirectory;
             if (openFileDialog1.ShowDialog(this) == DialogResult.OK)
             {
                 var paths = openFileDialog1.FileNames;

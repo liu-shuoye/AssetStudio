@@ -71,9 +71,12 @@ namespace AssetStudio
         public static string SupportedGames() => $"Supported Games:\n{string.Join("\n", Games.Values.Select(x => x.Name))}";
     }
 
+    /// <summary> 游戏信息 </summary>
     public record Game
     {
+        /// <summary> 游戏名称 </summary>
         public string Name { get; set; }
+        /// <summary> 游戏类型 </summary>
         public GameType Type { get; }
 
         public Game(GameType type)
@@ -133,28 +136,37 @@ namespace AssetStudio
         }
     }
 
+    /// <summary> 游戏类型 </summary>
     public enum GameType
     {
+        /// <summary> 正常包 </summary>
         Normal,
+        /// <summary> 假包头 </summary>
         FakeHeader,
+        /// <summary> Unity中国版 </summary>
         UnityCN,
+        /// <summary> 原神 </summary>
         GI,
         GI_Pack,
         GI_CB1,
         GI_CB2,
         GI_CB3,
         GI_CB3Pre,
+        /// <summary> 崩坏三 </summary>
         BH3,
         BH3Pre,
         BH3PrePre,
+        /// <summary> 绝区零 </summary>
         ZZZ_CB1,
         SR_CB2,
+        /// <summary> 崩坏·星穹铁道 </summary>
         SR,
         TOT,
         Naraka,
         EnsembleStars,
         OPFP,
         FantasyOfWind,
+        //<summary> 闪耀暖暖 </summary>
         ShiningNikki,
         HelixWaltz2,
         NetEase,
@@ -225,6 +237,7 @@ namespace AssetStudio
             _ => false,
         };
 
+        /// <summary> 崩坏星穹铁道的子包 </summary>
         public static bool IsSRGroup(this GameType type) => type switch
         {
             GameType.SR_CB2 or GameType.SR => true,

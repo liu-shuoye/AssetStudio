@@ -15,8 +15,10 @@ using SevenZip;
 
 namespace AssetStudio
 {
+    /// <summary> 导入处理器 </summary>
     public static class ImportHelper
     {
+        /// <summary> 合并拆分文件 </summary>
         public static void MergeSplitAssets(string path, bool allDirectories = false)
         {
             Logger.Verbose($"在加载文件之前处理拆分资产 (.splitX)...");
@@ -47,6 +49,7 @@ namespace AssetStudio
             }
         }
 
+        /// <summary> 处理拆分文件 </summary>
         public static string[] ProcessingSplitFiles(List<string> selectFile)
         {
             Logger.Verbose("过滤出具有.split且名称相同的路径");
@@ -301,6 +304,7 @@ namespace AssetStudio
             }
         }
         
+        /// <summary> 从索引处读取文件大小 </summary>
         private static long GetBundleFileSize(FileReader reader, int idx)
         {
             reader.Position = idx;
