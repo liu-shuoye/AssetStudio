@@ -11,6 +11,7 @@ using static AssetStudio.ImportHelper;
 
 namespace AssetStudio
 {
+    /// <summary> AssetStudio的资源管理器 </summary>
     public class AssetsManager
     {
         private Game _game;
@@ -38,6 +39,7 @@ namespace AssetStudio
         }
         private bool _enableLuaScript = false;
 
+        /// <summary> 是否启用Lua脚本 </summary>
         public bool EnableLuaScript
         {
             get => _enableLuaScript; 
@@ -51,22 +53,33 @@ namespace AssetStudio
             }
         }
         private Lua luaEnvironment = new Lua();
+        /// <summary> Lua脚本 </summary>
         public string LuaScript = "";
         public bool Silent = false;
+        /// <summary> 是否跳过解析 </summary>
         public bool SkipProcess = false;
+        /// 是否解析依赖关系
         public bool ResolveDependencies = false;        
         public string SpecifyUnityVersion;
+        /// <summary> 取消令牌 </summary>
         public CancellationTokenSource tokenSource = new CancellationTokenSource();
+        /// <summary> 所有的资源文件 </summary>
         public List<SerializedFile> assetsFileList = new List<SerializedFile>();
 
         internal Dictionary<string, int> assetsFileIndexCache = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        /// <summary> resource 资源文件读取器 </summary>
         internal Dictionary<string, BinaryReader> resourceFileReaders = new Dictionary<string, BinaryReader>(StringComparer.OrdinalIgnoreCase);
 
+        /// <summary> 导入的文件列表 </summary>
         internal List<string> importFiles = new List<string>();
+        /// <summary> 导入文件的哈希列表 </summary>
         internal HashSet<string> importFilesHash = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        /// <summary> 不存在的文件 </summary>
         internal HashSet<string> noexistFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        /// <summary> 资源文件列表哈希表 </summary>
         internal HashSet<string> assetsFileListHash = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         
+        /// <summary> 是否自动检测多包 </summary>
         public bool autoDetectMultipleBundle = false;
         
         public void SetSpecifyUnityVersion(string version)
@@ -97,6 +110,7 @@ namespace AssetStudio
             luaEnvironment.RegisterFunction("SetUnityCNKey", this, GetType().GetMethod("SetUnityCNKey"));
         }
 
+        /// <summary> 加载文件 </summary>
         public void LoadFiles(params string[] files)
         {
             if (Silent)
@@ -139,6 +153,7 @@ namespace AssetStudio
             }
         }
 
+        /// <summary> 加载文件 </summary>
         private void Load(string[] files)
         {
             foreach (var file in files)
@@ -174,6 +189,7 @@ namespace AssetStudio
             }
         }
 
+        /// <summary> 加载文件 </summary>
         private void LoadFile(string fullName)
         {
             FileReader reader = null;
@@ -202,6 +218,7 @@ namespace AssetStudio
             LoadFile(reader);
         }
 
+        /// <summary> 从内存中加载文件 </summary>
         private void LoadFile(FileReader reader)
         {
             switch (reader.FileType)
@@ -236,6 +253,7 @@ namespace AssetStudio
             }
         }
 
+        /// <summary> 加载Assets文件 </summary>
         private void LoadAssetsFile(FileReader reader)
         {
             if (!assetsFileListHash.Contains(reader.FileName))
@@ -294,6 +312,7 @@ namespace AssetStudio
             }
         }
 
+        ///  <summary> 加载内存中的Assets文件 </summary>
         private void LoadAssetsFromMemory(FileReader reader, string originalPath, string unityVersion = null, long originalOffset = 0)
         {
             Logger.Verbose($"从 {originalPath} 处的偏移量 0x{originalOffset:X8} 加载版本为 {unityVersion} 的资产文件 {reader.FileName}");
@@ -322,6 +341,7 @@ namespace AssetStudio
                 Logger.Info($"跳过 {originalPath} ({reader.FileName})");
         }
 
+        /// <summary> 加载AssetBundle(ab包)资源文件 </summary>
         private void LoadBundleFile(FileReader reader, string originalPath = null, long originalOffset = 0, bool log = true)
         {
             if (log)
@@ -657,6 +677,7 @@ namespace AssetStudio
             }
         }
 
+        /// <summary>  检查是否已设置 Unity 版本  </summary>
         public void CheckStrippedVersion(SerializedFile assetsFile)
         {
             if (assetsFile.IsVersionStripped && string.IsNullOrEmpty(SpecifyUnityVersion))
@@ -695,6 +716,7 @@ namespace AssetStudio
             GC.Collect();
         }
 
+        /// <summary>  读取资源文件  </summary>
         private void ReadAssets()
         {
             Logger.Info("读取资产...");

@@ -7,30 +7,54 @@ using System.Text.RegularExpressions;
 
 namespace AssetStudio
 {
+    
+    /// <summary> Unity 序列化文件 </summary>
     public class SerializedFile
     {
+        /// <summary> AssetStudio的资源管理器 </summary>
         public AssetsManager assetsManager;
+        /// <summary> 读取文件的读取器 </summary>
         public FileReader reader;
+        /// <summary> 游戏信息 </summary>
         public Game game;
+        /// <summary> 文件偏移量 </summary>
         public long offset = 0;
+        /// <summary> 完整路径 </summary>
         public string fullName;
+        /// <summary> 原始路径 </summary>
         public string originalPath;
+        /// <summary> 文件名 </summary>
         public string fileName;
+        /// <summary> 版本信息 </summary>
         public int[] version = { 0, 0, 0, 0 };
+        /// <summary> 构建类型 </summary>
         public BuildType buildType;
+        /// <summary> 所有对象 </summary>
         public List<Object> Objects;
+        /// <summary> 所有对象字典 </summary>
         public Dictionary<long, Object> ObjectsDic;
 
+        /// <summary> 文件头 </summary>
         public SerializedFileHeader header;
+        /// <summary> 文件字节序 </summary>
         private byte m_FileEndianess;
+        /// <summary> Unity 版本 </summary>
         public string unityVersion = "2.5.0f5";
+        /// <summary> 项目构建的目标平台 </summary>
         public BuildTarget m_TargetPlatform = BuildTarget.UnknownPlatform;
+        /// <summary> 是否启用类型树 </summary>
         private bool m_EnableTypeTree = true;
+        /// <summary> 序列号类型列表 </summary>
         public List<SerializedType> m_Types;
+        /// <summary> 大ID是否启用 </summary>
         public int bigIDEnabled = 0;
+        /// <summary> 所有对象信息 </summary>
         public List<ObjectInfo> m_Objects;
+        /// <summary> 脚本文件列表 </summary> 
         private List<LocalSerializedObjectIdentifier> m_ScriptTypes;
+        /// <summary> 依赖文件列表 </summary>
         public List<FileIdentifier> m_Externals;
+        /// <summary> 引用类型列表 </summary>
         public List<SerializedType> m_RefTypes;
         public string userInformation;
 
@@ -41,6 +65,8 @@ namespace AssetStudio
             game = assetsManager.Game;
             fullName = reader.FullPath;
             fileName = reader.FileName;
+
+            #region 读取文件头
 
             // ReadHeader
             header = new SerializedFileHeader();
@@ -71,6 +97,10 @@ namespace AssetStudio
             }
 
             Logger.Verbose($"文件 {fileName} 信息: {header}");
+
+            #endregion
+
+            #region 读取Metadata
 
             // ReadMetadata
             if (m_FileEndianess == 0)
@@ -104,6 +134,10 @@ namespace AssetStudio
                 m_EnableTypeTree = reader.ReadBoolean();
             }
 
+            #endregion
+
+            #region 读取类型
+
             // Read Types
             int typeCount = reader.ReadInt32();
             m_Types = new List<SerializedType>();
@@ -117,6 +151,10 @@ namespace AssetStudio
             {
                 bigIDEnabled = reader.ReadInt32();
             }
+
+            #endregion
+
+            #region 读取对象
 
             // Read Objects
             int objectCount = reader.ReadInt32();
@@ -177,6 +215,9 @@ namespace AssetStudio
                 Logger.Verbose($"对象信息: {objectInfo}");
                 m_Objects.Add(objectInfo);
             }
+            #endregion
+
+            #region 读取脚本
 
             if (header.m_Version >= SerializedFileFormatVersion.HasScriptTypeIndex)
             {
@@ -201,6 +242,10 @@ namespace AssetStudio
                 }
             }
 
+            #endregion
+
+            #region 读取依赖文件
+
             int externalsCount = reader.ReadInt32();
             m_Externals = new List<FileIdentifier>();
             Logger.Verbose($"找到 {externalsCount} 个外部文件。");
@@ -222,6 +267,10 @@ namespace AssetStudio
                 m_Externals.Add(m_External);
             }
 
+            #endregion
+
+            #region 读取引用类型
+
             if (header.m_Version >= SerializedFileFormatVersion.SupportsRefObject)
             {
                 int refTypesCount = reader.ReadInt32();
@@ -238,9 +287,14 @@ namespace AssetStudio
                 userInformation = reader.ReadStringToNull();
             }
 
+            #endregion
+
+
+
             //reader.AlignStream(16);
         }
 
+        /// <summary> 设置Unity版本  </summary>
         public void SetVersion(string stringVersion)
         {
             if (stringVersion != strippedVersion)
@@ -253,6 +307,7 @@ namespace AssetStudio
             }
         }
 
+        /// <summary> 读取序列化对象类型 </summary>
         private SerializedType ReadSerializedType(bool isRefType)
         {
             Logger.Verbose($"正在尝试解析序列化内容" + (isRefType ? " reference" : " ") + "type");
@@ -354,6 +409,7 @@ namespace AssetStudio
             Logger.Verbose($"类型树信息: {m_Type}");
         }
 
+        /// <summary> 读取 blob 类型树 </summary>
         private void TypeTreeBlobRead(TypeTree m_Type)
         {
             Logger.Verbose($"正在尝试解析 blob 类型树...");
@@ -391,6 +447,7 @@ namespace AssetStudio
 
             Logger.Verbose($"类型树信息: {m_Type}");
 
+            // 解析字符串
             string ReadString(EndianBinaryReader stringBufferReader, uint value)
             {
                 var isOffset = (value & 0x80000000) == 0;
@@ -423,8 +480,10 @@ namespace AssetStudio
             return (value ^ 0x23746FBE) - 3;
         }
 
+        /// <summary> 是否为版本移除的 Unity </summary>
         public bool IsVersionStripped => unityVersion == strippedVersion;
 
+        /// <summary> 被移除的版本信息 </summary>
         private const string strippedVersion = "0.0.0";
     }
 }

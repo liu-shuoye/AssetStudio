@@ -10,49 +10,130 @@ using System.Buffers;
 
 namespace AssetStudio
 {
+    /// <summary>
+    /// 指示存档文件中包含的数据类型以及如何处理这些数据的标志。
+    /// 使用Flags属性表示该枚举可以进行位操作。
+    /// </summary>
     [Flags]
     public enum ArchiveFlags
     {
+        /// <summary>
+        /// 压缩类型掩码，用于表示不同的压缩类型。
+        /// </summary>
         CompressionTypeMask = 0x3f,
+        
+        /// <summary>
+        /// 表示文件块和目录信息是结合在一起的。
+        /// </summary>
         BlocksAndDirectoryInfoCombined = 0x40,
+        
+        /// <summary>
+        /// 表示文件块信息位于文件末尾。
+        /// </summary>
         BlocksInfoAtTheEnd = 0x80,
+        
+        /// <summary>
+        /// 保留旧Web插件兼容性选项。
+        /// </summary>
         OldWebPluginCompatibility = 0x100,
+        
+        /// <summary>
+        /// 表示块信息需要在开始处填充。
+        /// </summary>
         BlockInfoNeedPaddingAtStart = 0x200,
+        
+        /// <summary>
+        /// 表示使用Unity CN加密。
+        /// </summary>
         UnityCNEncryption = 0x400
     }
 
+    /// <summary> 定义存储块标志的枚举，用于表示存储块的属性和状态 </summary>
     [Flags]
     public enum StorageBlockFlags
     {
+        /// <summary>  定义压缩类型掩码，用于表示压缩类型的标志位 </summary>
         CompressionTypeMask = 0x3f,
+        
+        /// <summary>  表示存储块是否为流式传输的状态标志 </summary>
         Streamed = 0x40,
     }
-
+    /// <summary>
+    /// 压缩类型的枚举，列出了各种可用的压缩算法。
+    /// </summary>
     public enum CompressionType
     {
+        /// <summary>
+        /// 无压缩。
+        /// </summary>
         None,
+    
+        /// <summary>
+        /// Lzma压缩算法。
+        /// </summary>
         Lzma,
+    
+        /// <summary>
+        /// Lz4压缩算法，提供较快的压缩和解压缩速度。
+        /// </summary>
         Lz4,
+    
+        /// <summary>
+        /// Lz4高压缩版本（HC），提供比Lz4更高的压缩率，但速度较慢。
+        /// </summary>
         Lz4HC,
+    
+        /// <summary>
+        /// Lzham压缩算法，支持多线程压缩和高压缩率。
+        /// </summary>
         Lzham,
+    
+        /// <summary>
+        /// Lz4Mr0k，Lz4的多线程版本，具有更快的压缩速度。
+        /// </summary>
         Lz4Mr0k,
+    
+        /// <summary>
+        /// Lz4Inv，一种使用Lz4算法的特殊压缩模式，值为5。
+        /// </summary>
         Lz4Inv = 5,
+    
+        /// <summary>
+        /// Zstd压缩算法，提供良好的压缩率和快速的解压缩速度，值也为5。
+        /// </summary>
         Zstd = 5,
+    
+        /// <summary>
+        /// Lz4Lit4，Lz4的一种文学模式，值为4。
+        /// </summary>
         Lz4Lit4 = 4,
+    
+        /// <summary>
+        /// Lz4Lit5，Lz4的另一种文学模式，值为5。
+        /// </summary>
         Lz4Lit5 = 5,
     }
-
+    /// <summary> AB包文件 </summary>
     public class BundleFile
     {
+        /// <summary> AB包文件头 </summary>
         public class Header
         {
+            /// <summary> 签名：UnityFS </summary>
             public string signature;
+            /// <summary> 版本号 </summary>
             public uint version;
+            /// <summary> Unity版本号： 5.x.x</summary>
             public string unityVersion;
+            /// <summary> Unity版本提交号： 2019.4.25f1</summary>
             public string unityRevision;
+            /// <summary> 文件大小 </summary>
             public long size;
+            /// <summary> 压缩的块信息大小 </summary>
             public uint compressedBlocksInfoSize;
+            /// <summary> 解压的块信息大小 </summary>
             public uint uncompressedBlocksInfoSize;
+            /// <summary> 存档文件中包含的数据类型 </summary>
             public ArchiveFlags flags;
 
             public override string ToString()
@@ -70,10 +151,14 @@ namespace AssetStudio
             }
         }
 
+        /// <summary> 存储块信息 </summary>
         public class StorageBlock
         {
+            /// <summary> 压缩大小 </summary>
             public uint compressedSize;
+            /// <summary> 解压大小 </summary>
             public uint uncompressedSize;
+            /// <summary> 压缩类型 </summary>
             public StorageBlockFlags flags;
 
             public override string ToString()
@@ -86,11 +171,16 @@ namespace AssetStudio
             }
         }
 
+        /// <summary> 资源节点 </summary>
         public class Node
         {
+            /// <summary> 文件偏移量 </summary>
             public long offset;
+            /// <summary> 文件大小 </summary>
             public long size;
+            /// <summary> 节点标志 </summary>
             public uint flags;
+            /// <summary> 资源路径 </summary>
             public string path;
 
             public override string ToString()
@@ -104,18 +194,26 @@ namespace AssetStudio
             }
         }
 
+        /// <summary> 游戏信息 </summary>
         private Game Game;
         private UnityCN UnityCN;
 
+        /// <summary> 文件头 </summary>
         public Header m_Header;
+        /// <summary> 资源目录信息 </summary>
         private List<Node> m_DirectoryInfo;
+        /// <summary> 资源块信息 </summary>
         private List<StorageBlock> m_BlocksInfo;
 
+        /// <summary> 文件列表 </summary>
         public List<StreamFile> fileList;
         
+        /// <summary> 默认为true，表示有无解压数据哈希值 </summary>
         private bool HasUncompressedDataHash = true;
+        /// <summary> 默认为true，表示是否需要填充数据到块的开始位置 </summary>
         private bool HasBlockInfoNeedPaddingAtStart = true;
 
+        /// <summary> 读取AB包文件 </summary>
         public BundleFile(FileReader reader, Game game)
         {
             Game = game;
@@ -154,6 +252,7 @@ namespace AssetStudio
             }
         }
 
+        /// <summary> 读取文件头 </summary>
         private Header ReadBundleHeader(FileReader reader)
         {
             Header header = new Header();
@@ -249,6 +348,7 @@ namespace AssetStudio
             reader.Position = m_Header.size;
         }
 
+        /// <summary> 创建解压块的流 </summary>
         private Stream CreateBlocksStream(string path)
         {
             Stream blocksStream;
@@ -299,6 +399,7 @@ namespace AssetStudio
             }
         }
 
+        /// <summary> 读取文件 </summary>
         public void ReadFiles(Stream blocksStream, string path)
         {
             Logger.Verbose($"正在从块流中写入文件...");
@@ -329,6 +430,7 @@ namespace AssetStudio
             }
         }
 
+        /// <summary> 读取文件头 </summary>
         private void ReadHeader(FileReader reader)
         {
             if (XORShift128.Init)
@@ -375,6 +477,7 @@ namespace AssetStudio
             Logger.Verbose($"包头信息: {m_Header}");
         }
 
+        /// <summary> 解密UnityCN文件 </summary>
         private void ReadUnityCN(FileReader reader)
         {
             Logger.Verbose($"正在尝试使用 UnityCN 加密解密文件 {reader.FileName}");
@@ -412,6 +515,7 @@ namespace AssetStudio
             }
         }
 
+        /// <summary> 读取包中的文件信息 块信息和目录信息</summary>
         private void ReadBlocksInfoAndDirectory(FileReader reader)
         {
             byte[] blocksInfoBytes;
@@ -445,6 +549,7 @@ namespace AssetStudio
             {
                 blocksInfoBytes = reader.ReadBytes((int)m_Header.compressedBlocksInfoSize);
             }
+            //读取解压后的文件信息
             MemoryStream blocksInfoUncompresseddStream;
             var blocksInfoBytesSpan = blocksInfoBytes.AsSpan(0, (int)m_Header.compressedBlocksInfoSize);
             var uncompressedSize = m_Header.uncompressedBlocksInfoSize;
@@ -540,6 +645,7 @@ namespace AssetStudio
             }
         }
 
+        /// <summary> 读取块内容到 blocksStream </summary>
         private void ReadBlocks(FileReader reader, Stream blocksStream)
         {
             Logger.Verbose($"正在将块写入块流...");
@@ -720,6 +826,7 @@ namespace AssetStudio
             blocksStream.Position = 0;
         }
 
+        /// <summary>  解析版本号，返回一个数组，数组中的元素为版本号，如 2018.4.0f1 解析为 [2018, 4, 0]</summary>
         public int[] ParseVersion()
         {
             var versionSplit = Regex.Replace(m_Header.unityRevision, @"\D", ".").Split(new[] { "." }, StringSplitOptions.RemoveEmptyEntries);

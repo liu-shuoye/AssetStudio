@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace AssetStudio
 {
+    /// <summary> SerializedFile 格式的版本。 </summary>
     public enum SerializedFileFormatVersion
     {
         Unsupported = 1,

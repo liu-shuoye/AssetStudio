@@ -127,11 +127,11 @@
 	<Target Name="CopyExtraFiles" AfterTargets="AfterBuild">
 		<Copy SourceFiles="$(SolutionDir)AssetStudio.FBXNative\bin\Win32\$(Configuration)\AssetStudio.FBXNative.dll" DestinationFolder="$(TargetDir)x86" ContinueOnError="true" />
 		<Copy SourceFiles="$(SolutionDir)AssetStudio.FBXNative\bin\x64\$(Configuration)\AssetStudio.FBXNative.dll" DestinationFolder="$(TargetDir)x64" ContinueOnError="true" />
-		<Exec Command="if exist &quot;$(TargetDir)LuaScripts&quot; rd /s /q &quot;$(TargetDir)LuaScripts&quot;" />
-		<Exec Command="git clone https://github.com/AXiX-official/AssetStudio-LuaScripts $(TargetDir)AssetStudio-LuaScripts" />
-		<Exec Command="if not exist &quot;$(TargetDir)LuaScripts&quot; mkdir &quot;$(TargetDir)LuaScripts&quot;" />
-		<Exec Command="xcopy /y /e $(TargetDir)AssetStudio-LuaScripts\Scripts\* $(TargetDir)LuaScripts" />
-		<Exec Command="rd /s /q $(TargetDir)AssetStudio-LuaScripts" />
+<!--		<Exec Command="if exist &quot;$(TargetDir)LuaScripts&quot; rd /s /q &quot;$(TargetDir)LuaScripts&quot;" />-->
+<!--		<Exec Command="git clone https://github.com/AXiX-official/AssetStudio-LuaScripts $(TargetDir)AssetStudio-LuaScripts" />-->
+<!--		<Exec Command="if not exist &quot;$(TargetDir)LuaScripts&quot; mkdir &quot;$(TargetDir)LuaScripts&quot;" />-->
+<!--		<Exec Command="xcopy /y /e $(TargetDir)AssetStudio-LuaScripts\Scripts\* $(TargetDir)LuaScripts" />-->
+<!--		<Exec Command="rd /s /q $(TargetDir)AssetStudio-LuaScripts" />-->
 	</Target>
 
 	<Target Name="PublishExtraFiles" AfterTargets="Publish">
