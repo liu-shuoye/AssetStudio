@@ -173,7 +173,7 @@ namespace AssetStudio
             var toReadFile = ImportHelper.ProcessingSplitFiles(files.ToList());
 
             var filesList = new List<string>(toReadFile);
-            for (int i = 0; i < filesList.Count; i++)
+            for (int i = filesList.Count - 1; i >= 0; i--)
             {
                 var file = filesList[i];
                 assetsManager.LoadFiles(file);
@@ -187,7 +187,8 @@ namespace AssetStudio
                     filesList.Remove(file);
                     msg = $"Removed {Path.GetFileName(file)}, no assets found";
                 }
-                Logger.Info($"[{i + 1}/{filesList.Count}] {msg}");
+
+                Logger.Info($"[{filesList.Count - i + 1}/{filesList.Count}] {msg}");
                 Progress.Report(i + 1, filesList.Count);
                 assetsManager.Clear();
             }
