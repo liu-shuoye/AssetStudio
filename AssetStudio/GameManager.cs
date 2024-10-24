@@ -52,6 +52,7 @@ namespace AssetStudio
             Games.Add(index++, new Game(GameType.PerpetualNovelty));
             Games.Add(index++, new Game(GameType.GuiLongChao));
             Games.Add(index++, new Game(GameType.CounterSide));
+            Games.Add(index++, new Game(GameType.Orisries));
         }
         public static Game GetGame(GameType gameType) => GetGame((int)gameType);
         public static Game GetGame(int index)
@@ -187,6 +188,8 @@ namespace AssetStudio
         PerpetualNovelty,
         GuiLongChao,
         CounterSide,
+        /// <summary> 萬源聖魔錄(Orisries) </summary>
+        Orisries,
     }
 
     public static class GameTypes

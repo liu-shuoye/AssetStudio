@@ -77,7 +77,7 @@ public class LuaMethods
         return new EndianBinaryReader(stream);
     }
     
-    public byte[] SliceByteArray(byte[] src, int start, int length)
+    public static byte[] SliceByteArray(byte[] src, int start, int length)
     {
         var buffer = new byte[length];
         Array.Copy(src, start, buffer, 0, length);
