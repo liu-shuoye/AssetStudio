@@ -30,6 +30,7 @@ namespace AssetStudio.GUI
         public static AssemblyLoader assemblyLoader = new AssemblyLoader();
         public static List<AssetItem> exportableAssets = new List<AssetItem>();
         public static List<AssetItem> visibleAssets = new List<AssetItem>();
+        /// <summary>  更新状态栏 </summary>
         internal static Action<string> StatusStripUpdate = x => { };
 
         public static int ExtractFolder(string path, string savePath)

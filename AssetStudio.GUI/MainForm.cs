@@ -1,5 +1,4 @@
-﻿
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
@@ -40,11 +39,14 @@ namespace AssetStudio.GUI
         private Point MouseDownLocation;
 
         #region TexControl
+
         private static char[] textureChannelNames = new[] { 'B', 'G', 'R', 'A' };
         private bool[] textureChannels = new[] { true, true, true, true };
+
         #endregion
 
         #region GLControl
+
         private bool glControlLoaded;
         private int mdx, mdy;
         private bool lmdown, rmdown;
@@ -67,6 +69,7 @@ namespace AssetStudio.GUI
         private int wireFrameMode;
         private int shadeMode;
         private int normalMode;
+
         #endregion
 
         //asset list sorting
@@ -77,11 +80,14 @@ namespace AssetStudio.GUI
         private int nextGObject;
         private List<TreeNode> treeSrcResults = new List<TreeNode>();
 
+        /// <summary> 打开目录备份 </summary>
         private string openDirectoryBackup = string.Empty;
+
+        /// <summary> 保存目录备份 </summary>
         private string saveDirectoryBackup = string.Empty;
-        
-        // 打开文件目录
-        private string _openFileDirectory = string.Empty; 
+
+        /// <summary> 打开文件备份 </summary>
+        private string _openFileDirectoryBackup = string.Empty;
 
         private GUILogger logger;
 
@@ -97,6 +103,7 @@ namespace AssetStudio.GUI
             FMODinit();
         }
 
+        /// <summary> 初始化导出选项 </summary>
         private void InitializeExportOptions()
         {
             enableConsole.Checked = Properties.Settings.Default.enableConsole;
@@ -118,6 +125,7 @@ namespace AssetStudio.GUI
             AutoDetectMultipleBundle.Checked = Properties.Settings.Default.autoDetectMultipleBundle;
         }
 
+        /// <summary> 初始化日志 </summary>
         private void InitializeLogger()
         {
             logger = new GUILogger(StatusStripUpdate);
@@ -131,9 +139,10 @@ namespace AssetStudio.GUI
             }
             else
             {
-                Logger.Default = new ConsoleLogger();;
+                Logger.Default = new ConsoleLogger();
                 ConsoleHelper.ShowWindow(handle, ConsoleHelper.SW_HIDE);
             }
+
             var loggerEventType = (LoggerEvent)Properties.Settings.Default.loggerEventType;
             var loggerEventTypes = Enum.GetValues<LoggerEvent>().ToArray()[1..^1];
             foreach (var loggerEvent in loggerEventTypes)
@@ -141,16 +150,19 @@ namespace AssetStudio.GUI
                 var menuItem = new ToolStripMenuItem(loggerEvent.ToString()) { CheckOnClick = true, Checked = loggerEventType.HasFlag(loggerEvent), Tag = (int)loggerEvent };
                 loggedEventsMenuItem.DropDownItems.Add(menuItem);
             }
+
             Logger.Flags = loggerEventType;
             Logger.FileLogging = enableFileLogging.Checked;
         }
 
+        /// <summary> 初始化进度条 </summary>
         private void InitializeProgressBar()
         {
             Progress.Default = new Progress<int>(SetProgressBarValue);
             Studio.StatusStripUpdate = StatusStripUpdate;
         }
 
+        ///<summary> 初始化设置 </summary>
         private void InitalizeOptions()
         {
             var assetMapType = (ExportListType)Properties.Settings.Default.assetMapType;
@@ -187,6 +199,7 @@ namespace AssetStudio.GUI
                 }
             }
         }
+
         private void MainForm_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -217,23 +230,25 @@ namespace AssetStudio.GUI
             {
                 await Task.Run(() => assetsManager.LoadFiles(paths));
             }
+
             BuildAssetStructures();
         }
 
         private async void loadFile_Click(object sender, EventArgs e)
         {
-            openFileDialog1.InitialDirectory = _openFileDirectory;
+            openFileDialog1.InitialDirectory = _openFileDirectoryBackup;
             if (openFileDialog1.ShowDialog(this) == DialogResult.OK)
             {
                 var paths = openFileDialog1.FileNames;
                 ResetForm();
-                openDirectoryBackup = Path.GetDirectoryName(paths[0]);
+                _openFileDirectoryBackup = Path.GetDirectoryName(paths[0]);
                 assetsManager.SpecifyUnityVersion = specifyUnityVersion.Text;
                 assetsManager.Game = Studio.Game;
                 if (paths.Length == 1 && File.Exists(paths[0]) && Path.GetExtension(paths[0]) == ".txt")
                 {
                     paths = File.ReadAllLines(paths[0]);
                 }
+
                 await Task.Run(() => assetsManager.LoadFiles(paths));
                 BuildAssetStructures();
             }
@@ -259,11 +274,13 @@ namespace AssetStudio.GUI
             if (openFileDialog1.ShowDialog(this) == DialogResult.OK)
             {
                 var saveFolderDialog = new OpenFolderDialog();
+                saveFolderDialog.InitialFolder = saveDirectoryBackup;
                 saveFolderDialog.Title = "选择保存文件夹";
                 if (saveFolderDialog.ShowDialog(this) == DialogResult.OK)
                 {
                     var fileNames = openFileDialog1.FileNames;
                     var savePath = saveFolderDialog.Folder;
+                    saveDirectoryBackup = saveFolderDialog.Folder;
                     var extractedCount = await Task.Run(() => ExtractFile(fileNames, savePath));
                     StatusStripUpdate($"已完成提取 {extractedCount} 个文件。");
                 }
@@ -335,6 +352,7 @@ namespace AssetStudio.GUI
                     classesListView.Items.Add(uclass.Value);
                 }
             }
+
             typeMap.Clear();
             classesListView.EndUpdate();
 
@@ -351,6 +369,7 @@ namespace AssetStudio.GUI
                 typeItem.Click += typeToolStripMenuItem_Click;
                 filterTypeToolStripMenuItem.DropDownItems.Add(typeItem);
             }
+
             allToolStripMenuItem.Checked = true;
             var log = $"Finished loading {assetsManager.assetsFileList.Count} files with {assetListView.Items.Count} exportable assets";
             var m_ObjectsCount = assetsManager.assetsFileList.Sum(x => x.m_Objects.Count);
@@ -359,6 +378,7 @@ namespace AssetStudio.GUI
             {
                 log += $" and {m_ObjectsCount - objectsCount} assets failed to read";
             }
+
             StatusStripUpdate(log);
         }
 
@@ -377,6 +397,7 @@ namespace AssetStudio.GUI
                     item.Checked = false;
                 }
             }
+
             FilterAssetList();
         }
 
@@ -431,6 +452,7 @@ namespace AssetStudio.GUI
                             need = true;
                             break;
                     }
+
                     if (need)
                     {
                         if (lastSelectedItem != null)
@@ -475,7 +497,7 @@ namespace AssetStudio.GUI
             Properties.Settings.Default.displayAll = displayAll.Checked;
             Properties.Settings.Default.Save();
         }
-        
+
         private void autoDetectMultipleBundle_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.autoDetectMultipleBundle = AutoDetectMultipleBundle.Checked;
@@ -492,16 +514,16 @@ namespace AssetStudio.GUI
                 {
                     case ClassIDType.Texture2D:
                     case ClassIDType.Sprite:
+                    {
+                        if (enablePreview.Checked && imageTexture != null)
                         {
-                            if (enablePreview.Checked && imageTexture != null)
-                            {
-                                imgPreviewBox.Image = imageTexture.Bitmap;
-                            }
-                            else
-                            {
-                                imgPreviewBox.Image = null;
-                            }
+                            imgPreviewBox.Image = imageTexture.Bitmap;
                         }
+                        else
+                        {
+                            imgPreviewBox.Image = null;
+                        }
+                    }
                         break;
                     case ClassIDType.Shader:
                     case ClassIDType.TextAsset:
@@ -513,28 +535,26 @@ namespace AssetStudio.GUI
                         fontPreviewBox.Visible = !fontPreviewBox.Visible;
                         break;
                     case ClassIDType.AudioClip:
+                    {
+                        FMODpanel.Visible = !FMODpanel.Visible;
+
+                        if (sound != null && channel != null)
                         {
-                            FMODpanel.Visible = !FMODpanel.Visible;
-
-                            if (sound != null && channel != null)
+                            var result = channel.isPlaying(out var playing);
+                            if (result == FMOD.RESULT.OK && playing)
                             {
-                                var result = channel.isPlaying(out var playing);
-                                if (result == FMOD.RESULT.OK && playing)
-                                {
-                                    channel.stop();
-                                    FMODreset();
-                                }
+                                channel.stop();
+                                FMODreset();
                             }
-                            else if (FMODpanel.Visible)
-                            {
-                                PreviewAsset(lastSelectedItem);
-                            }
-
-                            break;
+                        }
+                        else if (FMODpanel.Visible)
+                        {
+                            PreviewAsset(lastSelectedItem);
                         }
 
+                        break;
+                    }
                 }
-
             }
             else if (lastSelectedItem != null && enablePreview.Checked)
             {
@@ -544,6 +564,7 @@ namespace AssetStudio.GUI
             Properties.Settings.Default.enablePreview = enablePreview.Checked;
             Properties.Settings.Default.Save();
         }
+
         private void displayAssetInfo_Check(object sender, EventArgs e)
         {
             if (displayInfo.Checked && assetInfoLabel.Text != null)
@@ -609,12 +630,14 @@ namespace AssetStudio.GUI
                         Logger.Error("无效的正则表达式。\n" + ex.Message);
                         return;
                     }
+
                     var regex = new Regex(treeSearch.Text, RegexOptions.IgnoreCase);
                     foreach (TreeNode node in sceneTreeView.Nodes)
                     {
                         TreeNodeSearch(regex, node);
                     }
                 }
+
                 if (treeSrcResults.Count > 0)
                 {
                     if (e.Shift)
@@ -629,9 +652,11 @@ namespace AssetStudio.GUI
                                     tempNode = tempNode.Parent;
                                 }
                             }
+
                             tempNode.EnsureVisible();
                             tempNode.Checked = e.Control;
                         }
+
                         sceneTreeView.SelectedNode = treeSrcResults[0];
                     }
                     else
@@ -640,6 +665,7 @@ namespace AssetStudio.GUI
                         {
                             nextGObject = 0;
                         }
+
                         var node = treeSrcResults[nextGObject];
                         if (e.Alt)
                         {
@@ -691,6 +717,7 @@ namespace AssetStudio.GUI
                     var value = GetNode(node);
                     nodes.Add(node.Text, value);
                 }
+
                 var json = JsonConvert.SerializeObject(nodes, Formatting.Indented);
                 File.WriteAllText(path, json);
                 Logger.Info("成功导出场景层次结构！！");
@@ -707,6 +734,7 @@ namespace AssetStudio.GUI
                     nodes.TryAdd(node.Text, GetNode(node));
                 }
             }
+
             return nodes.Count == 0 ? string.Empty : nodes;
         }
 
@@ -722,6 +750,7 @@ namespace AssetStudio.GUI
                 {
                     return HasGameObjectNode(node);
                 }
+
                 return false;
             }
         }
@@ -744,6 +773,7 @@ namespace AssetStudio.GUI
             {
                 reverseSort = !reverseSort;
             }
+
             sortColumn = e.Column;
             assetListView.BeginUpdate();
             assetListView.SelectedIndices.Clear();
@@ -774,6 +804,7 @@ namespace AssetStudio.GUI
                     return reverseSort ? bt.CompareTo(at) : at.CompareTo(bt);
                 });
             }
+
             assetListView.EndUpdate();
         }
 
@@ -800,6 +831,7 @@ namespace AssetStudio.GUI
                 {
                     dumpTextBox.Text = DumpAsset(lastSelectedItem.Asset);
                 }
+
                 if (enablePreview.Checked)
                 {
                     PreviewAsset(lastSelectedItem);
@@ -895,6 +927,7 @@ namespace AssetStudio.GUI
                             textPreviewBox.Text = str;
                             textPreviewBox.Visible = true;
                         }
+
                         break;
                 }
             }
@@ -914,16 +947,28 @@ namespace AssetStudio.GUI
                 assetItem.InfoText = $"Width: {m_Texture2D.m_Width}\nHeight: {m_Texture2D.m_Height}\nFormat: {m_Texture2D.m_TextureFormat}";
                 switch (m_Texture2D.m_TextureSettings.m_FilterMode)
                 {
-                    case 0: assetItem.InfoText += "\nFilter Mode: Point "; break;
-                    case 1: assetItem.InfoText += "\nFilter Mode: Bilinear "; break;
-                    case 2: assetItem.InfoText += "\nFilter Mode: Trilinear "; break;
+                    case 0:
+                        assetItem.InfoText += "\nFilter Mode: Point ";
+                        break;
+                    case 1:
+                        assetItem.InfoText += "\nFilter Mode: Bilinear ";
+                        break;
+                    case 2:
+                        assetItem.InfoText += "\nFilter Mode: Trilinear ";
+                        break;
                 }
+
                 assetItem.InfoText += $"\nAnisotropic level: {m_Texture2D.m_TextureSettings.m_Aniso}\nMip map bias: {m_Texture2D.m_TextureSettings.m_MipBias}";
                 switch (m_Texture2D.m_TextureSettings.m_WrapMode)
                 {
-                    case 0: assetItem.InfoText += "\nWrap mode: Repeat"; break;
-                    case 1: assetItem.InfoText += "\nWrap mode: Clamp"; break;
+                    case 0:
+                        assetItem.InfoText += "\nWrap mode: Repeat";
+                        break;
+                    case 1:
+                        assetItem.InfoText += "\nWrap mode: Clamp";
+                        break;
                 }
+
                 assetItem.InfoText += "\nChannels: ";
                 int validChannel = 0;
                 for (int i = 0; i < 4; i++)
@@ -934,6 +979,7 @@ namespace AssetStudio.GUI
                         validChannel++;
                     }
                 }
+
                 if (validChannel == 0)
                     assetItem.InfoText += "None";
                 if (validChannel != 4)
@@ -952,6 +998,7 @@ namespace AssetStudio.GUI
                         }
                     }
                 }
+
                 PreviewTexture(bitmap);
 
                 StatusStripUpdate("'Ctrl'+'R'/'G'/'B'/'A' 切换通道");
@@ -1115,6 +1162,7 @@ namespace AssetStudio.GUI
                 var type = MonoBehaviourToTypeTree(m_MonoBehaviour);
                 obj = m_MonoBehaviour.ToType(type);
             }
+
             var str = JsonConvert.SerializeObject(obj, Formatting.Indented);
             PreviewText(str);
         }
@@ -1163,9 +1211,11 @@ namespace AssetStudio.GUI
                             fontPreviewBox.Visible = true;
                         }
                     }
+
                     return;
                 }
             }
+
             StatusStripUpdate("不支持字体预览，尝试导出。");
         }
 
@@ -1174,17 +1224,21 @@ namespace AssetStudio.GUI
             if (m_Mesh.m_VertexCount > 0)
             {
                 viewMatrixData = Matrix4.CreateRotationY(-(float)Math.PI / 4) * Matrix4.CreateRotationX(-(float)Math.PI / 6);
+
                 #region Vertices
+
                 if (m_Mesh.m_Vertices == null || m_Mesh.m_Vertices.Length == 0)
                 {
                     StatusStripUpdate("无法预览网格。");
                     return;
                 }
+
                 int count = 3;
                 if (m_Mesh.m_Vertices.Length == m_Mesh.m_VertexCount * 4)
                 {
                     count = 4;
                 }
+
                 vertexData = new OpenTK.Mathematics.Vector3[m_Mesh.m_VertexCount];
                 // Calculate Bounding
                 float[] min = new float[3];
@@ -1194,6 +1248,7 @@ namespace AssetStudio.GUI
                     min[i] = m_Mesh.m_Vertices[i];
                     max[i] = m_Mesh.m_Vertices[i];
                 }
+
                 for (int v = 0; v < m_Mesh.m_VertexCount; v++)
                 {
                     for (int i = 0; i < 3; i++)
@@ -1201,6 +1256,7 @@ namespace AssetStudio.GUI
                         min[i] = Math.Min(min[i], m_Mesh.m_Vertices[v * count + i]);
                         max[i] = Math.Max(max[i], m_Mesh.m_Vertices[v * count + i]);
                     }
+
                     vertexData[v] = new OpenTK.Mathematics.Vector3(
                         m_Mesh.m_Vertices[v * count],
                         m_Mesh.m_Vertices[v * count + 1],
@@ -1215,10 +1271,14 @@ namespace AssetStudio.GUI
                     dist[i] = max[i] - min[i];
                     offset[i] = (max[i] + min[i]) / 2;
                 }
+
                 float d = Math.Max(1e-5f, dist.Length);
                 modelMatrixData = Matrix4.CreateTranslation(-offset) * Matrix4.CreateScale(2f / d);
+
                 #endregion
+
                 #region Indicies
+
                 indiceData = new int[m_Mesh.m_Indices.Count];
                 for (int i = 0; i < m_Mesh.m_Indices.Count; i = i + 3)
                 {
@@ -1226,8 +1286,11 @@ namespace AssetStudio.GUI
                     indiceData[i + 1] = (int)m_Mesh.m_Indices[i + 1];
                     indiceData[i + 2] = (int)m_Mesh.m_Indices[i + 2];
                 }
+
                 #endregion
+
                 #region Normals
+
                 if (m_Mesh.m_Normals != null && m_Mesh.m_Normals.Length > 0)
                 {
                     if (m_Mesh.m_Normals.Length == m_Mesh.m_VertexCount * 3)
@@ -1245,6 +1308,7 @@ namespace AssetStudio.GUI
                 }
                 else
                     normalData = null;
+
                 // calculate normal by ourself
                 normal2Data = new OpenTK.Mathematics.Vector3[m_Mesh.m_VertexCount];
                 int[] normalCalculatedCount = new int[m_Mesh.m_VertexCount];
@@ -1253,6 +1317,7 @@ namespace AssetStudio.GUI
                     normal2Data[i] = OpenTK.Mathematics.Vector3.Zero;
                     normalCalculatedCount[i] = 0;
                 }
+
                 for (int i = 0; i < m_Mesh.m_Indices.Count; i = i + 3)
                 {
                     var dir1 = vertexData[indiceData[i + 1]] - vertexData[indiceData[i]];
@@ -1265,6 +1330,7 @@ namespace AssetStudio.GUI
                         normalCalculatedCount[indiceData[i + j]]++;
                     }
                 }
+
                 for (int i = 0; i < m_Mesh.m_VertexCount; i++)
                 {
                     if (normalCalculatedCount[i] == 0)
@@ -1272,8 +1338,11 @@ namespace AssetStudio.GUI
                     else
                         normal2Data[i] /= normalCalculatedCount[i];
                 }
+
                 #endregion
+
                 #region Colors
+
                 if (m_Mesh.m_Colors != null && m_Mesh.m_Colors.Length == m_Mesh.m_VertexCount * 3)
                 {
                     colorData = new OpenTK.Mathematics.Vector4[m_Mesh.m_VertexCount];
@@ -1292,10 +1361,10 @@ namespace AssetStudio.GUI
                     for (int c = 0; c < m_Mesh.m_VertexCount; c++)
                     {
                         colorData[c] = new OpenTK.Mathematics.Vector4(
-                        m_Mesh.m_Colors[c * 4],
-                        m_Mesh.m_Colors[c * 4 + 1],
-                        m_Mesh.m_Colors[c * 4 + 2],
-                        m_Mesh.m_Colors[c * 4 + 3]);
+                            m_Mesh.m_Colors[c * 4],
+                            m_Mesh.m_Colors[c * 4 + 1],
+                            m_Mesh.m_Colors[c * 4 + 2],
+                            m_Mesh.m_Colors[c * 4 + 3]);
                     }
                 }
                 else
@@ -1306,7 +1375,9 @@ namespace AssetStudio.GUI
                         colorData[c] = new OpenTK.Mathematics.Vector4(0.5f, 0.5f, 0.5f, 1.0f);
                     }
                 }
+
                 #endregion
+
                 glControl.Visible = true;
                 CreateVAO();
                 StatusStripUpdate("使用OpenGL版本：" + GL.GetString(StringName.Version) + "\n"
@@ -1334,6 +1405,7 @@ namespace AssetStudio.GUI
             var model = new ModelConverter(m_GameObject, options, Array.Empty<AnimationClip>());
             PreviewModel(model);
         }
+
         private void PreviewAnimator(Animator m_Animator)
         {
             var options = new ModelConverter.Options()
@@ -1363,7 +1435,9 @@ namespace AssetStudio.GUI
             if (model.MeshList.Count > 0)
             {
                 viewMatrixData = Matrix4.CreateRotationY(-(float)Math.PI / 4) * Matrix4.CreateRotationX(-(float)Math.PI / 6);
+
                 #region Vertices
+
                 vertexData = model.MeshList.SelectMany(x => x.VertexList).Select(x => new OpenTK.Mathematics.Vector3(x.Vertex.X, x.Vertex.Y, x.Vertex.Z)).ToArray();
                 // Calculate Bounding
                 var min = vertexData.Aggregate(OpenTK.Mathematics.Vector3.ComponentMin);
@@ -1374,8 +1448,11 @@ namespace AssetStudio.GUI
                 var offset = (max - min) / 2;
                 float d = Math.Max(1e-5f, dist.Length);
                 modelMatrixData = Matrix4.CreateTranslation(-offset) * Matrix4.CreateScale(2f / d);
+
                 #endregion
+
                 #region Indicies
+
                 int meshOffset = 0;
                 var indices = new List<int>();
                 foreach (var mesh in model.MeshList)
@@ -1390,11 +1467,16 @@ namespace AssetStudio.GUI
                             }
                         }
                     }
+
                     meshOffset += mesh.VertexList.Count;
                 }
+
                 indiceData = indices.ToArray();
+
                 #endregion
+
                 #region Normals
+
                 normalData = model.MeshList.SelectMany(x => x.VertexList).Select(x => new OpenTK.Mathematics.Vector3(x.Normal.X, x.Normal.Y, x.Normal.Z)).ToArray();
                 // calculate normal by ourself
                 normal2Data = new OpenTK.Mathematics.Vector3[vertexData.Length];
@@ -1413,6 +1495,7 @@ namespace AssetStudio.GUI
                         normalCalculatedCount[indiceData[j + k]]++;
                     }
                 }
+
                 for (int j = 0; j < vertexData.Length; j++)
                 {
                     if (normalCalculatedCount[j] == 0)
@@ -1420,10 +1503,15 @@ namespace AssetStudio.GUI
                     else
                         normal2Data[j] /= normalCalculatedCount[j];
                 }
+
                 #endregion
+
                 #region Colors
+
                 colorData = model.MeshList.SelectMany(x => x.VertexList).Select(x => new OpenTK.Mathematics.Vector4(x.Color.R, x.Color.G, x.Color.B, x.Color.A)).ToArray();
+
                 #endregion
+
                 glControl.Visible = true;
                 CreateVAO();
                 StatusStripUpdate("使用OpenGL版本：" + GL.GetString(StringName.Version) + "\n"
@@ -1462,7 +1550,7 @@ namespace AssetStudio.GUI
             imgPreviewBox.Image = imageTexture.Bitmap;
             imgPreviewBox.SizeMode = PictureBoxSizeMode.Zoom;
         }
-        
+
         private void imgPreviewBox_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
@@ -1495,7 +1583,7 @@ namespace AssetStudio.GUI
                 imgPreviewBox.Height = (int)(imgPreviewBox.Height / 1.25);
             }
         }
-        
+
         private void imgPreviewBox_MouseUp(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -1510,11 +1598,11 @@ namespace AssetStudio.GUI
             textPreviewBox.Visible = true;
         }
 
+        /// <summary> 设置进度条值 </summary>
         private void SetProgressBarValue(int value)
         {
             if (InvokeRequired)
             {
-                
                 var result = BeginInvoke(new Action(() => { progressBar1.Value = value; }));
                 result.AsyncWaitHandle.WaitOne();
             }
@@ -1524,6 +1612,7 @@ namespace AssetStudio.GUI
             }
         }
 
+        /// <summary> 更新状态栏 </summary>
         private void StatusStripUpdate(string statusText)
         {
             if (InvokeRequired)
@@ -1586,6 +1675,7 @@ namespace AssetStudio.GUI
                     goToSceneHierarchyToolStripMenuItem.Visible = true;
                     showOriginalFileToolStripMenuItem.Visible = true;
                 }
+
                 if (assetListView.SelectedIndices.Count >= 1)
                 {
                     var selectedAssets = GetSelectedAssets();
@@ -1677,6 +1767,7 @@ namespace AssetStudio.GUI
                             animationList = null;
                         }
                     }
+
                     ExportObjectsWithAnimationClip(exportPath, sceneTreeView.Nodes, animationList);
                 }
             }
@@ -1722,6 +1813,7 @@ namespace AssetStudio.GUI
                                 animationList = null;
                             }
                         }
+
                         ExportObjectsMergeWithAnimationClip(exportPath, gameObjects, animationList);
                     }
                 }
@@ -1758,6 +1850,7 @@ namespace AssetStudio.GUI
                         Logger.Info("未找到选定的根节点。");
                         return;
                     }
+
                     List<AssetItem> animationList = null;
                     if (animation)
                     {
@@ -1767,6 +1860,7 @@ namespace AssetStudio.GUI
                             animationList = null;
                         }
                     }
+
                     ExportNodesWithAnimationClip(exportPath, roots, animationList);
                 }
             }
@@ -1826,6 +1920,7 @@ namespace AssetStudio.GUI
         {
             ExportAssets(ExportFilter.Filtered, ExportType.Dump);
         }
+
         private void toolStripMenuItem17_Click(object sender, EventArgs e)
         {
             ExportAssets(ExportFilter.All, ExportType.JSON);
@@ -1901,12 +1996,14 @@ namespace AssetStudio.GUI
                         show.Add((ClassIDType)Enum.Parse(typeof(ClassIDType), item.Text));
                     }
                 }
+
                 visibleAssets = exportableAssets.FindAll(x => show.Contains(x.Type));
             }
             else
             {
                 visibleAssets = exportableAssets;
             }
+
             if (Properties.Settings.Default.modelsOnly)
             {
                 var models = visibleAssets.FindAll(x => x.Type == ClassIDType.Animator || x.Type == ClassIDType.GameObject);
@@ -1924,6 +2021,7 @@ namespace AssetStudio.GUI
                     }
                 }
             }
+
             if (!string.IsNullOrEmpty(listSearch.Text))
             {
                 try
@@ -1935,12 +2033,14 @@ namespace AssetStudio.GUI
                     Logger.Error("无效的正则表达式。\n" + ex.Message);
                     listSearch.Text = "";
                 }
+
                 var regex = new Regex(listSearch.Text, RegexOptions.IgnoreCase);
                 visibleAssets = visibleAssets.FindAll(
                     x => regex.IsMatch(x.Text) ||
-                    regex.IsMatch(x.SubItems[1].Text) ||
-                    regex.IsMatch(x.SubItems[3].Text));
+                         regex.IsMatch(x.SubItems[1].Text) ||
+                         regex.IsMatch(x.SubItems[3].Text));
             }
+
             assetListView.VirtualListSize = visibleAssets.Count;
             assetListView.EndUpdate();
         }
@@ -1968,6 +2068,7 @@ namespace AssetStudio.GUI
                             toExportAssets = visibleAssets;
                             break;
                     }
+
                     await Studio.ExportAssets(saveFolderDialog.Folder, toExportAssets, exportType, Properties.Settings.Default.openAfterExport);
                 }
             }
@@ -2002,6 +2103,7 @@ namespace AssetStudio.GUI
                             toExportAssets = visibleAssets;
                             break;
                     }
+
                     Studio.ExportAssetsList(saveFolderDialog.Folder, toExportAssets, ExportListType.XML);
                 }
             }
@@ -2015,6 +2117,7 @@ namespace AssetStudio.GUI
         {
             logger.ShowErrorMessage = toolStripMenuItem15.Checked;
         }
+
         private async void toolStripMenuItem19_DropDownOpening(object sender, EventArgs e)
         {
             if (specifyAIVersion.Enabled && await AIVersionManager.FetchVersions())
@@ -2038,11 +2141,13 @@ namespace AssetStudio.GUI
             {
                 return;
             }
+
             if (skipContainer.Checked)
             {
                 Logger.Info("启用了跳过容器，正在中止...");
                 return;
             }
+
             optionsToolStripMenuItem.DropDown.Visible = false;
             var version = specifyAIVersion.SelectedItem.ToString();
 
@@ -2104,6 +2209,7 @@ namespace AssetStudio.GUI
                         }
                     }
                 }
+
                 assetListView.EndUpdate();
                 Logger.Info("已更新！！");
             }
@@ -2128,6 +2234,7 @@ namespace AssetStudio.GUI
                 dumpTextBox.Text = DumpAsset(lastSelectedItem.Asset);
             }
         }
+
         private void enableResolveDependencies_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.enableResolveDependencies = enableResolveDependencies.Checked;
@@ -2135,11 +2242,13 @@ namespace AssetStudio.GUI
 
             assetsManager.ResolveDependencies = enableResolveDependencies.Checked;
         }
+
         private void allowDuplicates_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.allowDuplicates = allowDuplicates.Checked;
             Properties.Settings.Default.Save();
         }
+
         private void skipContainer_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.skipContainer = skipContainer.Checked;
@@ -2147,6 +2256,7 @@ namespace AssetStudio.GUI
 
             SkipContainer = skipContainer.Checked;
         }
+
         private void assetMapTypeMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             var assetMapType = Properties.Settings.Default.assetMapType;
@@ -2164,8 +2274,8 @@ namespace AssetStudio.GUI
                 Properties.Settings.Default.assetMapType = assetMapType;
                 Properties.Settings.Default.Save();
             }
-
         }
+
         private void modelsOnly_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.modelsOnly = modelsOnly.Checked;
@@ -2176,6 +2286,7 @@ namespace AssetStudio.GUI
                 FilterAssetList();
             }
         }
+
         private void enableModelPreview_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.enableModelPreview = enableModelPreview.Checked;
@@ -2277,6 +2388,7 @@ namespace AssetStudio.GUI
                 AssetsHelper.SetUnityVersion(version);
                 await Task.Run(() => AssetsHelper.BuildCABMap(files, name, openFolderDialog.Folder, Studio.Game));
             }
+
             InvokeUpdate(miscToolStripMenuItem, true);
         }
 
@@ -2314,7 +2426,7 @@ namespace AssetStudio.GUI
 
             if (File.Exists(Path.Combine(AssetsHelper.MapName, $"{name}.bin")))
             {
-                var acceptOverride = MessageBox.Show("地图已存在，是否要覆盖？", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                var acceptOverride = MessageBox.Show("地图已存在，是否要覆盖？", "警告", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                 if (acceptOverride != DialogResult.Yes)
                 {
                     InvokeUpdate(miscToolStripMenuItem, true);
@@ -2324,6 +2436,7 @@ namespace AssetStudio.GUI
 
             var version = specifyUnityVersion.Text;
             var openFolderDialog = new OpenFolderDialog();
+            openFolderDialog.InitialFolder = openDirectoryBackup;
             openFolderDialog.Title = "选择游戏文件夹";
             if (openFolderDialog.ShowDialog(this) == DialogResult.OK)
             {
@@ -2341,6 +2454,7 @@ namespace AssetStudio.GUI
                     await Task.Run(() => AssetsHelper.BuildBoth(files, name, openFolderDialog.Folder, Studio.Game, saveFolderDialog.Folder, exportListType));
                 }
             }
+
             InvokeUpdate(miscToolStripMenuItem, true);
         }
 
@@ -2459,6 +2573,7 @@ namespace AssetStudio.GUI
                 Logger.Info("启用了跳过容器，正在中止...");
                 return;
             }
+
             miscToolStripMenuItem.DropDown.Visible = false;
 
             var openFileDialog = new OpenFileDialog() { Multiselect = false, Filter = "Asset Index JSON File|*.json" };
@@ -2515,6 +2630,7 @@ namespace AssetStudio.GUI
 
             var version = specifyUnityVersion.Text;
             var openFolderDialog = new OpenFolderDialog();
+            openFolderDialog.InitialFolder = openDirectoryBackup;
             openFolderDialog.Title = $"Select Game Folder";
             if (openFolderDialog.ShowDialog(this) == DialogResult.OK)
             {
@@ -2531,6 +2647,7 @@ namespace AssetStudio.GUI
                     await Task.Run(() => AssetsHelper.BuildAssetMap(files, name, Studio.Game, saveFolderDialog.Folder, exportListType));
                 }
             }
+
             InvokeUpdate(miscToolStripMenuItem, true);
         }
 
@@ -2547,12 +2664,16 @@ namespace AssetStudio.GUI
         }
 
         #region FMOD
+
         private void FMODinit()
         {
             FMODreset();
 
             var result = FMOD.Factory.System_Create(out system);
-            if (ERRCHECK(result)) { return; }
+            if (ERRCHECK(result))
+            {
+                return;
+            }
 
             result = system.getVersion(out var version);
             ERRCHECK(result);
@@ -2563,13 +2684,22 @@ namespace AssetStudio.GUI
             }
 
             result = system.init(2, FMOD.INITFLAGS.NORMAL, IntPtr.Zero);
-            if (ERRCHECK(result)) { return; }
+            if (ERRCHECK(result))
+            {
+                return;
+            }
 
             result = system.getMasterSoundGroup(out masterSoundGroup);
-            if (ERRCHECK(result)) { return; }
+            if (ERRCHECK(result))
+            {
+                return;
+            }
 
             result = masterSoundGroup.setVolume(FMODVolume);
-            if (ERRCHECK(result)) { return; }
+            if (ERRCHECK(result))
+            {
+                return;
+            }
         }
 
         private void FMODreset()
@@ -2596,23 +2726,36 @@ namespace AssetStudio.GUI
                 var result = channel.isPlaying(out var playing);
                 if ((result != FMOD.RESULT.OK) && (result != FMOD.RESULT.ERR_INVALID_HANDLE))
                 {
-                    if (ERRCHECK(result)) { return; }
+                    if (ERRCHECK(result))
+                    {
+                        return;
+                    }
                 }
 
                 if (playing)
                 {
                     result = channel.stop();
-                    if (ERRCHECK(result)) { return; }
+                    if (ERRCHECK(result))
+                    {
+                        return;
+                    }
 
                     result = system.playSound(sound, null, false, out channel);
-                    if (ERRCHECK(result)) { return; }
+                    if (ERRCHECK(result))
+                    {
+                        return;
+                    }
 
                     FMODpauseButton.Text = "Pause";
                 }
                 else
                 {
                     result = system.playSound(sound, null, false, out channel);
-                    if (ERRCHECK(result)) { return; }
+                    if (ERRCHECK(result))
+                    {
+                        return;
+                    }
+
                     FMODstatusLabel.Text = "Playing";
 
                     if (FMODprogressBar.Value > 0)
@@ -2622,9 +2765,11 @@ namespace AssetStudio.GUI
                         result = channel.setPosition(newms, FMOD.TIMEUNIT.MS);
                         if ((result != FMOD.RESULT.OK) && (result != FMOD.RESULT.ERR_INVALID_HANDLE))
                         {
-                            if (ERRCHECK(result)) { return; }
+                            if (ERRCHECK(result))
+                            {
+                                return;
+                            }
                         }
-
                     }
                 }
             }
@@ -2637,15 +2782,25 @@ namespace AssetStudio.GUI
                 var result = channel.isPlaying(out var playing);
                 if ((result != FMOD.RESULT.OK) && (result != FMOD.RESULT.ERR_INVALID_HANDLE))
                 {
-                    if (ERRCHECK(result)) { return; }
+                    if (ERRCHECK(result))
+                    {
+                        return;
+                    }
                 }
 
                 if (playing)
                 {
                     result = channel.getPaused(out var paused);
-                    if (ERRCHECK(result)) { return; }
+                    if (ERRCHECK(result))
+                    {
+                        return;
+                    }
+
                     result = channel.setPaused(!paused);
-                    if (ERRCHECK(result)) { return; }
+                    if (ERRCHECK(result))
+                    {
+                        return;
+                    }
 
                     if (paused)
                     {
@@ -2670,13 +2825,20 @@ namespace AssetStudio.GUI
                 var result = channel.isPlaying(out var playing);
                 if ((result != FMOD.RESULT.OK) && (result != FMOD.RESULT.ERR_INVALID_HANDLE))
                 {
-                    if (ERRCHECK(result)) { return; }
+                    if (ERRCHECK(result))
+                    {
+                        return;
+                    }
                 }
 
                 if (playing)
                 {
                     result = channel.stop();
-                    if (ERRCHECK(result)) { return; }
+                    if (ERRCHECK(result))
+                    {
+                        return;
+                    }
+
                     //channel = null;
                     //don't FMODreset, it will nullify the sound
                     timer.Stop();
@@ -2697,7 +2859,10 @@ namespace AssetStudio.GUI
             if (sound != null)
             {
                 result = sound.setMode(loopMode);
-                if (ERRCHECK(result)) { return; }
+                if (ERRCHECK(result))
+                {
+                    return;
+                }
             }
 
             if (channel != null)
@@ -2705,19 +2870,28 @@ namespace AssetStudio.GUI
                 result = channel.isPlaying(out var playing);
                 if ((result != FMOD.RESULT.OK) && (result != FMOD.RESULT.ERR_INVALID_HANDLE))
                 {
-                    if (ERRCHECK(result)) { return; }
+                    if (ERRCHECK(result))
+                    {
+                        return;
+                    }
                 }
 
                 result = channel.getPaused(out var paused);
                 if ((result != FMOD.RESULT.OK) && (result != FMOD.RESULT.ERR_INVALID_HANDLE))
                 {
-                    if (ERRCHECK(result)) { return; }
+                    if (ERRCHECK(result))
+                    {
+                        return;
+                    }
                 }
 
                 if (playing || paused)
                 {
                     result = channel.setMode(loopMode);
-                    if (ERRCHECK(result)) { return; }
+                    if (ERRCHECK(result))
+                    {
+                        return;
+                    }
                 }
             }
         }
@@ -2727,7 +2901,10 @@ namespace AssetStudio.GUI
             FMODVolume = Convert.ToSingle(FMODvolumeBar.Value) / 10;
 
             var result = masterSoundGroup.setVolume(FMODVolume);
-            if (ERRCHECK(result)) { return; }
+            if (ERRCHECK(result))
+            {
+                return;
+            }
         }
 
         private void FMODprogressBar_Scroll(object sender, EventArgs e)
@@ -2753,17 +2930,26 @@ namespace AssetStudio.GUI
                 var result = channel.setPosition(newms, FMOD.TIMEUNIT.MS);
                 if ((result != FMOD.RESULT.OK) && (result != FMOD.RESULT.ERR_INVALID_HANDLE))
                 {
-                    if (ERRCHECK(result)) { return; }
+                    if (ERRCHECK(result))
+                    {
+                        return;
+                    }
                 }
 
 
                 result = channel.isPlaying(out var playing);
                 if ((result != FMOD.RESULT.OK) && (result != FMOD.RESULT.ERR_INVALID_HANDLE))
                 {
-                    if (ERRCHECK(result)) { return; }
+                    if (ERRCHECK(result))
+                    {
+                        return;
+                    }
                 }
 
-                if (playing) { timer.Start(); }
+                if (playing)
+                {
+                    timer.Start();
+                }
             }
         }
 
@@ -2812,11 +2998,14 @@ namespace AssetStudio.GUI
                 StatusStripUpdate($"FMOD 错误！{result} - {FMOD.Error.String(result)}");
                 return true;
             }
+
             return false;
         }
+
         #endregion
 
         #region GLControl
+
         private void InitOpenTK()
         {
             ChangeGLSize(glControl.Size);
@@ -2859,9 +3048,9 @@ namespace AssetStudio.GUI
             GL.GenBuffers(1, out vboAddress);
             GL.BindBuffer(BufferTarget.ArrayBuffer, vboAddress);
             GL.BufferData(BufferTarget.ArrayBuffer,
-                                    (IntPtr)(data.Length * OpenTK.Mathematics.Vector3.SizeInBytes),
-                                    data,
-                                    BufferUsageHint.StaticDraw);
+                (IntPtr)(data.Length * OpenTK.Mathematics.Vector3.SizeInBytes),
+                data,
+                BufferUsageHint.StaticDraw);
             GL.VertexAttribPointer(address, 3, VertexAttribPointerType.Float, false, 0, 0);
             GL.EnableVertexAttribArray(address);
         }
@@ -2871,9 +3060,9 @@ namespace AssetStudio.GUI
             GL.GenBuffers(1, out vboAddress);
             GL.BindBuffer(BufferTarget.ArrayBuffer, vboAddress);
             GL.BufferData(BufferTarget.ArrayBuffer,
-                                    (IntPtr)(data.Length * OpenTK.Mathematics.Vector4.SizeInBytes),
-                                    data,
-                                    BufferUsageHint.StaticDraw);
+                (IntPtr)(data.Length * OpenTK.Mathematics.Vector4.SizeInBytes),
+                data,
+                BufferUsageHint.StaticDraw);
             GL.VertexAttribPointer(address, 4, VertexAttribPointerType.Float, false, 0, 0);
             GL.EnableVertexAttribArray(address);
         }
@@ -2889,9 +3078,9 @@ namespace AssetStudio.GUI
             GL.GenBuffers(1, out address);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, address);
             GL.BufferData(BufferTarget.ElementArrayBuffer,
-                            (IntPtr)(data.Length * sizeof(int)),
-                            data,
-                            BufferUsageHint.StaticDraw);
+                (IntPtr)(data.Length * sizeof(int)),
+                data,
+                BufferUsageHint.StaticDraw);
         }
 
         private void CreateVAO()
@@ -2909,6 +3098,7 @@ namespace AssetStudio.GUI
                 if (normalData != null)
                     CreateVBO(out var vboNormals, normalData, attributeNormalDirection);
             }
+
             CreateVBO(out var vboColors, colorData, attributeVertexColor);
             CreateVBO(out var vboModelMatrix, modelMatrixData, uniformModelMatrix);
             CreateVBO(out var vboViewMatrix, viewMatrixData, uniformViewMatrix);
@@ -2956,6 +3146,7 @@ namespace AssetStudio.GUI
                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
                 GL.DrawElements(PrimitiveType.Triangles, indiceData.Length, DrawElementsType.UnsignedInt, 0);
             }
+
             //Wireframe
             if (wireFrameMode == 1 || wireFrameMode == 2)
             {
@@ -2969,6 +3160,7 @@ namespace AssetStudio.GUI
                 GL.DrawElements(PrimitiveType.Triangles, indiceData.Length, DrawElementsType.UnsignedInt, 0);
                 GL.Disable(EnableCap.PolygonOffsetLine);
             }
+
             GL.BindVertexArray(0);
             GL.Flush();
             glControl.SwapBuffers();
@@ -2991,6 +3183,7 @@ namespace AssetStudio.GUI
             {
                 lmdown = true;
             }
+
             if (e.Button == MouseButtons.Right)
             {
                 rmdown = true;
@@ -3012,12 +3205,14 @@ namespace AssetStudio.GUI
                     viewMatrixData *= Matrix4.CreateRotationX(dy);
                     viewMatrixData *= Matrix4.CreateRotationY(dx);
                 }
+
                 if (rmdown)
                 {
                     dx *= 0.003f;
                     dy *= 0.003f;
                     viewMatrixData *= Matrix4.CreateTranslation(-dx, dy, 0);
                 }
+
                 glControl.Invalidate();
             }
         }
@@ -3028,11 +3223,13 @@ namespace AssetStudio.GUI
             {
                 lmdown = false;
             }
+
             if (e.Button == MouseButtons.Right)
             {
                 rmdown = false;
             }
         }
+
         #endregion
 
         private void enableLua_CheckedChanged(object sender, EventArgs e)
@@ -3044,10 +3241,9 @@ namespace AssetStudio.GUI
 
         private void loadLuaTemplate_Click(object sender, EventArgs e)
         {
-            
             var openFileDialog = new OpenFileDialog()
             {
-                Multiselect = false, 
+                Multiselect = false,
                 Filter = "Lua Script|*.lua",
                 InitialDirectory = Path.Combine(Application.StartupPath, "LuaScripts")
             };
