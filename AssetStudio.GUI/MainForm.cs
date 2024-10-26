@@ -128,7 +128,7 @@ namespace AssetStudio.GUI
             }
             else
             {
-                Logger.Default = logger;
+                Logger.Default = new ConsoleLogger();;
                 ConsoleHelper.ShowWindow(handle, ConsoleHelper.SW_HIDE);
             }
             var loggerEventType = (LoggerEvent)Properties.Settings.Default.loggerEventType;
@@ -2389,7 +2389,7 @@ namespace AssetStudio.GUI
             }
             else
             {
-                Logger.Default = logger;
+                Logger.Default = new ConsoleLogger();
                 ConsoleHelper.ShowWindow(handle, ConsoleHelper.SW_HIDE);
             }
         }

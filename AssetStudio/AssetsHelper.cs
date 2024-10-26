@@ -24,7 +24,7 @@ namespace AssetStudio
         private static string BaseFolder = "";
         private static Dictionary<string, Entry> CABMap = new Dictionary<string, Entry>(StringComparer.OrdinalIgnoreCase);
         private static Dictionary<string, HashSet<long>> Offsets = new Dictionary<string, HashSet<long>>();
-        private static AssetsManager assetsManager = new AssetsManager() { Silent = true, SkipProcess = true, ResolveDependencies = false };
+        private static AssetsManager assetsManager = new AssetsManager() { SkipProcess = true, ResolveDependencies = false };
 
         public record Entry
         {

@@ -13,7 +13,6 @@ namespace AssetStudio
         public static ILogger Default = new DummyLogger();
         public static ILogger File;
 
-        public static bool Silent { get; set; }
         public static LoggerEvent Flags { get; set; }
 
         public static bool FileLogging
@@ -45,7 +44,7 @@ namespace AssetStudio
 
         public static void Verbose(string message)
         {
-            if (!Flags.HasFlag(LoggerEvent.Verbose) || Silent)
+            if (!Flags.HasFlag(LoggerEvent.Verbose))
                 return;
 
             try
@@ -63,7 +62,7 @@ namespace AssetStudio
         }
         public static void Debug(string message)
         {
-            if (!Flags.HasFlag(LoggerEvent.Debug) || Silent)
+            if (!Flags.HasFlag(LoggerEvent.Debug))
                 return;
 
             if (FileLogging) File.Log(LoggerEvent.Debug, message);
@@ -71,7 +70,7 @@ namespace AssetStudio
         }
         public static void Info(string message)
         {
-            if (!Flags.HasFlag(LoggerEvent.Info) || Silent)
+            if (!Flags.HasFlag(LoggerEvent.Info))
                 return;
 
             if (FileLogging) File.Log(LoggerEvent.Info, message);
@@ -79,7 +78,7 @@ namespace AssetStudio
         }
         public static void Warning(string message)
         {
-            if (!Flags.HasFlag(LoggerEvent.Warning) || Silent)
+            if (!Flags.HasFlag(LoggerEvent.Warning))
                 return;
 
             if (FileLogging) File.Log(LoggerEvent.Warning, message);
@@ -87,7 +86,7 @@ namespace AssetStudio
         }
         public static void Error(string message)
         {
-            if (!Flags.HasFlag(LoggerEvent.Error) || Silent)
+            if (!Flags.HasFlag(LoggerEvent.Error))
                 return;
 
             if (FileLogging) File.Log(LoggerEvent.Error, message);
@@ -96,7 +95,7 @@ namespace AssetStudio
 
         public static void Error(string message, Exception e)
         {
-            if (!Flags.HasFlag(LoggerEvent.Error) || Silent)
+            if (!Flags.HasFlag(LoggerEvent.Error))
                 return;
 
             var sb = new StringBuilder();

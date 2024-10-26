@@ -123,7 +123,6 @@ namespace AssetStudio.CLI
                     assetsManager.EnableLuaScript = true;
                     assetsManager.LuaScript = File.ReadAllText(o.LuaScriptPath);
                 }
-                assetsManager.Silent = o.Silent;
                 assetsManager.Game = game;
                 assetsManager.SpecifyUnityVersion = o.UnityVersion;
                 o.Output.Create();

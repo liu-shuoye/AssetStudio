@@ -55,7 +55,6 @@ namespace AssetStudio
         }
         private Lua luaEnvironment = new Lua();
         public string LuaScript = "";
-        public bool Silent = false;
         public bool SkipProcess = false;
         public bool ResolveDependencies = false;        
         public string SpecifyUnityVersion;
@@ -102,11 +101,6 @@ namespace AssetStudio
 
         public void LoadFiles(params string[] files)
         {
-            if (Silent)
-            {
-                Logger.Silent = true;
-                Progress.Silent = true;
-            }
 
             var path = Path.GetDirectoryName(Path.GetFullPath(files[0]));
             MergeSplitAssets(path);
@@ -114,32 +108,17 @@ namespace AssetStudio
             if (ResolveDependencies)
                 toReadFile = AssetsHelper.ProcessDependencies(toReadFile);
             Load(toReadFile);
-
-            if (Silent)
-            {
-                Logger.Silent = false;
-                Progress.Silent = false;
-            }
+            
         }
 
         public void LoadFolder(string path)
         {
-            if (Silent)
-            {
-                Logger.Silent = true;
-                Progress.Silent = true;
-            }
 
             MergeSplitAssets(path, true);
             var files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).ToList();
             var toReadFile = ProcessingSplitFiles(files);
             Load(toReadFile);
-
-            if (Silent)
-            {
-                Logger.Silent = false;
-                Progress.Silent = false;
-            }
+            
         }
 
         private void Load(string[] files)
