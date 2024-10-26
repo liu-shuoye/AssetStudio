@@ -1316,5 +1316,36 @@ namespace AssetStudio
             ms.Position = 0;
             return new FileReader(reader.FullPath, ms);
         }
+
+        /// <summary> Orisries 加密文件尾 </summary>
+        private static readonly byte[] OrisriesEOF = { 0x10, 0x00, 0x00, 0x00 };
+
+        /// <summary> 解密 Orisries 加密文件 </summary>
+        public static FileReader DecryptOrisries(FileReader reader)
+        {
+            if (reader.FileType == FileType.BundleFile) return reader;
+            Logger.Verbose($"正在尝试使用 Orisries 加密 解密文件 {reader.FileName}");
+            var keyStr = "wiki is transfer";
+            var dataTmp = reader.ReadBytes((int)reader.Remaining);
+            var decryptSize = dataTmp.Length;
+            var orisriesEofStartPos = decryptSize - 4;
+            if (orisriesEofStartPos < 0 || !OrisriesEOF.SequenceEqual(dataTmp[orisriesEofStartPos..]))
+            {
+                Logger.Warning($"Orisries 无法解密文件：{reader.FileName}");
+                reader.Position = 0;
+                return reader;
+            }
+
+            var ivLen = dataTmp[decryptSize - 4] + dataTmp[decryptSize - 3] * 256 + dataTmp[decryptSize - 2] * 256 * 256 + dataTmp[decryptSize - 1] * 256 * 256 * 256;
+            var dataEnd = decryptSize - ivLen - 4;
+            var iv = LuaMethods.SliceByteArray(dataTmp, dataEnd, ivLen);
+            var data = LuaMethods.SliceByteArray(dataTmp, 0, dataEnd);
+            var key = Encoding.UTF8.GetBytes(keyStr);
+            var deData = LuaMethods.AES_Decrypt(data, key, iv);
+            MemoryStream ms = new();
+            ms.Write(deData);
+            ms.Position = 0;
+            return new FileReader(reader.FullPath, ms);
+        }
     }
 }
