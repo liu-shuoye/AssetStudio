@@ -1,4 +1,4 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="AssetStudio.GUI.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
@@ -105,7 +105,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="uvs" Type="System.String" Scope="User">
-      <Value Profile="(Default)">{"UV0":{"Item1":true,"Item2":0},"UV1":{"Item1":true,"Item2":1},"UV2":{"Item1":false,"Item2":0},"UV3":{"Item1":false,"Item2":0},"UV4":{"Item1":false,"Item2":0},"UV5":{"Item1":false,"Item2":0},"UV6":{"Item1":false,"Item2":0},"UV7":{"Item1":false,"Item2":0}}</Value>
+      <Value Profile="(Default)">{&quot;UV0&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:0},&quot;UV1&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:1},&quot;UV2&quot;:{&quot;Item1&quot;:false,&quot;Item2&quot;:0},&quot;UV3&quot;:{&quot;Item1&quot;:false,&quot;Item2&quot;:0},&quot;UV4&quot;:{&quot;Item1&quot;:false,&quot;Item2&quot;:0},&quot;UV5&quot;:{&quot;Item1&quot;:false,&quot;Item2&quot;:0},&quot;UV6&quot;:{&quot;Item1&quot;:false,&quot;Item2&quot;:0},&quot;UV7&quot;:{&quot;Item1&quot;:false,&quot;Item2&quot;:0}}</Value>
     </Setting>
     <Setting Name="allowDuplicates" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -114,7 +114,7 @@
       <Value Profile="(Default)">30</Value>
     </Setting>
     <Setting Name="types" Type="System.String" Scope="User">
-      <Value Profile="(Default)">{"Animation":{"Item1":true,"Item2":false},"AnimationClip":{"Item1":true,"Item2":true},"Animator":{"Item1":true,"Item2":true},"AnimatorController":{"Item1":true,"Item2":false},"AnimatorOverrideController":{"Item1":true,"Item2":false},"AssetBundle":{"Item1":true,"Item2":false},"AudioClip":{"Item1":true,"Item2":true},"Avatar":{"Item1":true,"Item2":false},"Font":{"Item1":true,"Item2":true},"GameObject":{"Item1":true,"Item2":false},"IndexObject":{"Item1":true,"Item2":false},"Material":{"Item1":true,"Item2":true},"Mesh":{"Item1":true,"Item2":true},"MeshFilter":{"Item1":true,"Item2":false},"MeshRenderer":{"Item1":true,"Item2":false},"MiHoYoBinData":{"Item1":true,"Item2":true},"MonoBehaviour":{"Item1":true,"Item2":true},"MonoScript":{"Item1":true,"Item2":false},"MovieTexture":{"Item1":true,"Item2":true},"PlayerSettings":{"Item1":true,"Item2":false},"RectTransform":{"Item1":true,"Item2":false},"Shader":{"Item1":true,"Item2":true},"SkinnedMeshRenderer":{"Item1":true,"Item2":false},"Sprite":{"Item1":true,"Item2":true},"SpriteAtlas":{"Item1":true,"Item2":false},"TextAsset":{"Item1":true,"Item2":true},"Texture2D":{"Item1":true,"Item2":true},"Transform":{"Item1":true,"Item2":false},"VideoClip":{"Item1":true,"Item2":true},"ResourceManager":{"Item1":true,"Item2":false}}</Value>
+      <Value Profile="(Default)">{&quot;Animation&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:false},&quot;AnimationClip&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:true},&quot;Animator&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:true},&quot;AnimatorController&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:false},&quot;AnimatorOverrideController&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:false},&quot;AssetBundle&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:false},&quot;AudioClip&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:true},&quot;Avatar&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:false},&quot;Font&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:true},&quot;GameObject&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:false},&quot;IndexObject&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:false},&quot;Material&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:true},&quot;Mesh&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:true},&quot;MeshFilter&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:false},&quot;MeshRenderer&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:false},&quot;MiHoYoBinData&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:true},&quot;MonoBehaviour&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:true},&quot;MonoScript&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:false},&quot;MovieTexture&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:true},&quot;PlayerSettings&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:false},&quot;RectTransform&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:false},&quot;Shader&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:true},&quot;SkinnedMeshRenderer&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:false},&quot;Sprite&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:true},&quot;SpriteAtlas&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:false},&quot;TextAsset&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:true},&quot;Texture2D&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:true},&quot;Transform&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:false},&quot;VideoClip&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:true},&quot;ResourceManager&quot;:{&quot;Item1&quot;:true,&quot;Item2&quot;:false}}</Value>
     </Setting>
     <Setting Name="texs" Type="System.String" Scope="User">
       <Value Profile="(Default)">{}</Value>
@@ -122,5 +122,24 @@
     <Setting Name="exportMaterials" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="autoDetectMultipleBundle" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="enableLuaScripts" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="openDirectoryBackup" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="saveDirectoryBackup" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="openFileDirectoryBackup" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="saveAssetMapDirectoryBackup" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>
+

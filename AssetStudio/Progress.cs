@@ -4,6 +4,7 @@ namespace AssetStudio
     /// <summary> 进度条组件 </summary>
     public static class Progress
     {
+        /// <summary> 默认进度条 </summary>
         public static IProgress<int> Default = new Progress<int>();
         private static int preValue;
 
