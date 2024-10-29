@@ -139,14 +139,14 @@ namespace Org.Brotli.Dec
 		{
 			if (state.runningState != Org.Brotli.Dec.RunningState.Uninitialized)
 			{
-				throw new System.InvalidOperationException("State MUST be uninitialized");
+				throw new System.InvalidOperationException("状态必须未初始化");
 			}
 			Org.Brotli.Dec.BitReader.Init(state.br, input);
 			int windowBits = DecodeWindowBits(state.br);
 			if (windowBits == 9)
 			{
 				/* Reserved case for future expansion. */
-				throw new Org.Brotli.Dec.BrotliRuntimeException("Invalid 'windowBits' code");
+				throw new Org.Brotli.Dec.BrotliRuntimeException("无效的 'windowBits' 代码");
 			}
 			state.maxRingBufferSize = 1 << windowBits;
 			state.maxBackwardDistance = state.maxRingBufferSize - 16;
@@ -158,7 +158,7 @@ namespace Org.Brotli.Dec
 		{
 			if (state.runningState == Org.Brotli.Dec.RunningState.Uninitialized)
 			{
-				throw new System.InvalidOperationException("State MUST be initialized");
+				throw new System.InvalidOperationException("状态必须初始化");
 			}
 			if (state.runningState == Org.Brotli.Dec.RunningState.Closed)
 			{

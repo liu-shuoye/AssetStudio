@@ -6,16 +6,55 @@ using System.Runtime.InteropServices;
 
 namespace AssetStudio
 {
+    /// <summary>
+    /// 表示一个关键帧，包含时间点和对应的值，以及插值信息。
+    /// </summary>
+    /// <typeparam name="T">值的类型，必须实现IYAMLExportable接口。</typeparam>
     public class Keyframe<T> : IYAMLExportable where T : IYAMLExportable
     {
+        /// <summary>
+        /// 关键帧的时间点。
+        /// </summary>
         public float time;
+
+        /// <summary>
+        /// 关键帧的值。
+        /// </summary>
         public T value;
+
+        /// <summary>
+        /// 关键帧的入切线斜率。
+        /// </summary>
         public T inSlope;
+
+        /// <summary>
+        /// 关键帧的出切线斜率。
+        /// </summary>
         public T outSlope;
+
+        /// <summary>
+        /// 权重模式，决定如何混合关键帧。
+        /// </summary>
         public int weightedMode;
+
+        /// <summary>
+        /// 关键帧的入权重值。
+        /// </summary>
         public T inWeight;
+
+        /// <summary>
+        /// 关键帧的出权重值。
+        /// </summary>
         public T outWeight;
 
+        /// <summary>
+        /// 初始化Keyframe对象。
+        /// </summary>
+        /// <param name="time">关键帧的时间点。</param>
+        /// <param name="value">关键帧的值。</param>
+        /// <param name="inSlope">关键帧的入切线斜率。</param>
+        /// <param name="outSlope">关键帧的出切线斜率。</param>
+        /// <param name="weight">关键帧的权重值。</param>
         public Keyframe(float time, T value, T inSlope, T outSlope, T weight)
         {
             this.time = time;
@@ -27,6 +66,11 @@ namespace AssetStudio
             outWeight = weight;
         }
 
+        /// <summary>
+        /// 从ObjectReader中读取数据，初始化Keyframe对象。
+        /// </summary>
+        /// <param name="reader">用于读取数据的ObjectReader对象。</param>
+        /// <param name="readerFunc">用于读取T类型值的委托函数。</param>
         public Keyframe(ObjectReader reader, Func<T> readerFunc)
         {
             time = reader.ReadSingle();
@@ -41,6 +85,11 @@ namespace AssetStudio
             }
         }
 
+        /// <summary>
+        /// 将Keyframe对象导出为YAML节点。
+        /// </summary>
+        /// <param name="version">版本数组，用于确定导出的版本。</param>
+        /// <returns>包含Keyframe数据的YAML节点。</returns>
         public YAMLNode ExportYAML(int[] version)
         {
             var node = new YAMLMappingNode();
@@ -55,9 +104,15 @@ namespace AssetStudio
                 node.Add(nameof(inWeight), inWeight.ExportYAML(version));
                 node.Add(nameof(outWeight), outWeight.ExportYAML(version));
             }
+
             return node;
         }
 
+        /// <summary>
+        /// 根据版本数组确定序列化版本。
+        /// </summary>
+        /// <param name="version">版本数组。</param>
+        /// <returns>序列化版本号。</returns>
         private int ToSerializedVersion(int[] version)
         {
             if (version[0] >= 2018) //2018 and up
@@ -68,17 +123,32 @@ namespace AssetStudio
             {
                 return 2;
             }
+
             return 1;
         }
     }
 
+
+    /// <summary>
+    /// 泛型类AnimationCurve用于表示动画曲线，其中T为曲线关键帧的数据类型
+    /// </summary>
     public class AnimationCurve<T> : IYAMLExportable where T : IYAMLExportable
     {
+        // 曲线的关键帧列表
         public List<Keyframe<T>> m_Curve;
+
+        // 描述曲线在开始之前的延伸方式
         public int m_PreInfinity;
+
+        // 描述曲线在结束之后的延伸方式
         public int m_PostInfinity;
+
+        // 旋转顺序，主要用于动画曲线的插值计算
         public int m_RotationOrder;
 
+        /// <summary>
+        /// 默认构造函数，初始化AnimationCurve对象
+        /// </summary>
         public AnimationCurve()
         {
             m_PreInfinity = 2;
@@ -87,6 +157,11 @@ namespace AssetStudio
             m_Curve = new List<Keyframe<T>>();
         }
 
+        /// <summary>
+        /// 构造函数，从ObjectReader中读取数据初始化AnimationCurve对象
+        /// </summary>
+        /// <param name="reader">用于读取动画曲线数据的ObjectReader对象</param>
+        /// <param name="readerFunc">用于读取关键帧数据的函数</param>
         public AnimationCurve(ObjectReader reader, Func<T> readerFunc)
         {
             var version = reader.version;
@@ -99,12 +174,17 @@ namespace AssetStudio
 
             m_PreInfinity = reader.ReadInt32();
             m_PostInfinity = reader.ReadInt32();
-            if (version[0] > 5 || (version[0] == 5 && version[1] >= 3))//5.3 and up
+            if (version[0] > 5 || (version[0] == 5 && version[1] >= 3)) //5.3 and up
             {
                 m_RotationOrder = reader.ReadInt32();
             }
         }
 
+        /// <summary>
+        /// 将动画曲线的数据导出为YAML格式
+        /// </summary>
+        /// <param name="version">Unity的版本号，用于确定导出格式</param>
+        /// <returns>表示动画曲线数据的YAML节点</returns>
         public YAMLNode ExportYAML(int[] version)
         {
             var node = new YAMLMappingNode();
@@ -112,40 +192,72 @@ namespace AssetStudio
             node.Add(nameof(m_Curve), m_Curve.ExportYAML(version));
             node.Add(nameof(m_PreInfinity), m_PreInfinity);
             node.Add(nameof(m_PostInfinity), m_PostInfinity);
-            if (version[0] > 5 || (version[0] == 5 && version[1] >= 3))//5.3 and up
+            if (version[0] > 5 || (version[0] == 5 && version[1] >= 3)) //5.3 and up
             {
                 node.Add(nameof(m_RotationOrder), m_RotationOrder);
             }
+
             return node;
         }
 
+        /// <summary>
+        /// 根据Unity版本号确定序列化版本
+        /// </summary>
+        /// <param name="version">Unity的版本号</param>
+        /// <returns>序列化版本号</returns>
         private int ToSerializedVersion(int[] version)
         {
             if (version[0] > 2 || (version[0] == 2 && version[1] >= 1))
             {
                 return 2;
             }
+
             return 1;
         }
     }
 
+
+    /// <summary>
+    /// 表示一个四元数曲线，用于动画 interpolation。
+    /// 实现了 YAML 导出接口，以便于序列化和存储。
+    /// </summary>
     public class QuaternionCurve : IYAMLExportable
     {
+        /// <summary>
+        /// 存储四元数关键帧的动画曲线。
+        /// </summary>
         public AnimationCurve<Quaternion> curve;
+
+        /// <summary>
+        /// 曲线在文件系统中的路径，用于标识和存储。
+        /// </summary>
         public string path;
 
+        /// <summary>
+        /// 初始化 QuaternionCurve 实例，指定路径。
+        /// </summary>
+        /// <param name="path">曲线的标识路径。</param>
         public QuaternionCurve(string path)
         {
             curve = new AnimationCurve<Quaternion>();
             this.path = path;
         }
 
+        /// <summary>
+        /// 从 ObjectReader 初始化 QuaternionCurve 实例，用于反序列化。
+        /// </summary>
+        /// <param name="reader">用于读取曲线数据的 ObjectReader 实例。</param>
         public QuaternionCurve(ObjectReader reader)
         {
             curve = new AnimationCurve<Quaternion>(reader, reader.ReadQuaternion);
             path = reader.ReadAlignedString();
         }
 
+        /// <summary>
+        /// 将曲线数据导出为 YAML 格式。
+        /// </summary>
+        /// <param name="version">当前数据的版本，用于处理不同版本的导出需求。</param>
+        /// <returns>表示曲线数据的 YAML 节点。</returns>
         public YAMLNode ExportYAML(int[] version)
         {
             YAMLMappingNode node = new YAMLMappingNode();
@@ -153,15 +265,26 @@ namespace AssetStudio
             node.Add(nameof(path), path);
             return node;
         }
+
+        /// <summary>
+        /// 重写 Equals 方法，用于比较两个 QuaternionCurve 实例是否相等。
+        /// </summary>
+        /// <param name="obj">要比较的对象。</param>
+        /// <returns>如果对象相等则返回 true，否则返回 false。</returns>
         public override bool Equals(object obj)
         {
             if (obj is QuaternionCurve quaternionCurve)
             {
                 return path == quaternionCurve.path;
             }
+
             return false;
         }
 
+        /// <summary>
+        /// 重写 GetHashCode 方法，为曲线实例生成哈希码。
+        /// </summary>
+        /// <returns>曲线实例的哈希码。</returns>
         public override int GetHashCode()
         {
             int hash = 199;
@@ -169,18 +292,46 @@ namespace AssetStudio
             {
                 hash = 617 + hash * path.GetHashCode();
             }
+
             return hash;
         }
     }
 
+
+    /// <summary>
+    /// 表示一个打包的浮点数向量，用于有效存储和操作大量浮点数数据。
+    /// </summary>
     public class PackedFloatVector : IYAMLExportable
     {
+        /// <summary>
+        /// 打包的浮点数的数量。
+        /// </summary>
         public uint m_NumItems;
+
+        /// <summary>
+        /// 打包数据的范围，用于缩放解包。
+        /// </summary>
         public float m_Range;
+
+        /// <summary>
+        /// 打包数据的起始值，用于解包时定位。
+        /// </summary>
         public float m_Start;
+
+        /// <summary>
+        /// 存储打包浮点数数据的字节数组。
+        /// </summary>
         public byte[] m_Data;
+
+        /// <summary>
+        /// 每个浮点数使用的位数，用于解包时的位操作。
+        /// </summary>
         public byte m_BitSize;
 
+        /// <summary>
+        /// 初始化PackedFloatVector对象，从给定的ObjectReader中读取数据。
+        /// </summary>
+        /// <param name="reader">用于读取打包数据的ObjectReader实例。</param>
         public PackedFloatVector(ObjectReader reader)
         {
             m_NumItems = reader.ReadUInt32();
@@ -195,6 +346,11 @@ namespace AssetStudio
             reader.AlignStream();
         }
 
+        /// <summary>
+        /// 将打包的浮点数向量数据导出为YAML格式。
+        /// </summary>
+        /// <param name="version">导出时指定的版本信息。</param>
+        /// <returns>表示打包的浮点数向量数据的YAMLNode。</returns>
         public YAMLNode ExportYAML(int[] version)
         {
             var node = new YAMLMappingNode();
@@ -206,6 +362,14 @@ namespace AssetStudio
             return node;
         }
 
+        /// <summary>
+        /// 解包浮点数数据。
+        /// </summary>
+        /// <param name="itemCountInChunk">每个块中的浮点数项数。</param>
+        /// <param name="chunkStride">块之间的步长。</param>
+        /// <param name="start">开始解包的索引位置。</param>
+        /// <param name="numChunks">要解包的块数，默认为-1，表示解包所有数据。</param>
+        /// <returns>解包后的浮点数数组。</returns>
         public float[] UnpackFloats(int itemCountInChunk, int chunkStride, int start = 0, int numChunks = -1)
         {
             int bitPos = m_BitSize * start;
@@ -236,6 +400,7 @@ namespace AssetStudio
                             bitPos = 0;
                         }
                     }
+
                     x &= (uint)(1 << m_BitSize) - 1u;
                     data.Add(x / (scale * ((1 << m_BitSize) - 1)) + m_Start);
                 }
@@ -245,12 +410,31 @@ namespace AssetStudio
         }
     }
 
+
+    /// <summary>
+    /// 表示一个打包的整数向量，用于高效存储和处理大量整数数据。
+    /// </summary>
     public class PackedIntVector : IYAMLExportable
     {
+        /// <summary>
+        /// 打包的整数项的数量。
+        /// </summary>
         public uint m_NumItems;
+
+        /// <summary>
+        /// 存储整数数据的字节数组。
+        /// </summary>
         public byte[] m_Data;
+
+        /// <summary>
+        /// 每个整数的位大小。
+        /// </summary>
         public byte m_BitSize;
 
+        /// <summary>
+        /// 从二进制流中读取数据，初始化PackedIntVector对象。
+        /// </summary>
+        /// <param name="reader">用于读取二进制数据的ObjectReader对象。</param>
         public PackedIntVector(ObjectReader reader)
         {
             m_NumItems = reader.ReadUInt32();
@@ -262,6 +446,12 @@ namespace AssetStudio
             m_BitSize = reader.ReadByte();
             reader.AlignStream();
         }
+
+        /// <summary>
+        /// 将PackedIntVector对象导出为YAML格式。
+        /// </summary>
+        /// <param name="version">表示导出时的版本信息。</param>
+        /// <returns>返回表示PackedIntVector对象的YAML节点。</returns>
         public YAMLNode ExportYAML(int[] version)
         {
             var node = new YAMLMappingNode();
@@ -271,6 +461,10 @@ namespace AssetStudio
             return node;
         }
 
+        /// <summary>
+        /// 解包出整数数组。
+        /// </summary>
+        /// <returns>返回解包后的整数数组。</returns>
         public int[] UnpackInts()
         {
             var data = new int[m_NumItems];
@@ -292,17 +486,35 @@ namespace AssetStudio
                         bitPos = 0;
                     }
                 }
+
                 data[i] &= (1 << m_BitSize) - 1;
             }
+
             return data;
         }
     }
 
+
+    /// <summary>
+    /// 表示一个打包的四元数向量，用于有效存储和传输四元数数据。
+    /// 实现了IYAMLExportable接口，支持导出为YAML格式。
+    /// </summary>
     public class PackedQuatVector : IYAMLExportable
     {
+        /// <summary>
+        /// 打包的四元数项的数量。
+        /// </summary>
         public uint m_NumItems;
+
+        /// <summary>
+        /// 打包的四元数数据数组。
+        /// </summary>
         public byte[] m_Data;
 
+        /// <summary>
+        /// 使用ObjectReader初始化PackedQuatVector实例。
+        /// </summary>
+        /// <param name="reader">用于读取打包数据的ObjectReader对象。</param>
         public PackedQuatVector(ObjectReader reader)
         {
             m_NumItems = reader.ReadUInt32();
@@ -313,6 +525,11 @@ namespace AssetStudio
             reader.AlignStream();
         }
 
+        /// <summary>
+        /// 将打包的四元数向量导出为YAML节点。
+        /// </summary>
+        /// <param name="version">表示导出版本的整数数组。</param>
+        /// <returns>表示打包的四元数向量的YAMLNode对象。</returns>
         public YAMLNode ExportYAML(int[] version)
         {
             var node = new YAMLMappingNode();
@@ -321,6 +538,10 @@ namespace AssetStudio
             return node;
         }
 
+        /// <summary>
+        /// 解包出存储在m_Data中的四元数数组。
+        /// </summary>
+        /// <returns>包含解包四元数的数组。</returns>
         public Quaternion[] UnpackQuats()
         {
             var data = new Quaternion[m_NumItems];
@@ -344,6 +565,7 @@ namespace AssetStudio
                         bitPos = 0;
                     }
                 }
+
                 flags &= 7;
 
 
@@ -369,6 +591,7 @@ namespace AssetStudio
                                 bitPos = 0;
                             }
                         }
+
                         x &= (uint)((1 << bitSize) - 1);
                         q[j] = x / (0.5f * ((1 << bitSize) - 1)) - 1;
                         sum += q[j] * q[j];
@@ -386,15 +609,45 @@ namespace AssetStudio
         }
     }
 
+    /// <summary>
+    /// 表示一个压缩的动画曲线，实现了YAML导出接口。
+    /// </summary>
     public class CompressedAnimationCurve : IYAMLExportable
     {
+        /// <summary>
+        /// 动画曲线的路径。
+        /// </summary>
         public string m_Path;
+
+        /// <summary>
+        /// 动画关键帧的时间。
+        /// </summary>
         public PackedIntVector m_Times;
+
+        /// <summary>
+        /// 动画关键帧的值，以四元数形式表示。
+        /// </summary>
         public PackedQuatVector m_Values;
+
+        /// <summary>
+        /// 动画关键帧的斜率，用于插值。
+        /// </summary>
         public PackedFloatVector m_Slopes;
+
+        /// <summary>
+        /// 动画曲线的前置无限大类型。
+        /// </summary>
         public int m_PreInfinity;
+
+        /// <summary>
+        /// 动画曲线的后置无限大类型。
+        /// </summary>
         public int m_PostInfinity;
 
+        /// <summary>
+        /// 初始化CompressedAnimationCurve对象。
+        /// </summary>
+        /// <param name="reader">用于读取动画曲线数据的ObjectReader对象。</param>
         public CompressedAnimationCurve(ObjectReader reader)
         {
             m_Path = reader.ReadAlignedString();
@@ -405,6 +658,11 @@ namespace AssetStudio
             m_PostInfinity = reader.ReadInt32();
         }
 
+        /// <summary>
+        /// 将动画曲线数据导出为YAML格式。
+        /// </summary>
+        /// <param name="version">当前数据的版本号，用于处理不同版本的数据格式。</param>
+        /// <returns>表示动画曲线的YAML节点。</returns>
         public YAMLNode ExportYAML(int[] version)
         {
             var node = new YAMLMappingNode();
@@ -417,6 +675,7 @@ namespace AssetStudio
             return node;
         }
     }
+
 
     public class Vector3Curve : IYAMLExportable
     {
@@ -449,6 +708,7 @@ namespace AssetStudio
             {
                 return path == vector3Curve.path;
             }
+
             return false;
         }
 
@@ -459,19 +719,53 @@ namespace AssetStudio
             {
                 hash = 419 + hash * path.GetHashCode();
             }
+
             return hash;
         }
     }
 
+    /// <summary>
+    /// 表示一个浮点数值的动画曲线，实现了YAML导出接口。
+    /// </summary>
     public class FloatCurve : IYAMLExportable
     {
+        /// <summary>
+        /// 动画曲线。
+        /// </summary>
         public AnimationCurve<Float> curve;
+
+        /// <summary>
+        /// 动画曲线对应的属性名称。
+        /// </summary>
         public string attribute;
+
+        /// <summary>
+        /// 动画曲线在场景中的路径。
+        /// </summary>
         public string path;
+
+        /// <summary>
+        /// 动画曲线所属的类ID。
+        /// </summary>
         public ClassIDType classID;
+
+        /// <summary>
+        /// 关联的脚本指针。
+        /// </summary>
         public PPtr<MonoScript> script;
+
+        /// <summary>
+        /// 额外的标记信息。
+        /// </summary>
         public int flags;
 
+        /// <summary>
+        /// 初始化FloatCurve实例。
+        /// </summary>
+        /// <param name="path">动画曲线在场景中的路径。</param>
+        /// <param name="attribute">动画曲线对应的属性名称。</param>
+        /// <param name="classID">动画曲线所属的类ID。</param>
+        /// <param name="script">关联的脚本指针。</param>
         public FloatCurve(string path, string attribute, ClassIDType classID, PPtr<MonoScript> script)
         {
             curve = new AnimationCurve<Float>();
@@ -482,6 +776,10 @@ namespace AssetStudio
             flags = 0;
         }
 
+        /// <summary>
+        /// 从ObjectReader中读取并初始化FloatCurve实例。
+        /// </summary>
+        /// <param name="reader">用于读取动画曲线信息的ObjectReader对象。</param>
         public FloatCurve(ObjectReader reader)
         {
             var version = reader.version;
@@ -491,12 +789,17 @@ namespace AssetStudio
             path = reader.ReadAlignedString();
             classID = (ClassIDType)reader.ReadInt32();
             script = new PPtr<MonoScript>(reader);
-            if (version[0] == 2022 && version[1] >= 2) //2022.2 and up
+            if (version[0] == 2022 && version[1] >= 2) //2022.2及更高版本
             {
                 flags = reader.ReadInt32();
             }
         }
 
+        /// <summary>
+        /// 将动画曲线信息导出为YAML格式。
+        /// </summary>
+        /// <param name="version">Unity引擎的版本。</param>
+        /// <returns>包含动画曲线信息的YAML节点。</returns>
         public YAMLNode ExportYAML(int[] version)
         {
             YAMLMappingNode node = new YAMLMappingNode();
@@ -508,19 +811,30 @@ namespace AssetStudio
             {
                 node.Add(nameof(script), script.ExportYAML(version));
             }
+
             node.Add(nameof(flags), flags);
             return node;
         }
 
+        /// <summary>
+        /// 重写Equals方法，用于比较两个FloatCurve对象是否相等。
+        /// </summary>
+        /// <param name="obj">要比较的对象。</param>
+        /// <returns>如果对象相等则返回true，否则返回false。</returns>
         public override bool Equals(object obj)
         {
             if (obj is FloatCurve floatCurve)
             {
                 return attribute == floatCurve.attribute && path == floatCurve.path && classID == floatCurve.classID;
             }
+
             return false;
         }
 
+        /// <summary>
+        /// 重写GetHashCode方法，生成对象的哈希码。
+        /// </summary>
+        /// <returns>对象的哈希码。</returns>
         public override int GetHashCode()
         {
             int hash = 17;
@@ -528,9 +842,11 @@ namespace AssetStudio
             {
                 hash = hash * 23 + path.GetHashCode();
             }
+
             return hash;
         }
     }
+
 
     public class PPtrKeyframe : IYAMLExportable
     {
@@ -548,6 +864,7 @@ namespace AssetStudio
             time = reader.ReadSingle();
             value = new PPtr<Object>(reader);
         }
+
         public YAMLNode ExportYAML(int[] version)
         {
             var node = new YAMLMappingNode();
@@ -615,6 +932,7 @@ namespace AssetStudio
             {
                 return this == pptrCurve;
             }
+
             return false;
         }
 
@@ -629,29 +947,44 @@ namespace AssetStudio
                 hash = hash * 911 + script.GetHashCode();
                 hash = hash * 342 + flags.GetHashCode();
             }
+
             return hash;
         }
     }
 
+    /// <summary>
+    /// 用于表示三维空间中的轴对齐边界框（AABB）
+    /// </summary>
     public class AABB : IYAMLExportable
     {
+        /// 中心坐标
         public Vector3 m_Center;
+
+        /// 尺寸范围
         public Vector3 m_Extent;
 
+        /// 构造函数，通过ObjectReader对象读取中心和范围的值
         public AABB(ObjectReader reader)
         {
-            m_Center = reader.ReadVector3();
-            m_Extent = reader.ReadVector3();
+            m_Center = reader.ReadVector3(); // 读取中心向量
+            m_Extent = reader.ReadVector3(); // 读取范围向量
         }
 
+        /// 将对象导出为YAML格式
         public YAMLNode ExportYAML(int[] version)
         {
+            // 创建YAML映射节点
             var node = new YAMLMappingNode();
+
+            // 将中心和范围的YAML表示添加到节点中
             node.Add(nameof(m_Center), m_Center.ExportYAML(version));
             node.Add(nameof(m_Extent), m_Extent.ExportYAML(version));
+
+            // 返回生成的YAML节点
             return node;
         }
     }
+
 
     public class HandPose
     {
@@ -661,7 +994,10 @@ namespace AssetStudio
         public float m_CloseOpen;
         public float m_InOut;
         public float m_Grab;
-        public HandPose() { }
+
+        public HandPose()
+        {
+        }
 
         public HandPose(ObjectReader reader)
         {
@@ -695,7 +1031,10 @@ namespace AssetStudio
         public float m_WeightR;
         public Vector3 m_HintT;
         public float m_HintWeightT;
-        public HumanGoal() { }
+
+        public HumanGoal()
+        {
+        }
 
         public HumanGoal(ObjectReader reader)
         {
@@ -703,9 +1042,9 @@ namespace AssetStudio
             m_X = reader.ReadXForm();
             m_WeightT = reader.ReadSingle();
             m_WeightR = reader.ReadSingle();
-            if (version[0] >= 5)//5.0 and up
+            if (version[0] >= 5) //5.0 and up
             {
-                m_HintT = version[0] > 5 || (version[0] == 5 && version[1] >= 4) ? reader.ReadVector3() : (Vector3)reader.ReadVector4();//5.4 and up
+                m_HintT = version[0] > 5 || (version[0] == 5 && version[1] >= 4) ? reader.ReadVector3() : (Vector3)reader.ReadVector4(); //5.4 and up
                 m_HintWeightT = reader.ReadSingle();
             }
         }
@@ -728,70 +1067,113 @@ namespace AssetStudio
         }
     }
 
+    /// <summary> 人形姿势 </summary>
     public class HumanPose
     {
+        /// 根变换
         public XForm m_RootX;
-        public Vector3 m_LookAtPosition;
-        public Vector4 m_LookAtWeight;
-        public List<HumanGoal> m_GoalArray;
-        public HandPose m_LeftHandPose;
-        public HandPose m_RightHandPose;
-        public float[] m_DoFArray;
-        public Vector3[] m_TDoFArray;
-        public HumanPose() { }
 
+        /// 视线目标位置
+        public Vector3 m_LookAtPosition;
+
+        /// 视线目标权重
+        public Vector4 m_LookAtWeight;
+
+        /// 人体目标数组
+        public List<HumanGoal> m_GoalArray;
+
+        /// 左手姿势
+        public HandPose m_LeftHandPose;
+
+        /// 右手姿势
+        public HandPose m_RightHandPose;
+
+        /// 自由度数组
+        public float[] m_DoFArray;
+
+        /// 变换自由度数组
+        public Vector3[] m_TDoFArray;
+
+        /// 空的构造函数
+        public HumanPose()
+        {
+        }
+
+        /// 构造函数，通过ObjectReader对象读取姿势数据
         public HumanPose(ObjectReader reader)
         {
+            // 版本信息
             var version = reader.version;
-            m_RootX = reader.ReadXForm();
-            m_LookAtPosition = version[0] > 5 || (version[0] == 5 && version[1] >= 4) ? reader.ReadVector3() : (Vector3)reader.ReadVector4();//5.4 and up
-            m_LookAtWeight = reader.ReadVector4();
 
+            // 读取根变换
+            m_RootX = reader.ReadXForm();
+
+            // 根据版本判断是否读取Vector3或Vector4作为视线目标位置
+            m_LookAtPosition = version[0] > 5 || (version[0] == 5 && version[1] >= 4) ? reader.ReadVector3() : (Vector3)reader.ReadVector4(); // 版本5.4及以上
+            m_LookAtWeight = reader.ReadVector4(); // 读取视线目标权重
+
+            // 读取目标数量
             int numGoals = reader.ReadInt32();
             m_GoalArray = new List<HumanGoal>();
+
+            // 读取每个人体目标
             for (int i = 0; i < numGoals; i++)
             {
                 m_GoalArray.Add(new HumanGoal(reader));
             }
 
+            // 读取左手和右手的姿势
             m_LeftHandPose = new HandPose(reader);
             m_RightHandPose = new HandPose(reader);
 
+            // 读取自由度数组
             m_DoFArray = reader.ReadSingleArray();
 
-            if (version[0] > 5 || (version[0] == 5 && version[1] >= 2))//5.2 and up
+            // 根据版本读取变换自由度数组
+            if (version[0] > 5 || (version[0] == 5 && version[1] >= 2)) // 版本5.2及以上
             {
                 m_TDoFArray = reader.ReadVector3Array();
             }
         }
 
+        /// 解析GI格式的HumanPose
         public static HumanPose ParseGI(ObjectReader reader)
         {
+            // 版本信息
             var version = reader.version;
+
+            // 创建一个新的HumanPose实例
             var humanPose = new HumanPose();
 
+            // 读取根变换，视线位置，视线权重等
             humanPose.m_RootX = reader.ReadXForm4();
             humanPose.m_LookAtPosition = (Vector3)reader.ReadVector4();
             humanPose.m_LookAtWeight = reader.ReadVector4();
 
+            // 读取4个目标并添加到Goal数组中
             humanPose.m_GoalArray = new List<HumanGoal>();
             for (int i = 0; i < 4; i++)
             {
                 humanPose.m_GoalArray.Add(HumanGoal.ParseGI(reader));
             }
 
+            // 读取左手和右手的姿势
             humanPose.m_LeftHandPose = HandPose.ParseGI(reader);
             humanPose.m_RightHandPose = HandPose.ParseGI(reader);
 
+            // 读取自由度数组
             humanPose.m_DoFArray = reader.ReadSingleArray(0x37);
 
+            // 读取变换自由度数组并将Vector4转换为Vector3
             humanPose.m_TDoFArray = reader.ReadVector4Array(0x15).Select(x => (Vector3)x).ToArray();
 
+            // 跳过4个字节
             reader.Position += 4;
 
             return humanPose;
         }
     }
+
 
     public abstract class ACLClip
     {
@@ -802,7 +1184,9 @@ namespace AssetStudio
 
     public class EmptyACLClip : ACLClip
     {
-        public override void Read(ObjectReader reader) { }
+        public override void Read(ObjectReader reader)
+        {
+        }
     }
 
     public class MHYACLClip : ACLClip
@@ -821,6 +1205,7 @@ namespace AssetStudio
             m_ConstCurveCount = 0;
             m_ClipData = Array.Empty<byte>();
         }
+
         public override void Read(ObjectReader reader)
         {
             var byteCount = reader.ReadInt32();
@@ -847,6 +1232,7 @@ namespace AssetStudio
         public uint rotationIDToBindingCurveID;
         public uint positionIDToBindingCurveID;
         public uint scaleIDToBindingCurveID;
+
         public AclTransformTrackIDToBindingCurveID(ObjectReader reader)
         {
             rotationIDToBindingCurveID = reader.ReadUInt32();
@@ -862,6 +1248,7 @@ namespace AssetStudio
 
         public override bool IsSet => !m_ClipData.IsNullOrEmpty();
         public override uint CurveCount => m_CurveCount;
+
         public override void Read(ObjectReader reader)
         {
             m_CurveCount = reader.ReadUInt32();
@@ -881,6 +1268,7 @@ namespace AssetStudio
             {
                 aclTransformTrackIDToBindingCurveID.Add(new AclTransformTrackIDToBindingCurveID(reader));
             }
+
             var aclScalarTrackIDToBindingCurveID = reader.ReadUInt32Array();
         }
     }
@@ -911,7 +1299,7 @@ namespace AssetStudio
             var aclTracksCurveCount = reader.ReadUInt32();
             if (aclTracksOffset > reader.Length)
             {
-                throw new IOException("Offset outside of range");
+                throw new IOException("偏移量超出范围");
             }
 
             var pos = reader.Position;
@@ -933,7 +1321,7 @@ namespace AssetStudio
             var aclDatabaseCurveCount = (uint)reader.ReadUInt64();
             if (aclDatabaseOffset > reader.Length)
             {
-                throw new IOException("Offset outside of range");
+                throw new IOException("偏移量超出范围");
             }
 
             pos = reader.Position;
@@ -957,13 +1345,17 @@ namespace AssetStudio
     {
         public uint[] data;
         public uint curveCount;
-        public StreamedClip() { }
+
+        public StreamedClip()
+        {
+        }
 
         public StreamedClip(ObjectReader reader)
         {
             data = reader.ReadUInt32Array();
             curveCount = reader.ReadUInt32();
         }
+
         public static StreamedClip ParseGI(ObjectReader reader)
         {
             var streamedClipCount = (int)reader.ReadUInt64();
@@ -971,7 +1363,7 @@ namespace AssetStudio
             var streamedClipCurveCount = (uint)reader.ReadUInt64();
             if (streamedClipOffset > reader.Length)
             {
-                throw new IOException("Offset outside of range");
+                throw new IOException("偏移量超出范围");
             }
 
             var pos = reader.Position;
@@ -1071,6 +1463,7 @@ namespace AssetStudio
                     }
                 }
             }
+
             return frameList;
         }
     }
@@ -1082,7 +1475,10 @@ namespace AssetStudio
         public float m_SampleRate;
         public float m_BeginTime;
         public float[] m_SampleArray;
-        public DenseClip() { }
+
+        public DenseClip()
+        {
+        }
 
         public DenseClip(ObjectReader reader)
         {
@@ -1092,6 +1488,7 @@ namespace AssetStudio
             m_BeginTime = reader.ReadSingle();
             m_SampleArray = reader.ReadSingleArray();
         }
+
         public static DenseClip ParseGI(ObjectReader reader)
         {
             var denseClip = new DenseClip();
@@ -1105,7 +1502,7 @@ namespace AssetStudio
             var denseClipOffset = reader.Position + reader.ReadInt64();
             if (denseClipOffset > reader.Length)
             {
-                throw new IOException("Offset outside of range");
+                throw new IOException("偏移量超出范围");
             }
 
             var pos = reader.Position;
@@ -1118,6 +1515,7 @@ namespace AssetStudio
             return denseClip;
         }
     }
+
     public class ACLDenseClip : DenseClip
     {
         public int m_ACLType;
@@ -1162,6 +1560,7 @@ namespace AssetStudio
                 m_ACLArray = reader.ReadUInt8Array();
                 reader.AlignStream();
             }
+
             Process();
         }
 
@@ -1186,18 +1585,22 @@ namespace AssetStudio
                 {
                     sampleArray.Add(ReadCurve(aclSpan, m_PositionFactor, ref index));
                 }
+
                 for (int j = 0; j < m_nRotationCurves; j++)
                 {
                     sampleArray.Add(ReadCurve(aclSpan, 1.0f, ref index));
                 }
+
                 for (int j = 0; j < m_nEulerCurves; j++)
                 {
                     sampleArray.Add(ReadCurve(aclSpan, m_EulerFactor, ref index));
                 }
+
                 for (int j = 0; j < m_nScaleCurves; j++)
                 {
                     sampleArray.Add(ReadCurve(aclSpan, m_ScaleFactor, ref index));
                 }
+
                 var m_nFloatCurves = m_CurveCount - (m_nPositionCurves + m_nRotationCurves + m_nEulerCurves + m_nScaleCurves + m_nGenericCurves);
                 for (int j = 0; j < m_nFloatCurves; j++)
                 {
@@ -1241,19 +1644,23 @@ namespace AssetStudio
     public class ConstantClip
     {
         public float[] data;
-        public ConstantClip() { }
+
+        public ConstantClip()
+        {
+        }
 
         public ConstantClip(ObjectReader reader)
         {
             data = reader.ReadSingleArray();
         }
+
         public static ConstantClip ParseGI(ObjectReader reader)
         {
             var constantClipCount = (int)reader.ReadUInt64();
             var constantClipOffset = reader.Position + reader.ReadInt64();
             if (constantClipOffset > reader.Length)
             {
-                throw new IOException("Offset outside of range");
+                throw new IOException("偏移量超出范围");
             }
 
             var pos = reader.Position;
@@ -1279,10 +1686,11 @@ namespace AssetStudio
         {
             var version = reader.version;
             m_ID = reader.ReadUInt32();
-            if (version[0] < 5 || (version[0] == 5 && version[1] < 5))//5.5 down
+            if (version[0] < 5 || (version[0] == 5 && version[1] < 5)) //5.5 down
             {
                 m_TypeID = reader.ReadUInt32();
             }
+
             m_Type = reader.ReadUInt32();
             m_Index = reader.ReadUInt32();
         }
@@ -1303,19 +1711,53 @@ namespace AssetStudio
         }
     }
 
+    /// <summary>
+    /// 表示一个动画剪辑，包含多种类型的动画数据。
+    /// </summary>
     public class Clip
     {
+        /// <summary>
+        /// 存储ACL动画剪辑。
+        /// </summary>
         public ACLClip m_ACLClip = new EmptyACLClip();
-        public StreamedClip m_StreamedClip;
-        public DenseClip m_DenseClip;
-        public ConstantClip m_ConstantClip;
-        public ValueArrayConstant m_Binding;
-        public Clip() { }
 
+        /// <summary>
+        /// 存储流式动画剪辑。
+        /// </summary>
+        public StreamedClip m_StreamedClip;
+
+        /// <summary>
+        /// 存储密集动画剪辑。
+        /// </summary>
+        public DenseClip m_DenseClip;
+
+        /// <summary>
+        /// 存储常量动画剪辑。
+        /// </summary>
+        public ConstantClip m_ConstantClip;
+
+        /// <summary>
+        /// 存储绑定信息。
+        /// </summary>
+        public ValueArrayConstant m_Binding;
+
+        /// <summary>
+        /// 默认构造函数。
+        /// </summary>
+        public Clip()
+        {
+        }
+
+        /// <summary>
+        /// 使用ObjectReader解析动画剪辑数据。
+        /// </summary>
+        /// <param name="reader">用于读取动画剪辑数据的ObjectReader对象。</param>
         public Clip(ObjectReader reader)
         {
             var version = reader.version;
             m_StreamedClip = new StreamedClip(reader);
+
+            // 根据游戏类型选择性地初始化m_DenseClip
             if (reader.Game.Type.IsArknightsEndfield() || reader.Game.Type.IsExAstris())
             {
                 m_DenseClip = new ACLDenseClip(reader);
@@ -1324,36 +1766,52 @@ namespace AssetStudio
             {
                 m_DenseClip = new DenseClip(reader);
             }
+
+            // 如果是SRGroup类型，读取MHYACLClip
             if (reader.Game.Type.IsSRGroup())
             {
                 m_ACLClip = new MHYACLClip();
                 m_ACLClip.Read(reader);
             }
+
+            // 如果版本高于4.3，读取ConstantClip
             if (version[0] > 4 || (version[0] == 4 && version[1] >= 3)) //4.3 and up
             {
                 m_ConstantClip = new ConstantClip(reader);
             }
+
+            // 如果是GIGroup、BH3Group或ZZZCB1类型，读取MHYACLClip
             if (reader.Game.Type.IsGIGroup() || reader.Game.Type.IsBH3Group() || reader.Game.Type.IsZZZCB1())
             {
                 m_ACLClip = new MHYACLClip();
                 m_ACLClip.Read(reader);
             }
+
+            // 如果是LoveAndDeepspace类型，读取LnDACLClip
             if (reader.Game.Type.IsLoveAndDeepspace())
             {
                 m_ACLClip = new LnDACLClip();
                 m_ACLClip.Read(reader);
             }
+
+            // 如果版本低于2018.3，读取ValueArrayConstant
             if (version[0] < 2018 || (version[0] == 2018 && version[1] < 3)) //2018.3 down
             {
                 m_Binding = new ValueArrayConstant(reader);
             }
         }
+
+        /// <summary>
+        /// 解析并返回GI类型的动画剪辑。
+        /// </summary>
+        /// <param name="reader">用于读取动画剪辑数据的ObjectReader对象。</param>
+        /// <returns>解析后的Clip对象。</returns>
         public static Clip ParseGI(ObjectReader reader)
         {
             var clipOffset = reader.Position + reader.ReadInt64();
             if (clipOffset > reader.Length)
             {
-                throw new IOException("Offset outside of range");
+                throw new IOException("偏移量超出范围");
             }
 
             var pos = reader.Position;
@@ -1371,17 +1829,24 @@ namespace AssetStudio
             return clip;
         }
 
+        /// <summary>
+        /// 将ValueArrayConstant转换为AnimationClipBindingConstant。
+        /// </summary>
+        /// <returns>转换后的AnimationClipBindingConstant对象。</returns>
         public AnimationClipBindingConstant ConvertValueArrayToGenericBinding()
         {
             var bindings = new AnimationClipBindingConstant();
             var genericBindings = new List<GenericBinding>();
             var values = m_Binding;
+
             for (int i = 0; i < values.m_ValueArray.Count;)
             {
                 var curveID = values.m_ValueArray[i].m_ID;
                 var curveTypeID = values.m_ValueArray[i].m_TypeID;
                 var binding = new GenericBinding();
                 genericBindings.Add(binding);
+
+                // 根据curveTypeID处理不同的动画属性
                 if (curveTypeID == 4174552735) //CRC(PositionX))
                 {
                     binding.path = curveID;
@@ -1411,16 +1876,31 @@ namespace AssetStudio
                     i++;
                 }
             }
+
             bindings.genericBindings = genericBindings;
             return bindings;
         }
     }
 
+    /// <summary>
+    /// 表示值的变化范围。
+    /// </summary>
     public class ValueDelta
     {
+        /// <summary>
+        /// 起始值。
+        /// </summary>
         public float m_Start;
+
+        /// <summary>
+        /// 结束值。
+        /// </summary>
         public float m_Stop;
 
+        /// <summary>
+        /// 初始化ValueDelta类的新实例。
+        /// </summary>
+        /// <param name="reader">用于读取起始和结束值的ObjectReader对象。</param>
         public ValueDelta(ObjectReader reader)
         {
             m_Start = reader.ReadSingle();
@@ -1428,76 +1908,156 @@ namespace AssetStudio
         }
     }
 
+
+    /// <summary> 描述一个动画剪辑。 </summary>
     public class ClipMuscleConstant : IYAMLExportable
     {
+        /// 姿势的变化量
         public HumanPose m_DeltaPose;
-        public XForm m_StartX;
-        public XForm m_StopX;
-        public XForm m_LeftFootStartX;
-        public XForm m_RightFootStartX;
-        public XForm m_MotionStartX;
-        public XForm m_MotionStopX;
-        public Vector3 m_AverageSpeed;
-        public Clip m_Clip;
-        public float m_StartTime;
-        public float m_StopTime;
-        public float m_OrientationOffsetY;
-        public float m_Level;
-        public float m_CycleOffset;
-        public float m_AverageAngularSpeed;
-        public int[] m_IndexArray;
-        public List<ValueDelta> m_ValueArrayDelta;
-        public float[] m_ValueArrayReferencePose;
-        public bool m_Mirror;
-        public bool m_LoopTime;
-        public bool m_LoopBlend;
-        public bool m_LoopBlendOrientation;
-        public bool m_LoopBlendPositionY;
-        public bool m_LoopBlendPositionXZ;
-        public bool m_StartAtOrigin;
-        public bool m_KeepOriginalOrientation;
-        public bool m_KeepOriginalPositionY;
-        public bool m_KeepOriginalPositionXZ;
-        public bool m_HeightFromFeet;
-        public static bool HasShortIndexArray(SerializedType type) => type.Match("E708B1872AE48FD688AC012DF4A7A178") || type.Match("055AA41C7639327940F8900103A10356") || type.Match("82E1E738FBDE87C5A8DAE868F0578A4D");
-        public ClipMuscleConstant() { }
 
+        /// 起始位置
+        public XForm m_StartX;
+
+        /// 结束位置
+        public XForm m_StopX;
+
+        /// 左脚起始位置
+        public XForm m_LeftFootStartX;
+
+        /// 右脚起始位置
+        public XForm m_RightFootStartX;
+
+        /// 运动起始位置
+        public XForm m_MotionStartX;
+
+        /// 运动结束位置
+        public XForm m_MotionStopX;
+
+        /// 平均速度
+        public Vector3 m_AverageSpeed;
+
+        /// 动画片段
+        public Clip m_Clip;
+
+        /// 起始时间
+        public float m_StartTime;
+
+        /// 结束时间
+        public float m_StopTime;
+
+        /// Y轴方向的偏移角度
+        public float m_OrientationOffsetY;
+
+        /// 动画层级
+        public float m_Level;
+
+        /// 循环偏移量
+        public float m_CycleOffset;
+
+        /// 平均角速度
+        public float m_AverageAngularSpeed;
+
+        /// 索引数组
+        public int[] m_IndexArray;
+
+        /// 值变化数组
+        public List<ValueDelta> m_ValueArrayDelta;
+
+        /// 参考姿势值数组
+        public float[] m_ValueArrayReferencePose;
+
+        /// 镜像标志
+        public bool m_Mirror;
+
+        /// 时间循环标志
+        public bool m_LoopTime;
+
+        /// 循环混合标志
+        public bool m_LoopBlend;
+
+        /// 循环方向混合标志
+        public bool m_LoopBlendOrientation;
+
+        /// Y轴位置循环混合标志
+        public bool m_LoopBlendPositionY;
+
+        /// XZ平面位置循环混合标志
+        public bool m_LoopBlendPositionXZ;
+
+        /// 是否从起点开始
+        public bool m_StartAtOrigin;
+
+        /// 保持原始方向
+        public bool m_KeepOriginalOrientation;
+
+        /// 保持原始Y轴位置
+        public bool m_KeepOriginalPositionY;
+
+        /// 保持原始XZ平面位置
+        public bool m_KeepOriginalPositionXZ;
+
+        /// 是否从脚高度开始
+        public bool m_HeightFromFeet;
+
+        /// 判断是否使用短索引数组
+        public static bool HasShortIndexArray(SerializedType type) =>
+            type.Match("E708B1872AE48FD688AC012DF4A7A178") ||
+            type.Match("055AA41C7639327940F8900103A10356") ||
+            type.Match("82E1E738FBDE87C5A8DAE868F0578A4D");
+
+        /// 空构造函数
+        public ClipMuscleConstant()
+        {
+        }
+
+        /// 构造函数，通过ObjectReader对象读取动画常量数据
         public ClipMuscleConstant(ObjectReader reader)
         {
             var version = reader.version;
+
+            // 判断游戏类型是否是特定类型
             if (reader.Game.Type.IsLoveAndDeepspace())
             {
                 m_StartX = reader.ReadXForm();
-                if (version[0] > 5 || (version[0] == 5 && version[1] >= 5))//5.5 and up
+                if (version[0] > 5 || (version[0] == 5 && version[1] >= 5)) // 版本5.5及以上
                 {
                     m_StopX = reader.ReadXForm();
                 }
             }
             else
             {
+                // 读取姿势变化量
                 m_DeltaPose = new HumanPose(reader);
                 m_StartX = reader.ReadXForm();
-                if (version[0] > 5 || (version[0] == 5 && version[1] >= 5))//5.5 and up
+
+                if (version[0] > 5 || (version[0] == 5 && version[1] >= 5)) // 版本5.5及以上
                 {
                     m_StopX = reader.ReadXForm();
                 }
+
+                // 读取左右脚的起始位置
                 m_LeftFootStartX = reader.ReadXForm();
                 m_RightFootStartX = reader.ReadXForm();
-                if (version[0] < 5)//5.0 down
+
+                if (version[0] < 5) // 版本5.0及以下
                 {
                     m_MotionStartX = reader.ReadXForm();
                     m_MotionStopX = reader.ReadXForm();
                 }
             }
-            m_AverageSpeed = version[0] > 5 || (version[0] == 5 && version[1] >= 4) ? reader.ReadVector3() : (Vector3)reader.ReadVector4();//5.4 and up
-            m_Clip = new Clip(reader);
-            m_StartTime = reader.ReadSingle();
-            m_StopTime = reader.ReadSingle();
-            m_OrientationOffsetY = reader.ReadSingle();
-            m_Level = reader.ReadSingle();
-            m_CycleOffset = reader.ReadSingle();
-            m_AverageAngularSpeed = reader.ReadSingle();
 
+            // 根据版本读取平均速度
+            m_AverageSpeed = version[0] > 5 || (version[0] == 5 && version[1] >= 4) ? reader.ReadVector3() : (Vector3)reader.ReadVector4(); // 版本5.4及以上
+
+            m_Clip = new Clip(reader); // 读取动画片段
+            m_StartTime = reader.ReadSingle(); // 读取起始时间
+            m_StopTime = reader.ReadSingle(); // 读取结束时间
+            m_OrientationOffsetY = reader.ReadSingle(); // 读取Y轴方向的偏移角度
+            m_Level = reader.ReadSingle(); // 读取层级
+            m_CycleOffset = reader.ReadSingle(); // 读取循环偏移量
+            m_AverageAngularSpeed = reader.ReadSingle(); // 读取平均角速度
+
+            // 判断是否需要使用短索引数组
             if (reader.Game.Type.IsSR() && HasShortIndexArray(reader.serializedType))
             {
                 m_IndexArray = reader.ReadInt16Array().Select(x => (int)x).ToArray();
@@ -1506,40 +2066,50 @@ namespace AssetStudio
             {
                 m_IndexArray = reader.ReadInt32Array();
             }
-            if (version[0] < 4 || (version[0] == 4 && version[1] < 3)) //4.3 down
+
+            if (version[0] < 4 || (version[0] == 4 && version[1] < 3)) // 版本4.3及以下
             {
                 var m_AdditionalCurveIndexArray = reader.ReadInt32Array();
             }
+
+            // 读取值变化数组的数量
             int numDeltas = reader.ReadInt32();
             m_ValueArrayDelta = new List<ValueDelta>();
             for (int i = 0; i < numDeltas; i++)
             {
                 m_ValueArrayDelta.Add(new ValueDelta(reader));
             }
-            if (version[0] > 5 || (version[0] == 5 && version[1] >= 3))//5.3 and up
+
+            if (version[0] > 5 || (version[0] == 5 && version[1] >= 3)) // 版本5.3及以上
             {
                 m_ValueArrayReferencePose = reader.ReadSingleArray();
             }
 
+            // 读取布尔标志
             m_Mirror = reader.ReadBoolean();
-            if (version[0] > 4 || (version[0] == 4 && version[1] >= 3)) //4.3 and up
+            if (version[0] > 4 || (version[0] == 4 && version[1] >= 3)) // 版本4.3及以上
             {
                 m_LoopTime = reader.ReadBoolean();
             }
+
             m_LoopBlend = reader.ReadBoolean();
             m_LoopBlendOrientation = reader.ReadBoolean();
             m_LoopBlendPositionY = reader.ReadBoolean();
             m_LoopBlendPositionXZ = reader.ReadBoolean();
-            if (version[0] > 5 || (version[0] == 5 && version[1] >= 5))//5.5 and up
+
+            if (version[0] > 5 || (version[0] == 5 && version[1] >= 5)) // 版本5.5及以上
             {
                 m_StartAtOrigin = reader.ReadBoolean();
             }
+
             m_KeepOriginalOrientation = reader.ReadBoolean();
             m_KeepOriginalPositionY = reader.ReadBoolean();
             m_KeepOriginalPositionXZ = reader.ReadBoolean();
             m_HeightFromFeet = reader.ReadBoolean();
-            reader.AlignStream();
+
+            reader.AlignStream(); // 对齐流
         }
+        
         public static ClipMuscleConstant ParseGI(ObjectReader reader)
         {
             var version = reader.version;
@@ -1569,7 +2139,7 @@ namespace AssetStudio
 
             if (valueArrayDeltaOffset > reader.Length)
             {
-                throw new IOException("Offset outside of range");
+                throw new IOException("偏移量超出范围");
             }
 
             var valueArrayReferencePoseCount = (int)reader.ReadUInt64();
@@ -1577,7 +2147,7 @@ namespace AssetStudio
 
             if (valueArrayReferencePoseOffset > reader.Length)
             {
-                throw new IOException("Offset outside of range");
+                throw new IOException("偏移量超出范围");
             }
 
             clipMuscleConstant.m_Mirror = reader.ReadBoolean();
@@ -1611,6 +2181,8 @@ namespace AssetStudio
 
             return clipMuscleConstant;
         }
+        
+        /// 导出为YAML格式
         public YAMLNode ExportYAML(int[] version)
         {
             var node = new YAMLMappingNode();
@@ -1632,6 +2204,8 @@ namespace AssetStudio
             node.Add(nameof(m_Mirror), m_Mirror);
             return node;
         }
+
+        /// 根据版本返回序列化版本号
         private int ToSerializedVersion(int[] version)
         {
             if (version[0] > 5 || (version[0] == 5 && version[1] >= 6))
@@ -1642,9 +2216,11 @@ namespace AssetStudio
             {
                 return 2;
             }
+
             return 1;
         }
     }
+
 
     public class GenericBinding : IYAMLExportable
     {
@@ -1658,7 +2234,9 @@ namespace AssetStudio
         public byte isIntCurve;
         public byte isSerializeReferenceCurve;
 
-        public GenericBinding() { }
+        public GenericBinding()
+        {
+        }
 
         public GenericBinding(ObjectReader reader)
         {
@@ -1674,12 +2252,14 @@ namespace AssetStudio
             {
                 typeID = (ClassIDType)reader.ReadUInt16();
             }
+
             customType = reader.ReadByte();
             isPPtrCurve = reader.ReadByte();
             if (version[0] > 2022 || (version[0] == 2022 && version[1] >= 1)) //2022.1 and up
             {
                 isIntCurve = reader.ReadByte();
             }
+
             reader.AlignStream();
         }
 
@@ -1701,7 +2281,9 @@ namespace AssetStudio
         public List<GenericBinding> genericBindings;
         public List<PPtr<Object>> pptrCurveMapping;
 
-        public AnimationClipBindingConstant() { }
+        public AnimationClipBindingConstant()
+        {
+        }
 
         public AnimationClipBindingConstant(ObjectReader reader)
         {
@@ -1754,6 +2336,7 @@ namespace AssetStudio
                 {
                     curves += 1;
                 }
+
                 if (curves > index)
                 {
                     return b;
@@ -1787,6 +2370,7 @@ namespace AssetStudio
             {
                 intParameter = reader.ReadInt32();
             }
+
             messageOptions = reader.ReadInt32();
         }
 
@@ -1804,6 +2388,7 @@ namespace AssetStudio
         }
     }
 
+    ///  <summary> 动画类型 </summary>
     public enum AnimationType
     {
         Legacy = 1,
@@ -1811,12 +2396,21 @@ namespace AssetStudio
         Humanoid = 3
     };
 
+    /// <summary> 动画片段 </summary>
     public sealed class AnimationClip : NamedObject
     {
+        ///  <summary> 动画类型 </summary>
         public AnimationType m_AnimationType;
+
+        //<summary> 是否使用旧版动画剪辑 </summary>
         public bool m_Legacy;
+
+        ///  <summary> 是否压缩 </summary>
         public bool m_Compressed;
+
+        /// <summary> 是否使用高精度曲线 </summary>
         public bool m_UseHighQualityCurve;
+
         public List<QuaternionCurve> m_RotationCurves;
         public List<CompressedAnimationCurve> m_CompressedRotationCurves;
         public List<Vector3Curve> m_EulerCurves;
@@ -1824,24 +2418,47 @@ namespace AssetStudio
         public List<Vector3Curve> m_ScaleCurves;
         public List<FloatCurve> m_FloatCurves;
         public List<PPtrCurve> m_PPtrCurves;
+
+        /// <summary> 采样率 </summary>
         public float m_SampleRate;
+
+        /// <summary> 循环模式 </summary>
         public int m_WrapMode;
+
+        /// <summary> 动画片段的边界 </summary>
         public AABB m_Bounds;
+
+        /// <summary> 肌肉动画剪辑的大小 </summary>
         public uint m_MuscleClipSize;
+
+        /// <summary> 肌肉动画剪辑的常量数据 </summary>
         public ClipMuscleConstant m_MuscleClip;
+
+        /// <summary> 动画剪辑绑定的常量数据 </summary>
         public AnimationClipBindingConstant m_ClipBindingConstant;
+
+        /// <summary> 动画事件列表 </summary>
         public List<AnimationEvent> m_Events;
+
+        /// <summary> 流式传输信息 </summary>
         public StreamingInfo m_StreamData;
 
+        /// <summary> 是否包含流式传输信息 </summary>
         private bool hasStreamingInfo = false;
 
         public AnimationClip(ObjectReader reader) : base(reader)
         {
-            if (version[0] >= 5)//5.0 and up
+            reader.Save(Name);
+            if (reader.Game.Type.IsShiningNikki())
+            {
+                reader.RelativePosition += 27;
+            }
+
+            if (version[0] >= 5) //5.0 and up
             {
                 m_Legacy = reader.ReadBoolean();
             }
-            else if (version[0] >= 4)//4.0 and up
+            else if (version[0] >= 4) //4.0 and up
             {
                 m_AnimationType = (AnimationType)reader.ReadInt32();
                 if (m_AnimationType == AnimationType.Legacy)
@@ -1851,6 +2468,7 @@ namespace AssetStudio
             {
                 m_Legacy = true;
             }
+
             if (reader.Game.Type.IsLoveAndDeepspace())
             {
                 reader.AlignStream();
@@ -1862,13 +2480,16 @@ namespace AssetStudio
                 {
                     m_aclTransformTrackId2CurveId.Add(new AclTransformTrackIDToBindingCurveID(reader));
                 }
+
                 var m_aclScalarTrackId2CurveId = reader.ReadUInt32Array();
             }
+
             m_Compressed = reader.ReadBoolean();
-            if (version[0] > 4 || (version[0] == 4 && version[1] >= 3))//4.3 and up
+            if (version[0] > 4 || (version[0] == 4 && version[1] >= 3)) //4.3 and up
             {
                 m_UseHighQualityCurve = reader.ReadBoolean();
             }
+
             reader.AlignStream();
             int numRCurves = reader.ReadInt32();
             m_RotationCurves = new List<QuaternionCurve>();
@@ -1897,7 +2518,7 @@ namespace AssetStudio
             }
             else
             {
-                if (version[0] > 5 || (version[0] == 5 && version[1] >= 3))//5.3 and up
+                if (version[0] > 5 || (version[0] == 5 && version[1] >= 3)) //5.3 and up
                 {
                     int numEulerCurves = reader.ReadInt32();
                     m_EulerCurves = new List<Vector3Curve>();
@@ -1906,14 +2527,14 @@ namespace AssetStudio
                         m_EulerCurves.Add(new Vector3Curve(reader));
                     }
                 }
-    
+
                 int numPCurves = reader.ReadInt32();
                 m_PositionCurves = new List<Vector3Curve>();
                 for (int i = 0; i < numPCurves; i++)
                 {
                     m_PositionCurves.Add(new Vector3Curve(reader));
                 }
-    
+
                 int numSCurves = reader.ReadInt32();
                 m_ScaleCurves = new List<Vector3Curve>();
                 for (int i = 0; i < numSCurves; i++)
@@ -1945,12 +2566,13 @@ namespace AssetStudio
             {
                 var m_aclType = reader.ReadInt32();
             }
+
             if (version[0] > 3 || (version[0] == 3 && version[1] >= 4)) //3.4 and up
             {
                 m_Bounds = new AABB(reader);
             }
-            
-            if (version[0] >= 4)//4.0 and up
+
+            if (version[0] >= 4) //4.0 and up
             {
                 if (reader.Game.Type.IsGI())
                 {
@@ -1988,6 +2610,7 @@ namespace AssetStudio
                     }
                 }
             }
+
             if (reader.Game.Type.IsSRGroup())
             {
                 var m_AclClipData = reader.ReadUInt8Array();
@@ -1997,29 +2620,34 @@ namespace AssetStudio
                 {
                     m_AclBindings.Add(new GenericBinding(reader));
                 }
+
                 var m_AclRange = new KeyValuePair<float, float>(reader.ReadSingle(), reader.ReadSingle());
             }
-            
+
             if (version[0] > 4 || (version[0] == 4 && version[1] >= 3)) //4.3 and up
             {
                 m_ClipBindingConstant = new AnimationClipBindingConstant(reader);
             }
+
             if (version[0] > 2018 || (version[0] == 2018 && version[1] >= 3)) //2018.3 and up
             {
                 var m_HasGenericRootTransform = reader.ReadBoolean();
                 var m_HasMotionFloatCurves = reader.ReadBoolean();
                 reader.AlignStream();
             }
+
             int numEvents = reader.ReadInt32();
             m_Events = new List<AnimationEvent>();
             for (int i = 0; i < numEvents; i++)
             {
                 m_Events.Add(new AnimationEvent(reader));
             }
+
             if (version[0] >= 2017) //2017 and up
             {
                 reader.AlignStream();
             }
+
             if (hasStreamingInfo)
             {
                 m_StreamData = new StreamingInfo(reader);
@@ -2037,6 +2665,8 @@ namespace AssetStudio
                     aclClip.m_DatabaseData = ms.ToArray();
                 }
             }
+
+            Logger.Info($"读取结束：{reader.RelativePosition}，Position：{reader.Position}");
         }
     }
 }

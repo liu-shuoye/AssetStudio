@@ -16,13 +16,13 @@ namespace AssetStudio
 
             var properties = new byte[5];
             if (inStream.Read(properties, 0, 5) != 5)
-                throw new Exception("input .lzma is too short");
+                throw new Exception("输入 .lzma 过短");
             long outSize = 0;
             for (var i = 0; i < 8; i++)
             {
                 var v = inStream.ReadByte();
                 if (v < 0)
-                    throw new Exception("Can't Read 1");
+                    throw new Exception("无法读取 1");
                 outSize |= ((long)(byte)v) << (8 * i);
             }
             decoder.SetDecoderProperties(properties);
@@ -40,7 +40,7 @@ namespace AssetStudio
             var decoder = new Decoder();
             var properties = new byte[5];
             if (compressedStream.Read(properties, 0, 5) != 5)
-                throw new Exception("input .lzma is too short");
+                throw new Exception("输入 .lzma 过短");
             decoder.SetDecoderProperties(properties);
             decoder.Code(compressedStream, decompressedStream, compressedSize - 5, decompressedSize, null);
             compressedStream.Position = basePosition + compressedSize;

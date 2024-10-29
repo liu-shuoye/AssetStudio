@@ -53,7 +53,7 @@ namespace AssetStudio
             int decodedSize = SmolvDecoder.GetDecodedBufferSize(stream);
             if (decodedSize == 0)
             {
-                throw new Exception("Invalid SMOL-V shader header");
+                throw new Exception("无效的 SMOL-V 着色器头");
             }
             using (var decodedStream = new MemoryStream(new byte[decodedSize]))
             {
@@ -66,7 +66,7 @@ namespace AssetStudio
                 }
                 else
                 {
-                    throw new Exception("Unable to decode SMOL-V shader");
+                    throw new Exception("无法解码 SMOL-V 着色器");
                 }
             }
         }

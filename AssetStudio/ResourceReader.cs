@@ -56,7 +56,7 @@ namespace AssetStudio
                     assetsFile.assetsManager.resourceFileReaders.TryAdd(resourceFileName, reader);
                     return reader;
                 }
-                throw new FileNotFoundException($"Can't find the resource file {resourceFileName}");
+                throw new FileNotFoundException($"找不到资源文件 {resourceFileName}");
             }
             else
             {

@@ -30,7 +30,7 @@ namespace AssetStudio
 		{
 			if (m_indent == 0)
 			{
-				throw new Exception($"Increase/decrease indent mismatch");
+				throw new Exception($"增加/减少缩进不匹配");
 			}
 			m_indent--;
 			return this;

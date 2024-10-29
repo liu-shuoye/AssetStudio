@@ -51,12 +51,12 @@ namespace AssetStudio
                 versions = await DownloadString(url, TimeSpan.FromSeconds(2));
                 if (string.IsNullOrEmpty(versions))
                 {
-                    Logger.Warning("Could not load AI versions !!");
+                    Logger.Warning("无法加载AI版本！！");
                     return false;
                 }
                 if (!await StoreCommit(VersionIndexKey, VersionIndexName))
                 {
-                    throw new Exception("Failed to store version list !!");
+                    throw new Exception("存储版本列表失败 !!");
                 }
                 File.WriteAllText(path, versions);
             }
@@ -77,16 +77,16 @@ namespace AssetStudio
                 path = GetPath(version);
                 if (await NeedDownload(version, versionIndex.MappedPath))
                 {
-                    Logger.Info("Downloading...");
+                    Logger.Info("正在下载...");
                     var json = await DownloadString(url, TimeSpan.FromMinutes(2));
                     if (string.IsNullOrEmpty(json))
                     {
-                        Logger.Warning("Could not load AI !!");
+                        Logger.Warning("无法加载AI！！");
                         return "";
                     }
                     if (!await StoreCommit(version, versionIndex.MappedPath))
                     {
-                        throw new Exception("Failed to store AI !!");
+                        throw new Exception("存储 AI 失败 !!");
                     }
                     File.WriteAllText(path, json);
                 }
@@ -111,11 +111,11 @@ namespace AssetStudio
                 }
                 catch (TaskCanceledException ex)
                 {
-                    Logger.Warning($"Timeout occured while trying to download {Path.GetFileName(url)}, {ex.Message}");
+                    Logger.Warning($"尝试下载 {Path.GetFileName(url)} 时超时，{ex.Message}");
                 }
                 catch (Exception ex)
                 {
-                    Logger.Warning($"Failed to download {Path.GetFileName(url)}, {ex.Message}");
+                    Logger.Warning($"下载 {Path.GetFileName(url)} 失败, {ex.Message}");
                 }
             }
             return content;
@@ -215,7 +215,7 @@ namespace AssetStudio
             }
             catch (Exception)
             {
-                Logger.Warning($"Failed to parse latest commit {Path.GetFileName(path)}");
+                Logger.Warning($"解析最新提交 {Path.GetFileName(path)} 失败");
             }
             return commit;
         }

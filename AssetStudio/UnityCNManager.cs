@@ -33,16 +33,16 @@ namespace AssetStudio
             {
                 if (UnityCN.SetKey(unityCN))
                 {
-                    Logger.Info($"[UnityCN] Selected Key is {unityCN}");
+                    Logger.Info($"[UnityCN] 选择的密钥是 {unityCN}");
                 }
                 else
                 {
-                    Logger.Info($"[UnityCN] No Key is selected !!");
+                    Logger.Info($"[UnityCN] 未选择密钥！！");
                 }
             }
             else
             {
-                Logger.Error("Invalid Key !!");
+                Logger.Error("密钥无效！！");
                 Logger.Warning(GetEntries().Select(x => x.ToString()).ToString());
             }
         }
@@ -60,7 +60,7 @@ namespace AssetStudio
             }
             catch(Exception e)
             {
-                Logger.Error($"[UnityCN] Invalid Index, check if list is not empty !!\n{e.Message}");
+                Logger.Error($"[UnityCN] 索引无效，请检查列表是否为空！！\n{e.Message}");
                 key = null;
                 return false;
             }

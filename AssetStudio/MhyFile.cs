@@ -22,9 +22,9 @@ namespace AssetStudio
             reader.Endian = EndianType.LittleEndian;
 
             signature = reader.ReadStringToNull(4);
-            Logger.Verbose($"Parsed signature {signature}");
+            Logger.Verbose($"解析的签名 {signature}。");
             if (signature != "mhy0")
-                throw new Exception("not a mhy file");
+                throw new Exception("不是 mhy 文件");
 
             m_Header = new BundleFile.Header
             {
@@ -34,7 +34,7 @@ namespace AssetStudio
                 compressedBlocksInfoSize = reader.ReadUInt32(),
                 flags = (ArchiveFlags)0x43
             };
-            Logger.Verbose($"Header: {m_Header}");
+            Logger.Verbose($"头部: {m_Header}");
             ReadBlocksInfoAndDirectory(reader);
             using var blocksStream = CreateBlocksStream(reader.FullPath);
             ReadBlocks(reader, blocksStream);
@@ -51,11 +51,11 @@ namespace AssetStudio
             var blocksInfo = reader.ReadBytes((int)m_Header.compressedBlocksInfoSize);
             DescrambleHeader(blocksInfo);
 
-            Logger.Verbose($"Descrambled blocksInfo signature {Convert.ToHexString(blocksInfo, 0 , 4)}");
+            Logger.Verbose($"重组后的块信息签名 {Convert.ToHexString(blocksInfo, 0 , 4)}");
             using var blocksInfoStream = new MemoryStream(blocksInfo, 0x20, (int)m_Header.compressedBlocksInfoSize - 0x20);
             using var blocksInfoReader = new EndianBinaryReader(blocksInfoStream);
             m_Header.uncompressedBlocksInfoSize = blocksInfoReader.ReadMhyUInt();
-            Logger.Verbose($"uncompressed blocksInfo size: 0x{m_Header.uncompressedBlocksInfoSize:X8}");
+            Logger.Verbose($"未压缩块信息大小: 0x{m_Header.uncompressedBlocksInfoSize:X8}");
             var compressedBlocksInfo = blocksInfoReader.ReadBytes((int)blocksInfoReader.Remaining);
 
             var uncompressedBlocksInfo = ArrayPool<byte>.Shared.Rent((int)m_Header.uncompressedBlocksInfoSize);
@@ -66,15 +66,15 @@ namespace AssetStudio
                 var numWrite = LZ4.Instance.Decompress(compressedBlocksInfo, uncompressedBlocksInfoSpan);
                 if (numWrite != m_Header.uncompressedBlocksInfoSize)
                 {
-                    throw new IOException($"Lz4 decompression error, write {numWrite} bytes but expected {m_Header.uncompressedBlocksInfoSize} bytes");
+                    throw new IOException($"Lz4 解压缩错误，写入 {numWrite} 字节，但预期为 {m_Header.uncompressedBlocksInfoSize} 字节");
                 }
 
-                Logger.Verbose($"Writing block and directory to blocks stream...");
+                Logger.Verbose($"正在将块和目录写入块流...");
                 using var blocksInfoUncompressedStream = new MemoryStream(uncompressedBlocksInfo, 0, (int)m_Header.uncompressedBlocksInfoSize);
                 using var blocksInfoUncompressedReader = new EndianBinaryReader(blocksInfoUncompressedStream);
                 var nodesCount = blocksInfoUncompressedReader.ReadMhyInt();
                 m_DirectoryInfo = new List<BundleFile.Node>();
-                Logger.Verbose($"Directory count: {nodesCount}");
+                Logger.Verbose($"目录计数: {nodesCount}");
                 for (int i = 0; i < nodesCount; i++)
                 {
                     m_DirectoryInfo.Add(new BundleFile.Node
@@ -85,12 +85,12 @@ namespace AssetStudio
                         size = blocksInfoUncompressedReader.ReadMhyUInt()
                     });
 
-                    Logger.Verbose($"Directory {i} Info: {m_DirectoryInfo[i]}");
+                    Logger.Verbose($"目录 {i} 信息: {m_DirectoryInfo[i]}");
                 }
 
                 var blocksInfoCount = blocksInfoUncompressedReader.ReadMhyInt();
                 m_BlocksInfo = new List<BundleFile.StorageBlock>();
-                Logger.Verbose($"Blocks count: {blocksInfoCount}");
+                Logger.Verbose($"块数量: {blocksInfoCount}");
                 for (int i = 0; i < blocksInfoCount; i++)
                 {
                     m_BlocksInfo.Add(new BundleFile.StorageBlock
@@ -100,7 +100,7 @@ namespace AssetStudio
                         flags = (StorageBlockFlags)0x43
                     });
 
-                    Logger.Verbose($"Block {i} Info: {m_BlocksInfo[i]}");
+                    Logger.Verbose($"块 {i} 信息: {m_BlocksInfo[i]}");
                 }
             }
             finally
@@ -113,7 +113,7 @@ namespace AssetStudio
         {
             Stream blocksStream;
             var uncompressedSizeSum = (int)m_BlocksInfo.Sum(x => x.uncompressedSize);
-            Logger.Verbose($"Total size of decompressed blocks: 0x{uncompressedSizeSum:X8}");
+            Logger.Verbose($"解压块的总大小: 0x{uncompressedSizeSum:X8}");
             if (uncompressedSizeSum >= int.MaxValue)
                 blocksStream = new FileStream(path + ".temp", FileMode.Create, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose);
             else
@@ -129,7 +129,7 @@ namespace AssetStudio
                 var uncompressedSize = (int)blockInfo.uncompressedSize;
                 if (compressedSize < 0x10)
                 {
-                    throw new Exception($"Wrong compressed length: {compressedSize}");
+                    throw new Exception($"错误的压缩长度: {compressedSize}");
                 }
 
                 var compressedBytes = ArrayPool<byte>.Shared.Rent(compressedSize);
@@ -143,11 +143,11 @@ namespace AssetStudio
                     reader.Read(compressedBytesSpan);
                     DescrambleEntry(compressedBytesSpan);
 
-                    Logger.Verbose($"Descrambled block signature {Convert.ToHexString(compressedBytes, 0, 4)}");
+                    Logger.Verbose($"重组后的块签名 {Convert.ToHexString(compressedBytes, 0, 4)}");
                     var numWrite = LZ4.Instance.Decompress(compressedBytesSpan[0xC..], uncompressedBytesSpan);
                     if (numWrite != uncompressedSize)
                     {
-                        throw new IOException($"Lz4 decompression error, write {numWrite} bytes but expected {uncompressedSize} bytes");
+                        throw new IOException($"Lz4 解压缩错误，写入 {numWrite} 字节，但预期为 {uncompressedSize} 字节");
                     }
 
                     blocksStream.Write(uncompressedBytesSpan);
@@ -162,7 +162,7 @@ namespace AssetStudio
 
         private void ReadFiles(Stream blocksStream, string path)
         {
-            Logger.Verbose($"Writing files from blocks stream...");
+            Logger.Verbose($"正在从块流中写入文件...");
 
             fileList = new List<StreamFile>();
             for (int i = 0; i < m_DirectoryInfo.Count; i++)

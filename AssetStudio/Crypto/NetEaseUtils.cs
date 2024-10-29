@@ -22,7 +22,7 @@ namespace AssetStudio
         }
         private static void Decrypt(Span<byte> bytes)
         {
-            Logger.Verbose($"Attempting to decrypt block with NetEase encryption...");
+            Logger.Verbose($"正在尝试使用网易加密解密块...");
 
             var encryptedInts = MemoryMarshal.Cast<byte, int>(bytes);
 
@@ -91,7 +91,7 @@ namespace AssetStudio
             var index = bytes.Search(Signature);
             if (index == -1 || index >= 0x40)
             {
-                throw new Exception("Header not found !!");
+                throw new Exception("未找到头文件 !!");
             }
 
             var info = bytes[index..];
@@ -135,10 +135,10 @@ namespace AssetStudio
             var version = BinaryPrimitives.ReadUInt16LittleEndian(bytes[2..]);
             if (version < 0x2017 || version > 0x2025)
             {
-                throw new Exception("Unsupported version");
+                throw new Exception("不支持的版本");
             }
             var versionString = version.ToString("X4");
-            Logger.Verbose($"Bundle version: {versionString}");
+            Logger.Verbose($"包版本: {versionString}");
             Encoding.UTF8.GetBytes(versionString, bytes);
         }
 

@@ -505,7 +505,7 @@ namespace AssetStudio
                     }
                 }
             }
-            throw new Exception($"There is no curve with index {curveID} in any of previous frames");
+            throw new Exception($"在任何之前的帧中都没有索引为 {curveID} 的曲线");
         }
 
         private int GetNextCurve(StreamedClip.StreamedFrame frame, int currentCurve)

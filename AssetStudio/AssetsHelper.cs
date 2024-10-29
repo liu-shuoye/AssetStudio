@@ -23,6 +23,7 @@ namespace AssetStudio
 
         private static string BaseFolder = "";
         private static Dictionary<string, Entry> CABMap = new Dictionary<string, Entry>(StringComparer.OrdinalIgnoreCase);
+        ///  <summary> 依赖文件的缓存文件路径与偏移量 </summary>
         private static Dictionary<string, HashSet<long>> Offsets = new Dictionary<string, HashSet<long>>();
         private static AssetsManager assetsManager = new AssetsManager() { SkipProcess = true, ResolveDependencies = false };
 
@@ -43,7 +44,7 @@ namespace AssetStudio
             Directory.CreateDirectory(MapName);
             var files = Directory.GetFiles(MapName, "*.bin", SearchOption.TopDirectoryOnly);
             var mapNames = files.Select(Path.GetFileNameWithoutExtension).ToArray();
-            Logger.Verbose($"Found {mapNames.Length} CABMaps under Maps folder");
+            Logger.Verbose($"在 Maps 文件夹下找到 {mapNames.Length} 个 CABMaps。");
             return mapNames;
         }
 
@@ -57,20 +58,20 @@ namespace AssetStudio
             tokenSource.Dispose();
             tokenSource = new CancellationTokenSource();
 
-            Logger.Verbose("Cleared AssetsHelper successfully !!");
+            Logger.Verbose("成功清除AssetsHelper！！");
         }
 
         public static void ClearOffsets()
         {
             Offsets.Clear();
-            Logger.Verbose("Cleared cached offsets");
+            Logger.Verbose("已清除缓存偏移");
         }
 
         public static bool TryGet(string path, out long[] offsets)
         {
             if (Offsets.TryGetValue(path, out var list) && list.Count > 0)
             {
-                Logger.Verbose($"Found {list.Count} offsets for path {path}");
+                Logger.Verbose($"为路径 {path} 找到 {list.Count} 个偏移量。");
                 offsets = list.ToArray();
                 return true;
             }
@@ -78,6 +79,11 @@ namespace AssetStudio
             return false;
         }
 
+        /// <summary>
+        /// 添加 依赖文件在 CAB 文件的偏移量
+        /// </summary>
+        /// <param name="paths"></param>
+        /// <param name="cabs"></param>
         public static void AddCABOffsets(string[] paths, List<string> cabs)
         {
             for (int i = 0; i < cabs.Count; i++)
@@ -86,54 +92,59 @@ namespace AssetStudio
                 if (CABMap.TryGetValue(cab, out var entry))
                 {
                     var fullPath = Path.Combine(BaseFolder, entry.Path);
-                    Logger.Verbose($"Found {cab} in {fullPath}");
+                    Logger.Verbose($"在 {fullPath} 中找到 {cab}。");
                     if (!paths.Contains(fullPath))
                     {
                         Offsets.TryAdd(fullPath, new HashSet<long>());
                         Offsets[fullPath].Add(entry.Offset);
-                        Logger.Verbose($"Added {fullPath} to Offsets, at offset {entry.Offset}");
+                        Logger.Verbose($"已将 {fullPath} 添加到偏移量，偏移量为 {entry.Offset}");
                     }
                     foreach (var dep in entry.Dependencies)
                     {
                         if (!cabs.Contains(dep))
                             cabs.Add(dep);
                     }
+                    continue;
                 }
+                Logger.Warning($"未找到 {cab}，请检查 CABMap 是否正确和完整！");
             }
         }
 
+        /// <summary> 尝试获取 CAB 文件 </summary>
         public static bool FindCAB(string path, out List<string> cabs)
         {
             var relativePath = Path.GetRelativePath(BaseFolder, path);
             cabs = CABMap.AsParallel().Where(x => x.Value.Path.Equals(relativePath, StringComparison.OrdinalIgnoreCase)).Select(x => x.Key).Distinct().ToList();
-            Logger.Verbose($"Found {cabs.Count} that belongs to {relativePath}");
+            Logger.Verbose($"找到 {cabs.Count} 个属于 {relativePath} 的条目。");
             return cabs.Count != 0;
         }
 
+        /// <summary> 处理依赖文件 </summary>
         public static string[] ProcessFiles(string[] files)
         {
             foreach (var file in files)
             {
                 Offsets.TryAdd(file, new HashSet<long>());
-                Logger.Verbose($"Added {file} to Offsets dictionary");
+                Logger.Verbose($"已将 {file} 添加到偏移量字典中");
                 if (FindCAB(file, out var cabs))
                 {
                     AddCABOffsets(files, cabs);
                 }
             }
-            Logger.Verbose($"Finished resolving dependncies, the original {files.Length} files will be loaded entirely, and the {Offsets.Count - files.Length} dependicnes will be loaded from cached offsets only");
+            Logger.Verbose($"依赖解析完成，原始 {files.Length} 个文件将全部加载，{Offsets.Count - files.Length} 个依赖项将从缓存偏移量中加载。");
             return Offsets.Keys.ToArray();
         }
 
+        /// <summary> 处理依赖项 </summary>
         public static string[] ProcessDependencies(string[] files)
         {
             if (CABMap.Count == 0)
             {
-                Logger.Warning("CABMap is not build, skip resolving dependencies...");
+                Logger.Warning("CAB映射未构建，跳过解析依赖关系...");
             }
             else
             {
-                Logger.Info("Resolving Dependencies...");
+                Logger.Info("正在解析依赖关系...");
                 files = ProcessFiles(files);
             }
             return files;
@@ -141,7 +152,7 @@ namespace AssetStudio
 
         public static void BuildCABMap(string[] files, string mapName, string baseFolder, Game game)
         {
-            Logger.Info("Building CABMap...");
+            Logger.Info("正在构建CAB映射...");
             try
             {
                 CABMap.Clear();
@@ -156,11 +167,11 @@ namespace AssetStudio
 
                 DumpCABMap(mapName);
 
-                Logger.Info($"CABMap build successfully !! {collision} collisions found");
+                Logger.Info($"CABMap 构建成功！！发现 {collision} 个冲突");
             }
             catch (Exception e)
             {
-                Logger.Warning($"CABMap was not build, {e}");
+                Logger.Warning($"CABMap 构建失败，{e}");
             }
         }
 
@@ -180,12 +191,12 @@ namespace AssetStudio
                 if (assetsManager.assetsFileList.Count > 0)
                 {
                     yield return file;
-                    msg = $"Processed {Path.GetFileName(file)}";
+                    msg = $"已处理 {Path.GetFileName(file)}";
                 }
                 else
                 {
                     filesList.Remove(file);
-                    msg = $"Removed {Path.GetFileName(file)}, no assets found";
+                    msg = $"已移除 {Path.GetFileName(file)}，未找到资源";
                 }
 
                 Logger.Info($"[{filesList.Count - i + 1}/{filesList.Count}] {msg}");
@@ -201,7 +212,7 @@ namespace AssetStudio
             {
                 if (tokenSource.IsCancellationRequested)
                 {
-                    Logger.Info("Building CABMap has been cancelled !!");
+                    Logger.Info("构建CAB映射已取消！！");
                     return;
                 }
                 var entry = new Entry()
@@ -248,19 +259,19 @@ namespace AssetStudio
 
         public static bool LoadCABMapInternal(string mapName)
         {
-            Logger.Info($"Loading {mapName}...");
+            Logger.Info($"正在加载 {mapName}...");
             try
             {
                 CABMap.Clear();
                 using var fs = File.OpenRead(Path.Combine(MapName, $"{mapName}.bin"));
                 using var reader = new BinaryReader(fs);
                 ParseCABMap(reader);
-                Logger.Verbose($"Initialized CABMap with {CABMap.Count} entries");
-                Logger.Info($"Loaded {mapName} !!");
+                Logger.Verbose($"初始化 CABMap，包含 {CABMap.Count} 个条目。");
+                Logger.Info($"已加载 {mapName}！！");
             }
             catch (Exception e)
             {
-                Logger.Warning($"{mapName} was not loaded, {e}");
+                Logger.Warning($"{mapName} 未加载，{e}");
                 return false;
             }
 
@@ -270,19 +281,19 @@ namespace AssetStudio
         public static bool LoadCABMap(string path)
         {
             var mapName = Path.GetFileNameWithoutExtension(path);
-            Logger.Info($"Loading {mapName}...");
+            Logger.Info($"正在加载 {mapName}...");
             try
             {
                 CABMap.Clear();
                 using var fs = File.OpenRead(path);
                 using var reader = new BinaryReader(fs);
                 ParseCABMap(reader);
-                Logger.Verbose($"Initialized CABMap with {CABMap.Count} entries");
-                Logger.Info($"Loaded {mapName} !!");
+                Logger.Verbose($"初始化 CABMap，包含 {CABMap.Count} 个条目。");
+                Logger.Info($"已加载 {mapName}！！");
             }
             catch (Exception e)
             {
-                Logger.Warning($"{mapName} was not loaded, {e}");
+                Logger.Warning($"{mapName} 未加载，{e}");
                 return false;
             }
 
@@ -316,7 +327,7 @@ namespace AssetStudio
 
         public static async Task BuildAssetMap(string[] files, string mapName, Game game, string savePath, ExportListType exportListType, ClassIDType[] typeFilters = null, Regex[] nameFilters = null, Regex[] containerFilters = null)
         {
-            Logger.Info("Building AssetMap...");
+            Logger.Info("正在构建资产映射...");
             try
             {
                 Progress.Reset();
@@ -333,7 +344,7 @@ namespace AssetStudio
             }
             catch(Exception e)
             {
-                Logger.Warning($"AssetMap was not build, {e}");
+                Logger.Warning($"AssetMap 未能构建，{e}");
             }
             
         }
@@ -351,7 +362,7 @@ namespace AssetStudio
                 {
                     if (tokenSource.IsCancellationRequested)
                     {
-                        Logger.Info("Building AssetMap has been cancelled !!");
+                        Logger.Info("构建资产映射已取消！！");
                         return;
                     }
                     var objectReader = new ObjectReader(assetsFile.reader, assetsFile, objInfo, assetsManager.Game);
@@ -446,7 +457,7 @@ namespace AssetStudio
                     catch (Exception e)
                     {
                         var sb = new StringBuilder();
-                        sb.AppendLine("Unable to load object")
+                        sb.AppendLine("无法加载对象")
                             .AppendLine($"Assets {assetsFile.fileName}")
                             .AppendLine($"Path {assetsFile.originalPath}")
                             .AppendLine($"Type {objectReader.type}")
@@ -596,7 +607,7 @@ namespace AssetStudio
         {
             if (game.Type.IsGISubGroup() && assets.Count > 0)
             {
-                Logger.Info("Updating Containers...");
+                Logger.Info("正在更新容器...");
                 foreach (var asset in assets)
                 {
                     if (int.TryParse(asset.Container, out var value))
@@ -617,7 +628,7 @@ namespace AssetStudio
                         }
                     }
                 }
-                Logger.Info("Updated !!");
+                Logger.Info("已更新！！");
             }
         }
 
@@ -632,7 +643,7 @@ namespace AssetStudio
                 string filename = string.Empty;
                 if (exportListType.Equals(ExportListType.None))
                 {
-                    Logger.Info($"No export list type has been selected, skipping...");
+                    Logger.Info($"未选择导出列表类型，跳过...");
                 }
                 else
                 {
@@ -681,13 +692,13 @@ namespace AssetStudio
                         MessagePackSerializer.Serialize(file, assetMap, MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray));
                     }
 
-                    Logger.Info($"Finished buidling AssetMap with {toExportAssets.Count} assets.");
+                    Logger.Info($"完成 AssetMap 构建，共有 {toExportAssets.Count} 个资产。");
                 }
             });
         }
         public static async Task BuildBoth(string[] files, string mapName, string baseFolder, Game game, string savePath, ExportListType exportListType, ClassIDType[] typeFilters = null, Regex[] nameFilters = null, Regex[] containerFilters = null)
         {
-            Logger.Info($"Building Both...");
+            Logger.Info($"同时构建中...");
             CABMap.Clear();
             Progress.Reset();
             var collision = 0;
@@ -703,7 +714,7 @@ namespace AssetStudio
             UpdateContainers(assets, game);
             DumpCABMap(mapName);
 
-            Logger.Info($"Map build successfully !! {collision} collisions found");
+            Logger.Info($"地图构建成功！！发现 {collision} 个冲突。");
             await ExportAssetsMap(assets, game, mapName, savePath, exportListType);
         }
     }

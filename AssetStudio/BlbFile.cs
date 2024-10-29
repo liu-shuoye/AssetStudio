@@ -22,9 +22,9 @@ namespace AssetStudio
             reader.Endian = EndianType.LittleEndian;
 
             var signature = reader.ReadStringToNull(4);
-            Logger.Verbose($"Parsed signature {signature}");
+            Logger.Verbose($"解析的签名 {signature}。");
             if (signature != "Blb\x02")
-                throw new Exception("not a Blb file");
+                throw new Exception("不是 Blb 文件");
 
             var size = reader.ReadUInt32();
             m_Header = new BundleFile.Header
@@ -37,7 +37,7 @@ namespace AssetStudio
             m_Header.compressedBlocksInfoSize = size;
             m_Header.uncompressedBlocksInfoSize = size;
 
-            Logger.Verbose($"Header: {m_Header}");
+            Logger.Verbose($"头部: {m_Header}");
 
             var header = reader.ReadBytes((int)m_Header.compressedBlocksInfoSize);
             ReadBlocksInfoAndDirectory(header);
@@ -70,7 +70,7 @@ namespace AssetStudio
 
             reader.Position = blocksInfoOffset;
             m_BlocksInfo = new List<BundleFile.StorageBlock>();
-            Logger.Verbose($"Blocks count: {blocksInfoCount}");
+            Logger.Verbose($"块数量: {blocksInfoCount}");
             for (int i = 0; i < blocksInfoCount; i++)
             {
                 m_BlocksInfo.Add(new BundleFile.StorageBlock
@@ -80,12 +80,12 @@ namespace AssetStudio
                     flags = (StorageBlockFlags)compressionType
                 });
 
-                Logger.Verbose($"Block {i} Info: {m_BlocksInfo[i]}");
+                Logger.Verbose($"块 {i} 信息: {m_BlocksInfo[i]}");
             }
 
             reader.Position = nodesInfoOffset;
             m_DirectoryInfo = new List<BundleFile.Node>();
-            Logger.Verbose($"Directory count: {nodesCount}");
+            Logger.Verbose($"目录计数: {nodesCount}");
             for (int i = 0; i < nodesCount; i++)
             {
                 m_DirectoryInfo.Add(new BundleFile.Node
@@ -111,7 +111,7 @@ namespace AssetStudio
                 m_DirectoryInfo[i].path = reader.ReadStringToNull();
                 reader.Position = pos;
 
-                Logger.Verbose($"Directory {i} Info: {m_DirectoryInfo[i]}");
+                Logger.Verbose($"目录 {i} 信息: {m_DirectoryInfo[i]}");
             }
         }
 
@@ -119,7 +119,7 @@ namespace AssetStudio
         {
             Stream blocksStream;
             var uncompressedSizeSum = (int)m_BlocksInfo.Sum(x => x.uncompressedSize);
-            Logger.Verbose($"Total size of decompressed blocks: 0x{uncompressedSizeSum:X8}");
+            Logger.Verbose($"解压块的总大小: 0x{uncompressedSizeSum:X8}");
             if (uncompressedSizeSum >= int.MaxValue)
                 blocksStream = new FileStream(path + ".temp", FileMode.Create, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose);
             else
@@ -132,7 +132,7 @@ namespace AssetStudio
             foreach (var blockInfo in m_BlocksInfo)
             {
                 var compressionType = (CompressionType)(blockInfo.flags & StorageBlockFlags.CompressionTypeMask);
-                Logger.Verbose($"Block compression type {compressionType}");
+                Logger.Verbose($"块压缩类型 {compressionType}");
                 switch (compressionType) //kStorageBlockCompressionTypeMask
                 {
                     case CompressionType.None: //None
@@ -163,7 +163,7 @@ namespace AssetStudio
                                 var numWrite = LZ4.Instance.Decompress(compressedBytesSpan, uncompressedBytesSpan);
                                 if (numWrite != uncompressedSize)
                                 {
-                                    throw new IOException($"Lz4 decompression error, write {numWrite} bytes but expected {uncompressedSize} bytes");
+                                    throw new IOException($"Lz4 解压缩错误，写入 {numWrite} 字节，但预期为 {uncompressedSize} 字节");
                                 }
                                 blocksStream.Write(uncompressedBytesSpan);
                             }
@@ -175,14 +175,14 @@ namespace AssetStudio
                             break;
                         }
                     default:
-                        throw new IOException($"Unsupported compression type {compressionType}");
+                        throw new IOException($"不支持的压缩类型 {compressionType}");
                 }
             }
         }
 
         private void ReadFiles(Stream blocksStream, string path)
         {
-            Logger.Verbose($"Writing files from blocks stream...");
+            Logger.Verbose($"正在从块流中写入文件...");
 
             fileList = new List<StreamFile>();
             for (int i = 0; i < m_DirectoryInfo.Count; i++)

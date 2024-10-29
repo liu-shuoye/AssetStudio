@@ -20,7 +20,7 @@ namespace AssetStudio
             var readed = reader.Position - reader.byteStart;
             if (readed != reader.byteSize)
             {
-                Logger.Info($"Error while read type, read {readed} bytes but expected {reader.byteSize} bytes");
+                Logger.Info($"读取类型时出错，读取了 {readed} 字节但预期为 {reader.byteSize} 字节");
             }
             return sb.ToString();
         }
@@ -177,7 +177,7 @@ namespace AssetStudio
             var readed = reader.Position - reader.byteStart;
             if (readed != reader.byteSize)
             {
-                Logger.Info($"Error while read type, read {readed} bytes but expected {reader.byteSize} bytes");
+                Logger.Info($"读取类型时出错，读取了 {readed} 字节但预期为 {reader.byteSize} 字节");
             }
             return obj;
         }
@@ -186,7 +186,7 @@ namespace AssetStudio
         {
             var m_Node = m_Nodes[i];
             var varTypeStr = m_Node.m_Type;
-            Logger.Verbose($"Reading {m_Node.m_Name} of type {varTypeStr}");
+            Logger.Verbose($"正在读取类型为 {varTypeStr} 的 {m_Node.m_Name}");
             object value;
             var align = (m_Node.m_MetaFlag & 0x4000) != 0;
             switch (varTypeStr)

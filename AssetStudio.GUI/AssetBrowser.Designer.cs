@@ -76,7 +76,7 @@ namespace AssetStudio.GUI
             loadAssetMap.Name = "loadAssetMap";
             loadAssetMap.Size = new System.Drawing.Size(114, 23);
             loadAssetMap.TabIndex = 0;
-            loadAssetMap.Text = "Load AssetMap";
+            loadAssetMap.Text = "加载资产映射";
             loadAssetMap.UseVisualStyleBackColor = true;
             loadAssetMap.Click += loadAssetMap_Click;
             // 
@@ -87,7 +87,7 @@ namespace AssetStudio.GUI
             clear.Name = "clear";
             clear.Size = new System.Drawing.Size(54, 23);
             clear.TabIndex = 1;
-            clear.Text = "Clear";
+            clear.Text = "清除";
             clear.UseVisualStyleBackColor = true;
             clear.Click += clear_Click;
             // 
@@ -98,7 +98,7 @@ namespace AssetStudio.GUI
             loadSelected.Name = "loadSelected";
             loadSelected.Size = new System.Drawing.Size(114, 23);
             loadSelected.TabIndex = 2;
-            loadSelected.Text = "Load Selected";
+            loadSelected.Text = "加载选定项";
             loadSelected.UseVisualStyleBackColor = true;
             loadSelected.Click += loadSelected_Click;
             // 
@@ -109,7 +109,7 @@ namespace AssetStudio.GUI
             exportSelected.Name = "exportSelected";
             exportSelected.Size = new System.Drawing.Size(212, 23);
             exportSelected.TabIndex = 3;
-            exportSelected.Text = "Export Selected";
+            exportSelected.Text = "导出选定项";
             exportSelected.UseVisualStyleBackColor = true;
             exportSelected.Click += exportSelected_Click;
             // 
@@ -173,7 +173,7 @@ namespace AssetStudio.GUI
             sourceTextBox.Dock = DockStyle.Fill;
             sourceTextBox.Location = new System.Drawing.Point(209, 3);
             sourceTextBox.Name = "sourceTextBox";
-            sourceTextBox.PlaceholderText = "Source";
+            sourceTextBox.PlaceholderText = "源";
             sourceTextBox.Size = new System.Drawing.Size(97, 23);
             sourceTextBox.TabIndex = 6;
             sourceTextBox.KeyPress += SourceTextBox_KeyPress;
@@ -183,7 +183,7 @@ namespace AssetStudio.GUI
             pathTextBox.Dock = DockStyle.Fill;
             pathTextBox.Location = new System.Drawing.Point(312, 3);
             pathTextBox.Name = "pathTextBox";
-            pathTextBox.PlaceholderText = "PathID";
+            pathTextBox.PlaceholderText = "路径ID";
             pathTextBox.Size = new System.Drawing.Size(97, 23);
             pathTextBox.TabIndex = 7;
             pathTextBox.KeyPress += PathTextBox_KeyPress;
@@ -193,7 +193,7 @@ namespace AssetStudio.GUI
             nameTextBox.Dock = DockStyle.Fill;
             nameTextBox.Location = new System.Drawing.Point(3, 3);
             nameTextBox.Name = "nameTextBox";
-            nameTextBox.PlaceholderText = "Name";
+            nameTextBox.PlaceholderText = "名称";
             nameTextBox.Size = new System.Drawing.Size(97, 23);
             nameTextBox.TabIndex = 4;
             nameTextBox.KeyPress += NameTextBox_KeyPress;
@@ -203,7 +203,7 @@ namespace AssetStudio.GUI
             containerTextBox.Dock = DockStyle.Fill;
             containerTextBox.Location = new System.Drawing.Point(106, 3);
             containerTextBox.Name = "containerTextBox";
-            containerTextBox.PlaceholderText = "Container";
+            containerTextBox.PlaceholderText = "容器";
             containerTextBox.Size = new System.Drawing.Size(97, 23);
             containerTextBox.TabIndex = 5;
             containerTextBox.KeyPress += ContainerTextBox_KeyPress;
@@ -213,7 +213,7 @@ namespace AssetStudio.GUI
             typeTextBox.Dock = DockStyle.Fill;
             typeTextBox.Location = new System.Drawing.Point(415, 3);
             typeTextBox.Name = "typeTextBox";
-            typeTextBox.PlaceholderText = "Type";
+            typeTextBox.PlaceholderText = "类型";
             typeTextBox.Size = new System.Drawing.Size(100, 23);
             typeTextBox.TabIndex = 8;
             typeTextBox.KeyPress += TypeTextBox_KeyPress;
@@ -227,7 +227,7 @@ namespace AssetStudio.GUI
             Name = "AssetBrowser";
             ShowIcon = false;
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Asset Browser";
+            Text = "资产浏览器";
             FormClosing += AssetBrowser_FormClosing;
             tableLayoutPanel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)assetDataGridView).EndInit();

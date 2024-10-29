@@ -131,7 +131,7 @@ namespace AssetStudio
                             return "m_Sprite";
                         }
                     }
-                    throw new ArgumentException($"Unknown attribute {attribute} for {type}");
+                    throw new ArgumentException($"未知属性 {attribute}，用于 {type}");
 
                 case BindingCustomType.MonoBehaviour:
                     {
@@ -140,7 +140,7 @@ namespace AssetStudio
                             return "m_Enabled";
                         }
                     }
-                    throw new ArgumentException($"Unknown attribute {attribute} for {type}");
+                    throw new ArgumentException($"未知属性 {attribute}，用于 {type}");
 
                 case BindingCustomType.Light:
                     {
@@ -209,7 +209,7 @@ namespace AssetStudio
                             return "m_ColorTemperature";
                         }
                     }
-                    throw new ArgumentException($"Unknown attribute {attribute} for {type}");
+                    throw new ArgumentException($"未知属性 {attribute}，用于 {type}");
 
                 case BindingCustomType.RendererShadows:
                     {
@@ -222,7 +222,7 @@ namespace AssetStudio
                             return "m_SortingOrder";
                         }
                     }
-                    throw new ArgumentException($"Unknown attribute {attribute} for {type}");
+                    throw new ArgumentException($"未知属性 {attribute}，用于 {type}");
 
 #warning TODO:
                 case BindingCustomType.ParticleSystem:
@@ -230,7 +230,7 @@ namespace AssetStudio
                 /*{
 					// TODO: ordinal propertyName
 				}
-				throw new ArgumentException($"Unknown attribute {attribute} for {_this}");*/
+				throw new ArgumentException($"未知属性 {attribute}，用于 {_this}");*/
 
                 case BindingCustomType.RectTransform:
                     {
@@ -290,7 +290,7 @@ namespace AssetStudio
                             return PivotY;
                         }
                     }
-                    throw new ArgumentException($"Unknown attribute {attribute} for {type}");
+                    throw new ArgumentException($"未知属性 {attribute}，用于 {type}");
 
 #warning TODO:
                 case BindingCustomType.LineRenderer:
@@ -350,7 +350,7 @@ namespace AssetStudio
                                 return $"m_Sources.Array.data[{attribute >> 8}].weight";
                         }
                     }
-                    throw new ArgumentException($"Unknown attribute {attribute} for {type}");
+                    throw new ArgumentException($"未知属性 {attribute}，用于 {type}");
 
 #warning TODO:
                 case BindingCustomType.RotationConstraint:
@@ -386,7 +386,7 @@ namespace AssetStudio
                                 return $"m_Sources.Array.data[{attribute >> 8}].weight";
                         }
                     }
-                    throw new ArgumentException($"Unknown attribute {attribute} for {type}");
+                    throw new ArgumentException($"未知属性 {attribute}，用于 {type}");
 
 #warning TODO:
                 case BindingCustomType.ScaleConstraint:
@@ -422,7 +422,7 @@ namespace AssetStudio
                                 return $"m_Sources.Array.data[{attribute >> 8}].weight";
                         }
                     }
-                    throw new ArgumentException($"Unknown attribute {attribute} for {type}");
+                    throw new ArgumentException($"未知属性 {attribute}，用于 {type}");
 
 #warning TODO:
                 case BindingCustomType.AimConstraint:
@@ -448,7 +448,7 @@ namespace AssetStudio
                                 return $"m_Sources.Array.data[{attribute >> 8}].weight";
                         }
                     }
-                    throw new ArgumentException($"Unknown attribute {attribute} for {type}");
+                    throw new ArgumentException($"未知属性 {attribute}，用于 {type}");
 
 #warning TODO:
                 case BindingCustomType.ParentConstraint:
@@ -490,7 +490,7 @@ namespace AssetStudio
                                 return $"m_Sources.Array.data[{attribute >> 8}].weight";
                         }
                     }
-                    throw new ArgumentException($"Unknown attribute {attribute} for {type}");
+                    throw new ArgumentException($"未知属性 {attribute}，用于 {type}");
 
 #warning TODO:
                 case BindingCustomType.LookAtConstraint:
@@ -512,7 +512,7 @@ namespace AssetStudio
                                 return "m_Roll";
                         }
                     }
-                    throw new ArgumentException($"Unknown attribute {attribute} for {type}");
+                    throw new ArgumentException($"未知属性 {attribute}，用于 {type}");
 
                 case BindingCustomType.Camera:
                     {
@@ -525,7 +525,7 @@ namespace AssetStudio
                             return "m_FocalLength";
                         }
                     }
-                    throw new ArgumentException($"Unknown attribute {attribute} for {type}");
+                    throw new ArgumentException($"未知属性 {attribute}，用于 {type}");
 
                 default:
                     throw new ArgumentException(type.ToString());

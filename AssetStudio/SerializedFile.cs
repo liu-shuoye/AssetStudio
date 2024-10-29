@@ -7,30 +7,54 @@ using System.Text.RegularExpressions;
 
 namespace AssetStudio
 {
+    
+    /// <summary> Unity 序列化文件 </summary>
     public class SerializedFile
     {
+        /// <summary> AssetStudio的资源管理器 </summary>
         public AssetsManager assetsManager;
+        /// <summary> 读取文件的读取器 </summary>
         public FileReader reader;
+        /// <summary> 游戏信息 </summary>
         public Game game;
+        /// <summary> 文件偏移量 </summary>
         public long offset = 0;
+        /// <summary> 完整路径 </summary>
         public string fullName;
+        /// <summary> 原始路径 </summary>
         public string originalPath;
+        /// <summary> 文件名 </summary>
         public string fileName;
+        /// <summary> 版本信息 </summary>
         public int[] version = { 0, 0, 0, 0 };
+        /// <summary> 构建类型 </summary>
         public BuildType buildType;
+        /// <summary> 所有对象 </summary>
         public List<Object> Objects;
+        /// <summary> 所有对象字典 </summary>
         public Dictionary<long, Object> ObjectsDic;
 
+        /// <summary> 文件头 </summary>
         public SerializedFileHeader header;
+        /// <summary> 文件字节序 </summary>
         private byte m_FileEndianess;
+        /// <summary> Unity 版本 </summary>
         public string unityVersion = "2.5.0f5";
+        /// <summary> 项目构建的目标平台 </summary>
         public BuildTarget m_TargetPlatform = BuildTarget.UnknownPlatform;
+        /// <summary> 是否启用类型树 </summary>
         private bool m_EnableTypeTree = true;
+        /// <summary> 序列号类型列表 </summary>
         public List<SerializedType> m_Types;
+        /// <summary> 大ID是否启用 </summary>
         public int bigIDEnabled = 0;
+        /// <summary> 所有对象信息 </summary>
         public List<ObjectInfo> m_Objects;
+        /// <summary> 脚本文件列表 </summary> 
         private List<LocalSerializedObjectIdentifier> m_ScriptTypes;
+        /// <summary> 依赖文件列表 </summary>
         public List<FileIdentifier> m_Externals;
+        /// <summary> 引用类型列表 </summary>
         public List<SerializedType> m_RefTypes;
         public string userInformation;
 
@@ -41,6 +65,8 @@ namespace AssetStudio
             game = assetsManager.Game;
             fullName = reader.FullPath;
             fileName = reader.FileName;
+
+            #region 读取文件头
 
             // ReadHeader
             header = new SerializedFileHeader();
@@ -70,18 +96,22 @@ namespace AssetStudio
 
             }
 
-            Logger.Verbose($"File {fileName} Info: {header}");
+            Logger.Verbose($"文件 {fileName} 信息: {header}");
+
+            #endregion
+
+            #region 读取Metadata
 
             // ReadMetadata
             if (m_FileEndianess == 0)
             {
                 reader.Endian = EndianType.LittleEndian;
-                Logger.Verbose($"Endianness {reader.Endian}");
+                Logger.Verbose($"字节序 {reader.Endian}");
             }
             if (header.m_Version >= SerializedFileFormatVersion.Unknown_7)
             {
                 unityVersion = reader.ReadStringToNull();
-                Logger.Verbose($"Unity version {unityVersion}");
+                Logger.Verbose($"Unity 版本 {unityVersion}");
                 SetVersion(unityVersion);
             }
             if (header.m_Version >= SerializedFileFormatVersion.Unknown_8)
@@ -89,25 +119,29 @@ namespace AssetStudio
                 m_TargetPlatform = (BuildTarget)reader.ReadInt32();
                 if (!Enum.IsDefined(typeof(BuildTarget), m_TargetPlatform))
                 {
-                    Logger.Verbose($"Parsed target format {m_TargetPlatform} doesn't match any of supported formats, defaulting to {BuildTarget.UnknownPlatform}");
+                    Logger.Verbose($"解析的目标格式 {m_TargetPlatform} 与任何支持的格式不匹配，默认使用 {BuildTarget.UnknownPlatform}。");
                     m_TargetPlatform = BuildTarget.UnknownPlatform;
                 }
                 else if (m_TargetPlatform == BuildTarget.NoTarget && game.Type.IsMhyGroup())
                 {
-                    Logger.Verbose($"Selected game {game.Name} is a mhy game, forcing target format {BuildTarget.StandaloneWindows64}");
+                    Logger.Verbose($"选择的游戏 {game.Name} 是米哈游游戏，强制目标格式为 {BuildTarget.StandaloneWindows64}。");
                     m_TargetPlatform = BuildTarget.StandaloneWindows64;
                 }
-                Logger.Verbose($"Target format {m_TargetPlatform}");
+                Logger.Verbose($"目标格式 {m_TargetPlatform}");
             }
             if (header.m_Version >= SerializedFileFormatVersion.HasTypeTreeHashes)
             {
                 m_EnableTypeTree = reader.ReadBoolean();
             }
 
+            #endregion
+
+            #region 读取类型
+
             // Read Types
             int typeCount = reader.ReadInt32();
             m_Types = new List<SerializedType>();
-            Logger.Verbose($"Found {typeCount} serialized types");
+            Logger.Verbose($"找到 {typeCount} 个序列化类型。");
             for (int i = 0; i < typeCount; i++)
             {
                 m_Types.Add(ReadSerializedType(false));
@@ -118,12 +152,16 @@ namespace AssetStudio
                 bigIDEnabled = reader.ReadInt32();
             }
 
+            #endregion
+
+            #region 读取对象
+
             // Read Objects
             int objectCount = reader.ReadInt32();
             m_Objects = new List<ObjectInfo>();
             Objects = new List<Object>();
             ObjectsDic = new Dictionary<long, Object>();
-            Logger.Verbose($"Found {objectCount} objects");
+            Logger.Verbose($"找到 {objectCount} 个对象。");
             for (int i = 0; i < objectCount; i++)
             {
                 var objectInfo = new ObjectInfo();
@@ -174,14 +212,17 @@ namespace AssetStudio
                 {
                     objectInfo.stripped = reader.ReadByte();
                 }
-                Logger.Verbose($"Object Info: {objectInfo}");
+                Logger.Verbose($"对象信息: {objectInfo}");
                 m_Objects.Add(objectInfo);
             }
+            #endregion
+
+            #region 读取脚本
 
             if (header.m_Version >= SerializedFileFormatVersion.HasScriptTypeIndex)
             {
                 int scriptCount = reader.ReadInt32();
-                Logger.Verbose($"Found {scriptCount} scripts");
+                Logger.Verbose($"找到 {scriptCount} 个脚本。");
                 m_ScriptTypes = new List<LocalSerializedObjectIdentifier>();
                 for (int i = 0; i < scriptCount; i++)
                 {
@@ -196,14 +237,18 @@ namespace AssetStudio
                         reader.AlignStream();
                         m_ScriptType.localIdentifierInFile = reader.ReadInt64();
                     }
-                    Logger.Verbose($"Script Info: {m_ScriptType}");
+                    Logger.Verbose($"脚本信息: {m_ScriptType}");
                     m_ScriptTypes.Add(m_ScriptType);
                 }
             }
 
+            #endregion
+
+            #region 读取依赖文件
+
             int externalsCount = reader.ReadInt32();
             m_Externals = new List<FileIdentifier>();
-            Logger.Verbose($"Found {externalsCount} externals");
+            Logger.Verbose($"找到 {externalsCount} 个外部文件。");
             for (int i = 0; i < externalsCount; i++)
             {
                 var m_External = new FileIdentifier();
@@ -218,15 +263,19 @@ namespace AssetStudio
                 }
                 m_External.pathName = reader.ReadStringToNull();
                 m_External.fileName = Path.GetFileName(m_External.pathName);
-                Logger.Verbose($"External Info: {m_External}");
+                Logger.Verbose($"外部信息: {m_External}");
                 m_Externals.Add(m_External);
             }
+
+            #endregion
+
+            #region 读取引用类型
 
             if (header.m_Version >= SerializedFileFormatVersion.SupportsRefObject)
             {
                 int refTypesCount = reader.ReadInt32();
                 m_RefTypes = new List<SerializedType>();
-                Logger.Verbose($"Found {refTypesCount} reference types");
+                Logger.Verbose($"找到 {refTypesCount} 个引用类型。");
                 for (int i = 0; i < refTypesCount; i++)
                 {
                     m_RefTypes.Add(ReadSerializedType(true));
@@ -238,9 +287,14 @@ namespace AssetStudio
                 userInformation = reader.ReadStringToNull();
             }
 
+            #endregion
+
+
+
             //reader.AlignStream(16);
         }
 
+        /// <summary> 设置Unity版本  </summary>
         public void SetVersion(string stringVersion)
         {
             if (stringVersion != strippedVersion)
@@ -253,16 +307,17 @@ namespace AssetStudio
             }
         }
 
+        /// <summary> 读取序列化对象类型 </summary>
         private SerializedType ReadSerializedType(bool isRefType)
         {
-            Logger.Verbose($"Attempting to parse serialized" + (isRefType ? " reference" : " ") + "type");
+            Logger.Verbose($"正在尝试解析序列化内容" + (isRefType ? " reference" : " ") + "type");
             var type = new SerializedType();
 
             type.classID = reader.ReadInt32();
 
             if (game.Type.IsGIGroup() && BitConverter.ToBoolean(header.m_Reserved))
             {
-                Logger.Verbose($"Encoded class ID {type.classID}, decoding...");
+                Logger.Verbose($"已编码的类ID {type.classID}，解码中...");
                 type.classID = DecodeClassID(type.classID);
             }
 
@@ -291,7 +346,7 @@ namespace AssetStudio
 
             if (m_EnableTypeTree)
             {
-                Logger.Verbose($"File has type tree enabled !!");
+                Logger.Verbose($"文件已启用类型树!!");
                 type.m_Type = new TypeTree();
                 type.m_Type.m_Nodes = new List<TypeTreeNode>();
                 if (header.m_Version >= SerializedFileFormatVersion.Unknown_12 || header.m_Version == SerializedFileFormatVersion.Unknown_10)
@@ -317,13 +372,13 @@ namespace AssetStudio
                 }
             }
 
-            Logger.Verbose($"Serialized type info: {type}");
+            Logger.Verbose($"序列化类型信息: {type}");
             return type;
         }
 
         private void ReadTypeTree(TypeTree m_Type, int level = 0)
         {
-            Logger.Verbose($"Attempting to parse type tree...");
+            Logger.Verbose($"正在尝试解析类型树...");
             var typeTreeNode = new TypeTreeNode();
             m_Type.m_Nodes.Add(typeTreeNode);
             typeTreeNode.m_Level = level;
@@ -351,15 +406,16 @@ namespace AssetStudio
                 ReadTypeTree(m_Type, level + 1);
             }
 
-            Logger.Verbose($"Type Tree Info: {m_Type}");
+            Logger.Verbose($"类型树信息: {m_Type}");
         }
 
+        /// <summary> 读取 blob 类型树 </summary>
         private void TypeTreeBlobRead(TypeTree m_Type)
         {
-            Logger.Verbose($"Attempting to parse blob type tree...");
+            Logger.Verbose($"正在尝试解析 blob 类型树...");
             int numberOfNodes = reader.ReadInt32();
             int stringBufferSize = reader.ReadInt32();
-            Logger.Verbose($"Found {numberOfNodes} nodes and {stringBufferSize} strings");
+            Logger.Verbose($"找到 {numberOfNodes} 个节点和 {stringBufferSize} 个字符串。");
             for (int i = 0; i < numberOfNodes; i++)
             {
                 var typeTreeNode = new TypeTreeNode();
@@ -389,8 +445,9 @@ namespace AssetStudio
                 }
             }
 
-            Logger.Verbose($"Type Tree Info: {m_Type}");
+            Logger.Verbose($"类型树信息: {m_Type}");
 
+            // 解析字符串
             string ReadString(EndianBinaryReader stringBufferReader, uint value)
             {
                 var isOffset = (value & 0x80000000) == 0;
@@ -410,7 +467,7 @@ namespace AssetStudio
 
         public void AddObject(Object obj)
         {
-            Logger.Verbose($"Caching object with {obj.m_PathID} in file {fileName}...");
+            Logger.Verbose($"正在缓存文件 {fileName} 中的对象 {obj.m_PathID}...");
             Objects.Add(obj);
             ObjectsDic.Add(obj.m_PathID, obj);
         }
@@ -423,8 +480,10 @@ namespace AssetStudio
             return (value ^ 0x23746FBE) - 3;
         }
 
+        /// <summary> 是否为版本移除的 Unity </summary>
         public bool IsVersionStripped => unityVersion == strippedVersion;
 
+        /// <summary> 被移除的版本信息 </summary>
         private const string strippedVersion = "0.0.0";
     }
 }

@@ -1,6 +1,9 @@
 // official Class ID Reference: https://docs.unity3d.com/Manual/ClassIDReference.html
 namespace AssetStudio
 {
+    /// <summary>
+    /// 以下定义了一系列的枚举常量，用于表示不同的资源类型或导入器
+    /// </summary>
     public enum ClassIDType
     {
         UnknownType = -1,
@@ -54,23 +57,28 @@ namespace AssetStudio
         EdgeCollider2D = 68,
         CapsuleCollider2D = 70,
         ComputeShader = 72,
+        /// <summary> 动画片段 </summary>
         AnimationClip = 74,
         ConstantForce = 75,
         WorldParticleCollider = 76,
         TagManager = 78,
         AudioListener = 81,
         AudioSource = 82,
+        /// <summary> 音频 </summary>
         AudioClip = 83,
         RenderTexture = 84,
         CustomRenderTexture = 86,
         MeshParticleEmitter = 87,
         ParticleEmitter = 88,
         Cubemap = 89,
+        /// <summary> Avatar系统-Unity统一骨骼的解决方案 </summary>
         Avatar = 90,
+        /// <summary> 动画控制器 </summary>
         AnimatorController = 91,
         GUILayer = 92,
         RuntimeAnimatorController = 93,
         ScriptMapper = 94,
+        /// <summary> 动画器 </summary>
         Animator = 95,
         TrailRenderer = 96,
         DelayedCallManager = 98,
@@ -79,6 +87,7 @@ namespace AssetStudio
         Light = 108,
         CGProgram = 109,
         BaseAnimationTrack = 110,
+        /// <summary> 旧版动画 </summary>
         Animation = 111,
         MonoBehaviour = 114,
         MonoScript = 115,
@@ -95,6 +104,7 @@ namespace AssetStudio
         NavMeshAreas = 126,
         NavMeshProjectSettings = 126,
         HaloManager = 127,
+        /// <summary> 字体 </summary>
         Font = 128,
         PlayerSettings = 129,
         NamedObject = 130,
@@ -108,6 +118,7 @@ namespace AssetStudio
         FixedJoint = 138,
         RaycastCollider = 140,
         BuildSettings = 141,
+        /// <summary> 资源包 </summary>
         AssetBundle = 142,
         CharacterController = 143,
         CharacterJoint = 144,
@@ -168,6 +179,7 @@ namespace AssetStudio
         ReflectionProbes = 216,
         Terrain = 218,
         LightProbeGroup = 220,
+        /// <summary> 动画覆盖控制器 </summary>
         AnimatorOverrideController = 221,
         CanvasRenderer = 222,
         Canvas = 223,
