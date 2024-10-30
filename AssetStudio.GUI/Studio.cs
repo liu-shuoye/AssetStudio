@@ -25,11 +25,19 @@ namespace AssetStudio.GUI
     {
         public static Game Game;
         public static bool AutoDetectMultipleBundle;
+
+        /// <summary> 是否跳过容器恢复 </summary>
         public static bool SkipContainer = false;
+
         public static AssetsManager assetsManager = new AssetsManager();
         public static AssemblyLoader assemblyLoader = new AssemblyLoader();
+
+        /// <summary>  导出资源列表 </summary>
         public static List<AssetItem> exportableAssets = new List<AssetItem>();
+
+        /// <summary>  当前显示的资源列表 </summary>
         public static List<AssetItem> visibleAssets = new List<AssetItem>();
+
         /// <summary>  更新状态栏 </summary>
         internal static Action<string> StatusStripUpdate = x => { };
 
@@ -46,6 +54,7 @@ namespace AssetStudio.GUI
                 extractedCount += ExtractFile(file, fileSavePath);
                 Progress.Report(i + 1, files.Length);
             }
+
             return extractedCount;
         }
 
@@ -59,6 +68,7 @@ namespace AssetStudio.GUI
                 extractedCount += ExtractFile(fileName, savePath);
                 Progress.Report(i + 1, fileNames.Length);
             }
+
             return extractedCount;
         }
 
@@ -97,6 +107,7 @@ namespace AssetStudio.GUI
             {
                 Logger.Error($"游戏类型不匹配，预期为 {nameof(Mr0k)}，但得到 {Game.Name} ({Game.GetType().Name})！！");
             }
+
             return 0;
         }
 
@@ -110,6 +121,7 @@ namespace AssetStudio.GUI
                 var extractPath = Path.Combine(savePath, reader.FileName + "_unpacked");
                 return ExtractStreamFile(extractPath, webFile.fileList);
             }
+
             return 0;
         }
 
@@ -141,6 +153,7 @@ namespace AssetStudio.GUI
             {
                 Logger.Error($"游戏类型不匹配，预期为 {nameof(Blk)}，但得到 {Game.Name} ({Game.GetType().Name})！！");
             }
+
             return total;
         }
 
@@ -157,6 +170,7 @@ namespace AssetStudio.GUI
                 var subReader = new FileReader(dummyPath, stream, true);
                 total += ExtractBundleFile(subReader, subSavePath);
             } while (stream.Remaining > 0);
+
             return total;
         }
 
@@ -177,6 +191,7 @@ namespace AssetStudio.GUI
             {
                 Logger.Error($"游戏类型不匹配，预期为 {nameof(Mhy)}，但得到 {Game.Name} ({Game.GetType().Name})！！");
             }
+
             return 0;
         }
 
@@ -191,16 +206,20 @@ namespace AssetStudio.GUI
                 {
                     Directory.CreateDirectory(fileDirectory);
                 }
+
                 if (!File.Exists(filePath))
                 {
                     using (var fileStream = File.Create(filePath))
                     {
                         file.stream.CopyTo(fileStream);
                     }
+
                     extractedCount += 1;
                 }
+
                 file.stream.Dispose();
             }
+
             return extractedCount;
         }
 
@@ -229,10 +248,12 @@ namespace AssetStudio.GUI
                         }
                     }
                 }
+
                 Logger.Info("已更新！！");
             }
         }
 
+        /// <summary> 构建资源列表 </summary>
         public static (string, List<TreeNode>) BuildAssetData()
         {
             StatusStripUpdate("正在构建资源列表...");
@@ -242,6 +263,7 @@ namespace AssetStudio.GUI
             var objectCount = assetsManager.assetsFileList.Sum(x => x.Objects.Count);
             var objectAssetItemDic = new Dictionary<Object, AssetItem>(objectCount);
             var mihoyoBinDataNames = new List<(PPtr<Object>, string)>();
+            // 构建容器
             var containers = new List<(PPtr<Object>, string)>();
             Progress.Reset();
             foreach (var assetsFile in assetsManager.assetsFileList)
@@ -253,58 +275,61 @@ namespace AssetStudio.GUI
                         Logger.Info("构建资产列表已取消！！");
                         return (string.Empty, Array.Empty<TreeNode>().ToList());
                     }
+
+                    // 创建资产项
                     var assetItem = new AssetItem(asset);
                     objectAssetItemDic.Add(asset, assetItem);
                     assetItem.UniqueID = "#" + i;
                     var exportable = false;
                     switch (asset)
                     {
-                        case Texture2D m_Texture2D:
-                            if (!string.IsNullOrEmpty(m_Texture2D.m_StreamData?.path))
-                                assetItem.FullSize = asset.byteSize + m_Texture2D.m_StreamData.size;
+                        case Texture2D mTexture2D:
+                            if (!string.IsNullOrEmpty(mTexture2D.m_StreamData?.path))
+                                assetItem.FullSize = asset.byteSize + mTexture2D.m_StreamData.size;
                             exportable = ClassIDType.Texture2D.CanExport();
                             break;
-                        case AudioClip m_AudioClip:
-                            if (!string.IsNullOrEmpty(m_AudioClip.m_Source))
-                                assetItem.FullSize = asset.byteSize + m_AudioClip.m_Size;
+                        case AudioClip mAudioClip:
+                            if (!string.IsNullOrEmpty(mAudioClip.m_Source))
+                                assetItem.FullSize = asset.byteSize + mAudioClip.m_Size;
                             exportable = ClassIDType.AudioClip.CanExport();
                             break;
-                        case VideoClip m_VideoClip:
-                            if (!string.IsNullOrEmpty(m_VideoClip.m_OriginalPath))
-                                assetItem.FullSize = asset.byteSize + m_VideoClip.m_ExternalResources.m_Size;
+                        case VideoClip mVideoClip:
+                            if (!string.IsNullOrEmpty(mVideoClip.m_OriginalPath))
+                                assetItem.FullSize = asset.byteSize + mVideoClip.m_ExternalResources.m_Size;
                             exportable = ClassIDType.VideoClip.CanExport();
                             break;
-                        case PlayerSettings m_PlayerSettings:
-                            productName = m_PlayerSettings.productName;
+                        case PlayerSettings mPlayerSettings:
+                            productName = mPlayerSettings.productName;
                             exportable = ClassIDType.PlayerSettings.CanExport();
                             break;
-                        case AssetBundle m_AssetBundle:
+                        case AssetBundle mAssetBundle:
                             if (!SkipContainer)
                             {
-                                foreach (var m_Container in m_AssetBundle.m_Container)
+                                // 恢复容器
+                                foreach (var mContainer in mAssetBundle.Container)
                                 {
-                                    var preloadIndex = m_Container.Value.preloadIndex;
-                                    var preloadSize = m_Container.Value.preloadSize;
+                                    var preloadIndex = mContainer.Value.PreloadIndex;
+                                    var preloadSize = mContainer.Value.PreloadSize;
                                     var preloadEnd = preloadIndex + preloadSize;
                                     for (int k = preloadIndex; k < preloadEnd; k++)
                                     {
-                                        containers.Add((m_AssetBundle.m_PreloadTable[k], m_Container.Key));
+                                        containers.Add((mAssetBundle.PreloadTable[k], mContainer.Key));
                                     }
                                 }
                             }
 
                             exportable = ClassIDType.AssetBundle.CanExport();
                             break;
-                        case IndexObject m_IndexObject:
-                            foreach(var index in m_IndexObject.AssetMap)
+                        case IndexObject mIndexObject:
+                            foreach (var index in mIndexObject.AssetMap)
                             {
                                 mihoyoBinDataNames.Add((index.Value.Object, index.Key));
                             }
 
                             exportable = ClassIDType.IndexObject.CanExport();
                             break;
-                        case ResourceManager m_ResourceManager:
-                            foreach (var m_Container in m_ResourceManager.m_Container)
+                        case ResourceManager mResourceManager:
+                            foreach (var m_Container in mResourceManager.Container)
                             {
                                 containers.Add((m_Container.Value, m_Container.Key));
                             }
@@ -325,24 +350,29 @@ namespace AssetStudio.GUI
                             exportable = true;
                             break;
                     }
+
                     if (assetItem.Text == "")
                     {
                         assetItem.Text = assetItem.TypeString + assetItem.UniqueID;
                     }
+
                     if (Properties.Settings.Default.displayAll || exportable)
                     {
                         exportableAssets.Add(assetItem);
                     }
+
                     Progress.Report(++i, objectCount);
                 }
             }
-            foreach((var pptr, var name) in mihoyoBinDataNames)
+
+            foreach ((var pptr, var name) in mihoyoBinDataNames)
             {
                 if (assetsManager.tokenSource.IsCancellationRequested)
                 {
                     Logger.Info("处理资产名称已取消！！");
                     return (string.Empty, Array.Empty<TreeNode>().ToList());
                 }
+
                 if (pptr.TryGet<MiHoYoBinData>(out var obj))
                 {
                     var assetItem = objectAssetItemDic[obj];
@@ -351,9 +381,10 @@ namespace AssetStudio.GUI
                         assetItem.Text = name;
                         assetItem.Container = hash.ToString();
                     }
-                    else assetItem.Text = $"BinFile #{assetItem.m_PathID}";
+                    else assetItem.Text = $"BinFile #{assetItem.PathID}";
                 }
             }
+
             if (!SkipContainer)
             {
                 foreach ((var pptr, var container) in containers)
@@ -363,17 +394,20 @@ namespace AssetStudio.GUI
                         Logger.Info("处理容器已取消！！");
                         return (string.Empty, Array.Empty<TreeNode>().ToList());
                     }
+
                     if (pptr.TryGet(out var obj))
                     {
                         objectAssetItemDic[obj].Container = container;
                     }
                 }
+
                 containers.Clear();
                 if (Game.Type.IsGISubGroup())
                 {
                     UpdateContainers();
                 }
             }
+
             foreach (var tmp in exportableAssets)
             {
                 if (assetsManager.tokenSource.IsCancellationRequested)
@@ -381,6 +415,7 @@ namespace AssetStudio.GUI
                     Logger.Info("处理子项已取消！！");
                     return (string.Empty, Array.Empty<TreeNode>().ToList());
                 }
+
                 tmp.SetSubItems();
             }
 
@@ -452,6 +487,7 @@ namespace AssetStudio.GUI
                                             parentGameObjectNode = new GameObjectTreeNode(parentGameObject);
                                             treeNodeDictionary.Add(parentGameObject, parentGameObjectNode);
                                         }
+
                                         parentNode = parentGameObjectNode;
                                     }
                                 }
@@ -481,6 +517,7 @@ namespace AssetStudio.GUI
 
                 Progress.Report(++j, files.Count);
             }
+
             treeNodeDictionary.Clear();
 
             objectAssetItemDic.Clear();
@@ -498,6 +535,7 @@ namespace AssetStudio.GUI
                     Logger.Info("处理类结构已取消！！");
                     return new Dictionary<string, SortedDictionary<int, TypeTreeItem>>();
                 }
+
                 if (typeMap.TryGetValue(assetsFile.unityVersion, out var curVer))
                 {
                     foreach (var type in assetsFile.m_Types.Where(x => x.m_Type != null))
@@ -507,6 +545,7 @@ namespace AssetStudio.GUI
                         {
                             key = -1 - type.m_ScriptTypeIndex;
                         }
+
                         curVer[key] = new TypeTreeItem(key, type.m_Type);
                     }
                 }
@@ -520,8 +559,10 @@ namespace AssetStudio.GUI
                         {
                             key = -1 - type.m_ScriptTypeIndex;
                         }
+
                         items[key] = new TypeTreeItem(key, type.m_Type);
                     }
+
                     typeMap.Add(assetsFile.unityVersion, items);
                 }
             }
@@ -529,19 +570,28 @@ namespace AssetStudio.GUI
             return typeMap;
         }
 
+        /// <summary>
+        /// 导出资源
+        /// </summary>
+        /// <param name="savePath">保存路径</param>
+        /// <param name="toExportAssets">导出的资源列表</param>
+        /// <param name="exportType">导出格式类型</param>
+        /// <param name="openAfterExport">导出后是否打开文件夹</param>
+        /// <returns></returns>
         public static Task ExportAssets(string savePath, List<AssetItem> toExportAssets, ExportType exportType, bool openAfterExport)
         {
             return Task.Run(() =>
             {
                 Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
 
-                int toExportCount = toExportAssets.Count;
-                int exportedCount = 0;
-                int i = 0;
+                var toExportCount = toExportAssets.Count;
+                var exportedCount = 0;
+                var i = 0;
                 Progress.Reset();
                 foreach (var asset in toExportAssets)
                 {
                     string exportPath;
+                    // 导出的文件存放方式
                     switch ((AssetGroupOption)Properties.Settings.Default.assetGroupOption)
                     {
                         case AssetGroupOption.ByType: //type name
@@ -550,27 +600,24 @@ namespace AssetStudio.GUI
                         case AssetGroupOption.ByContainer: //container path
                             if (!string.IsNullOrEmpty(asset.Container))
                             {
-                                exportPath = Path.HasExtension(asset.Container) ? Path.Combine(savePath, Path.GetDirectoryName(asset.Container)) : Path.Combine(savePath, asset.Container);
+                                exportPath = Path.HasExtension(asset.Container) ? Path.Combine(savePath, Path.GetDirectoryName(asset.Container) ?? string.Empty) : Path.Combine(savePath, asset.Container);
                             }
                             else
                             {
-                                exportPath = savePath;
+                                // 如果不存在container，就根据来源导出
+                                goto case AssetGroupOption.BySource;
                             }
+
                             break;
                         case AssetGroupOption.BySource: //source file
-                            if (string.IsNullOrEmpty(asset.SourceFile.originalPath))
-                            {
-                                exportPath = Path.Combine(savePath, asset.SourceFile.fileName + "_export");
-                            }
-                            else
-                            {
-                                exportPath = Path.Combine(savePath, Path.GetFileName(asset.SourceFile.originalPath) + "_export", asset.SourceFile.fileName);
-                            }
+                            exportPath = string.IsNullOrEmpty(asset.SourceFile.originalPath) ? Path.Combine(savePath, asset.SourceFile.fileName + "_export") : Path.Combine(savePath, Path.GetFileName(asset.SourceFile.originalPath) + "_export", asset.SourceFile.fileName);
+
                             break;
                         default:
                             exportPath = savePath;
                             break;
                     }
+
                     exportPath += Path.DirectorySeparatorChar;
                     StatusStripUpdate($"[{exportedCount}/{toExportCount}] 正在导出 {asset.TypeString}: {asset.Text}");
                     try
@@ -582,24 +629,28 @@ namespace AssetStudio.GUI
                                 {
                                     exportedCount++;
                                 }
+
                                 break;
                             case ExportType.Dump:
                                 if (ExportDumpFile(asset, exportPath))
                                 {
                                     exportedCount++;
                                 }
+
                                 break;
                             case ExportType.Convert:
                                 if (ExportConvertFile(asset, exportPath))
                                 {
                                     exportedCount++;
                                 }
+
                                 break;
                             case ExportType.JSON:
                                 if (ExportJSONFile(asset, exportPath))
                                 {
                                     exportedCount++;
                                 }
+
                                 break;
                         }
                     }
@@ -655,14 +706,16 @@ namespace AssetStudio.GUI
                                 writer.WriteAttributeString("id", ((int)asset.Type).ToString());
                                 writer.WriteValue(asset.TypeString);
                                 writer.WriteEndElement();
-                                writer.WriteElementString("PathID", asset.m_PathID.ToString());
+                                writer.WriteElementString("PathID", asset.PathID.ToString());
                                 writer.WriteElementString("Source", asset.SourceFile.fullName);
                                 writer.WriteElementString("Size", asset.FullSize.ToString());
                                 writer.WriteEndElement();
                             }
+
                             writer.WriteEndElement();
                             writer.WriteEndDocument();
                         }
+
                         break;
                 }
 
@@ -677,6 +730,7 @@ namespace AssetStudio.GUI
             });
         }
 
+        /// <summary> 导出拆分的物体 </summary>
         public static Task ExportSplitObjects(string savePath, TreeNodeCollection nodes)
         {
             return Task.Run(() =>
@@ -699,16 +753,18 @@ namespace AssetStudio.GUI
                             Progress.Report(++k, count);
                             continue;
                         }
+
                         //处理非法文件名
                         var filename = FixFileName(j.Text);
-                        if (node.Parent != null) 
+                        if (node.Parent != null)
                         {
                             filename = Path.Combine(FixFileName(node.Parent.Text), filename);
                         }
+
                         //每个文件存放在单独的文件夹
                         var targetPath = $"{savePath}{filename}{Path.DirectorySeparatorChar}";
                         //重名文件处理
-                        for (int i = 1; ; i++)
+                        for (int i = 1;; i++)
                         {
                             if (Directory.Exists(targetPath))
                             {
@@ -719,6 +775,7 @@ namespace AssetStudio.GUI
                                 break;
                             }
                         }
+
                         Directory.CreateDirectory(targetPath);
                         //导出FBX
                         StatusStripUpdate($"正在导出 {filename}.fbx");
@@ -735,15 +792,17 @@ namespace AssetStudio.GUI
                         StatusStripUpdate($"已完成导出 {filename}.fbx");
                     }
                 }
+
                 if (Properties.Settings.Default.openAfterExport)
                 {
                     OpenFolderInExplorer(savePath);
                 }
+
                 StatusStripUpdate("已完成");
 
                 IEnumerable<TreeNode> GetNodes(TreeNodeCollection nodes)
                 {
-                    foreach(TreeNode node in nodes)
+                    foreach (TreeNode node in nodes)
                     {
                         var subNodes = node.Nodes.OfType<TreeNode>().ToArray();
                         if (subNodes.Length == 0)
@@ -784,6 +843,7 @@ namespace AssetStudio.GUI
                     {
                         OpenFolderInExplorer(exportPath);
                     }
+
                     Progress.Report(1, 1);
                     StatusStripUpdate($"已完成导出 {animator.Text}");
                 }
@@ -823,6 +883,7 @@ namespace AssetStudio.GUI
 
                         Progress.Report(++i, count);
                     }
+
                     if (Properties.Settings.Default.openAfterExport)
                     {
                         OpenFolderInExplorer(exportPath);
@@ -853,6 +914,7 @@ namespace AssetStudio.GUI
                     Logger.Error($"导出模型:{name} 错误\r\n{ex.Message}\r\n{ex.StackTrace}");
                     StatusStripUpdate("导出时出错");
                 }
+
                 if (Properties.Settings.Default.openAfterExport)
                 {
                     OpenFolderInExplorer(Path.GetDirectoryName(exportPath));
@@ -892,6 +954,7 @@ namespace AssetStudio.GUI
                         StatusStripUpdate("选择了空节点进行导出。");
                     }
                 }
+
                 if (Properties.Settings.Default.openAfterExport)
                 {
                     OpenFolderInExplorer(exportPath);
@@ -929,6 +992,7 @@ namespace AssetStudio.GUI
                     assemblyLoader.Loaded = true;
                 }
             }
+
             return m_MonoBehaviour.ConvertToTypeTree(assemblyLoader);
         }
 
@@ -940,12 +1004,14 @@ namespace AssetStudio.GUI
                 var type = MonoBehaviourToTypeTree(m_MonoBehaviour);
                 str = m_MonoBehaviour.Dump(type);
             }
+
             if (string.IsNullOrEmpty(str))
             {
                 var settings = new JsonSerializerSettings();
                 settings.Converters.Add(new StringEnumConverter());
                 str = JsonConvert.SerializeObject(obj, Newtonsoft.Json.Formatting.Indented, settings);
             }
+
             return str;
         }
 

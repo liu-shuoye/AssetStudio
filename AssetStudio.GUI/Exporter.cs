@@ -75,7 +75,7 @@ namespace AssetStudio.GUI
 
         public static bool ExportTextAsset(AssetItem item, string exportPath)
         {
-            var m_TextAsset = (TextAsset)(item.Asset);
+            var mTextAsset = (TextAsset)item.Asset;
             var extension = ".txt";
             if (Properties.Settings.Default.restoreExtensionName)
             {
@@ -86,7 +86,7 @@ namespace AssetStudio.GUI
             }
             if (!TryExportFile(exportPath, item, extension, out var exportFullPath))
                 return false;
-            File.WriteAllBytes(exportFullPath, m_TextAsset.m_Script);
+            File.WriteAllBytes(exportFullPath, mTextAsset.Data);
             return true;
         }
 
@@ -173,7 +173,7 @@ namespace AssetStudio.GUI
             if (!TryExportFile(exportPath, item, ".obj", out var exportFullPath))
                 return false;
             var sb = new StringBuilder();
-            sb.AppendLine("g " + m_Mesh.m_Name);
+            sb.AppendLine("g " + m_Mesh.Name);
             #region Vertices
             if (m_Mesh.m_Vertices == null || m_Mesh.m_Vertices.Length == 0)
             {
@@ -231,7 +231,7 @@ namespace AssetStudio.GUI
             int sum = 0;
             for (var i = 0; i < m_Mesh.m_SubMeshes.Count; i++)
             {
-                sb.AppendLine($"g {m_Mesh.m_Name}_{i}");
+                sb.AppendLine($"g {m_Mesh.Name}_{i}");
                 int indexCount = (int)m_Mesh.m_SubMeshes[i].indexCount;
                 var end = sum + indexCount / 3;
                 for (int f = sum; f < end; f++)
@@ -289,6 +289,12 @@ namespace AssetStudio.GUI
             return false;
         }
 
+        /// <summary>
+        /// 导出二进制文件
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="exportPath"></param>
+        /// <returns></returns>
         public static bool ExportRawFile(AssetItem item, string exportPath)
         {
             if (!TryExportFile(exportPath, item, ".dat", out var exportFullPath))
@@ -297,6 +303,7 @@ namespace AssetStudio.GUI
             return true;
         }
 
+        /// <summary> 尝试导出文件 </summary>
         private static bool TryExportFile(string dir, AssetItem item, string extension, out string fullPath)
         {
             var fileName = FixFileName(item.Text);
@@ -306,15 +313,14 @@ namespace AssetStudio.GUI
                 Directory.CreateDirectory(dir);
                 return true;
             }
-            if (Properties.Settings.Default.allowDuplicates)
+
+            if (!Properties.Settings.Default.allowDuplicates) return false;
+            for (var i = 1; i < int.MaxValue; i++)
             {
-                for (int i = 1; i < int.MaxValue; i++)
+                fullPath = Path.Combine(dir, $"{fileName} ({i}){extension}");
+                if (!File.Exists(fullPath))
                 {
-                    fullPath = Path.Combine(dir, $"{fileName} ({i}){extension}");
-                    if (!File.Exists(fullPath))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
             return false;
@@ -479,6 +485,7 @@ namespace AssetStudio.GUI
             ModelExporter.ExportFbx(exportPath, convert, exportOptions);
         }
 
+        /// <summary> 导出文本资源 </summary>
         public static bool ExportDumpFile(AssetItem item, string exportPath)
         {
             if (!TryExportFile(exportPath, item, ".txt", out var exportFullPath))
@@ -497,6 +504,7 @@ namespace AssetStudio.GUI
             return false;
         }
 
+        /// <summary> 导出转换后的资源文件 </summary>
         public static bool ExportConvertFile(AssetItem item, string exportPath)
         {
             switch (item.Type)
@@ -548,10 +556,10 @@ namespace AssetStudio.GUI
             return true;
         }
 
+        /// <summary> 修复文件名 </summary>
         public static string FixFileName(string str)
         {
-            if (str.Length >= 260) return Path.GetRandomFileName();
-            return Path.GetInvalidFileNameChars().Aggregate(str, (current, c) => current.Replace(c, '_'));
+            return str.Length >= 260 ? Path.GetRandomFileName() : Path.GetInvalidFileNameChars().Aggregate(str, (current, c) => current.Replace(c, '_'));
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -139,7 +138,7 @@ namespace AssetStudio.GUI
                         assetItem.Text = name;
                         assetItem.Container = hash.ToString();
                     }
-                    else assetItem.Text = $"BinFile #{assetItem.m_PathID}";
+                    else assetItem.Text = $"BinFile #{assetItem.PathID}";
                 }
             }
             foreach ((var pptr, var container) in containers)
@@ -152,7 +151,7 @@ namespace AssetStudio.GUI
             }
             containers.Clear();
 
-            var matches = exportableAssets.Where(asset => entries.Any(x => x.Container == asset.Container && x.Name == asset.Text && x.Type == asset.Type && x.PathID == asset.m_PathID)).ToArray();
+            var matches = exportableAssets.Where(asset => entries.Any(x => x.Container == asset.Container && x.Name == asset.Text && x.Type == asset.Type && x.PathID == asset.PathID)).ToArray();
             exportableAssets.Clear();
             exportableAssets.AddRange(matches);
         }
@@ -185,14 +184,14 @@ namespace AssetStudio.GUI
                     exportable = ClassIDType.MonoBehaviour.CanExport();
                     break;
                 case AssetBundle m_AssetBundle:
-                    foreach (var m_Container in m_AssetBundle.m_Container)
+                    foreach (var m_Container in m_AssetBundle.Container)
                     {
-                        var preloadIndex = m_Container.Value.preloadIndex;
-                        var preloadSize = m_Container.Value.preloadSize;
+                        var preloadIndex = m_Container.Value.PreloadIndex;
+                        var preloadSize = m_Container.Value.PreloadSize;
                         var preloadEnd = preloadIndex + preloadSize;
                         for (int k = preloadIndex; k < preloadEnd; k++)
                         {
-                            containers.Add((m_AssetBundle.m_PreloadTable[k], m_Container.Key));
+                            containers.Add((m_AssetBundle.PreloadTable[k], m_Container.Key));
                         }
                     }
 
@@ -207,7 +206,7 @@ namespace AssetStudio.GUI
                     exportable = ClassIDType.IndexObject.CanExport();
                     break;
                 case ResourceManager m_ResourceManager:
-                    foreach (var m_Container in m_ResourceManager.m_Container)
+                    foreach (var m_Container in m_ResourceManager.Container)
                     {
                         containers.Add((m_Container.Value, m_Container.Key));
                     }

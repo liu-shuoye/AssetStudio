@@ -182,7 +182,7 @@ namespace AssetStudio
         public static YAMLMappingNode ExportYAML(this AnimationClip clip, int[] version)
         {
             var node = new YAMLMappingNode();
-            node.Add(nameof(clip.m_Name), clip.m_Name);
+            node.Add(nameof(clip.Name), clip.Name);
             node.AddSerializedVersion(ToSerializedVersion(version));
             node.Add(nameof(clip.m_Legacy), clip.m_Legacy);
             node.Add(nameof(clip.m_Compressed), clip.m_Compressed);
