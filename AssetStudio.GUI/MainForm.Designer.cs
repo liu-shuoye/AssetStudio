@@ -108,6 +108,7 @@ namespace AssetStudio.GUI
             clearConsoleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             enableFileLogging = new System.Windows.Forms.ToolStripMenuItem();
             loggedEventsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            openLogFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             miscToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             MapNameComboBox = new System.Windows.Forms.ToolStripComboBox();
             buildMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -121,6 +122,9 @@ namespace AssetStudio.GUI
             loadAIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             loadCABMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             assetBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            luaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            enableLuaScripts = new System.Windows.Forms.ToolStripMenuItem();
+            luaTemplates = new System.Windows.Forms.ToolStripMenuItem();
             assetHelpersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             MapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             assetMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -162,8 +166,8 @@ namespace AssetStudio.GUI
             fontPreviewBox = new System.Windows.Forms.RichTextBox();
             glControl = new OpenTK.WinForms.GLControl();
             textPreviewBox = new System.Windows.Forms.TextBox();
-            imgPreviewBox = new System.Windows.Forms.PictureBox();
             classTextBox = new System.Windows.Forms.TextBox();
+            imgPreviewBox = new System.Windows.Forms.PictureBox();
             tabPage5 = new System.Windows.Forms.TabPage();
             dumpTextBox = new System.Windows.Forms.TextBox();
             statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -176,10 +180,9 @@ namespace AssetStudio.GUI
             exportAnimatorwithselectedAnimationClipMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             goToSceneHierarchyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             showOriginalFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            luaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            enableLuaScripts = new System.Windows.Forms.ToolStripMenuItem();
-            luaTemplates = new System.Windows.Forms.ToolStripMenuItem();
-            openLogFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            exportSpineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            exportAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            exportSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -196,6 +199,7 @@ namespace AssetStudio.GUI
             FMODpanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)FMODprogressBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)FMODvolumeBar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)imgPreviewBox).BeginInit();
             tabPage5.SuspendLayout();
             statusStrip1.SuspendLayout();
             contextMenuStrip1.SuspendLayout();
@@ -203,10 +207,11 @@ namespace AssetStudio.GUI
             // 
             // menuStrip1
             // 
+            menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem, optionsToolStripMenuItem, modelToolStripMenuItem, exportToolStripMenuItem, filterTypeToolStripMenuItem, debugMenuItem, miscToolStripMenuItem, luaToolStripMenuItem });
             menuStrip1.Location = new System.Drawing.Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new System.Drawing.Size(1264, 24);
+            menuStrip1.Size = new System.Drawing.Size(1264, 28);
             menuStrip1.TabIndex = 0;
             menuStrip1.Text = "菜单条1";
             // 
@@ -214,58 +219,58 @@ namespace AssetStudio.GUI
             // 
             fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { loadFileToolStripMenuItem, loadFolderToolStripMenuItem, toolStripMenuItem1, extractFileToolStripMenuItem, extractFolderToolStripMenuItem, toolStripSeparator6, resetToolStripMenuItem, abortStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            fileToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
             fileToolStripMenuItem.Text = "文件";
             // 
             // loadFileToolStripMenuItem
             // 
             loadFileToolStripMenuItem.Name = "loadFileToolStripMenuItem";
-            loadFileToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            loadFileToolStripMenuItem.Size = new System.Drawing.Size(167, 26);
             loadFileToolStripMenuItem.Text = "加载文件";
             loadFileToolStripMenuItem.Click += loadFile_Click;
             // 
             // loadFolderToolStripMenuItem
             // 
             loadFolderToolStripMenuItem.Name = "loadFolderToolStripMenuItem";
-            loadFolderToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            loadFolderToolStripMenuItem.Size = new System.Drawing.Size(167, 26);
             loadFolderToolStripMenuItem.Text = "加载文件夹";
             loadFolderToolStripMenuItem.Click += loadFolder_Click;
             // 
             // toolStripMenuItem1
             // 
             toolStripMenuItem1.Name = "toolStripMenuItem1";
-            toolStripMenuItem1.Size = new System.Drawing.Size(141, 6);
+            toolStripMenuItem1.Size = new System.Drawing.Size(164, 6);
             // 
             // extractFileToolStripMenuItem
             // 
             extractFileToolStripMenuItem.Name = "extractFileToolStripMenuItem";
-            extractFileToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            extractFileToolStripMenuItem.Size = new System.Drawing.Size(167, 26);
             extractFileToolStripMenuItem.Text = "提取文件";
             extractFileToolStripMenuItem.Click += extractFileToolStripMenuItem_Click;
             // 
             // extractFolderToolStripMenuItem
             // 
             extractFolderToolStripMenuItem.Name = "extractFolderToolStripMenuItem";
-            extractFolderToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            extractFolderToolStripMenuItem.Size = new System.Drawing.Size(167, 26);
             extractFolderToolStripMenuItem.Text = "提取文件夹";
             extractFolderToolStripMenuItem.Click += extractFolderToolStripMenuItem_Click;
             // 
             // toolStripSeparator6
             // 
             toolStripSeparator6.Name = "toolStripSeparator6";
-            toolStripSeparator6.Size = new System.Drawing.Size(141, 6);
+            toolStripSeparator6.Size = new System.Drawing.Size(164, 6);
             // 
             // resetToolStripMenuItem
             // 
             resetToolStripMenuItem.Name = "resetToolStripMenuItem";
-            resetToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            resetToolStripMenuItem.Size = new System.Drawing.Size(167, 26);
             resetToolStripMenuItem.Text = "重置";
             resetToolStripMenuItem.Click += resetToolStripMenuItem_Click;
             // 
             // abortStripMenuItem
             // 
             abortStripMenuItem.Name = "abortStripMenuItem";
-            abortStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            abortStripMenuItem.Size = new System.Drawing.Size(167, 26);
             abortStripMenuItem.Text = "中止";
             abortStripMenuItem.Click += abortStripMenuItem_Click;
             // 
@@ -273,14 +278,14 @@ namespace AssetStudio.GUI
             // 
             optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { displayAll, toolStripSeparator10, enablePreview, enableModelPreview, modelsOnly, toolStripSeparator11, displayInfo, enableResolveDependencies, allowDuplicates, skipContainer, toolStripSeparator12, toolStripMenuItem14, specifyUnityCNKey, toolStripSeparator13, toolStripMenuItem18, AutoDetectMultipleBundle, toolStripMenuItem19, showExpOpt });
             optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            optionsToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
             optionsToolStripMenuItem.Text = "选项";
             // 
             // displayAll
             // 
             displayAll.CheckOnClick = true;
             displayAll.Name = "displayAll";
-            displayAll.Size = new System.Drawing.Size(225, 22);
+            displayAll.Size = new System.Drawing.Size(212, 26);
             displayAll.Text = "显示所有资产";
             displayAll.ToolTipText = "选中此选项将显示所有类型的资产。不可提取的资产可以导出原始文件。";
             displayAll.CheckedChanged += displayAll_CheckedChanged;
@@ -288,7 +293,7 @@ namespace AssetStudio.GUI
             // toolStripSeparator10
             // 
             toolStripSeparator10.Name = "toolStripSeparator10";
-            toolStripSeparator10.Size = new System.Drawing.Size(222, 6);
+            toolStripSeparator10.Size = new System.Drawing.Size(209, 6);
             // 
             // enablePreview
             // 
@@ -296,7 +301,7 @@ namespace AssetStudio.GUI
             enablePreview.CheckOnClick = true;
             enablePreview.CheckState = System.Windows.Forms.CheckState.Checked;
             enablePreview.Name = "enablePreview";
-            enablePreview.Size = new System.Drawing.Size(225, 22);
+            enablePreview.Size = new System.Drawing.Size(212, 26);
             enablePreview.Text = "启用预览";
             enablePreview.ToolTipText = "切换可读资产的加载和预览，例如图像、声音、文本等。\r\n如果遇到性能或兼容性问题，请禁用预览。";
             enablePreview.CheckedChanged += enablePreview_Check;
@@ -305,7 +310,7 @@ namespace AssetStudio.GUI
             // 
             enableModelPreview.CheckOnClick = true;
             enableModelPreview.Name = "enableModelPreview";
-            enableModelPreview.Size = new System.Drawing.Size(225, 22);
+            enableModelPreview.Size = new System.Drawing.Size(212, 26);
             enableModelPreview.Text = "启用模型预览";
             enableModelPreview.CheckedChanged += enableModelPreview_CheckedChanged;
             // 
@@ -313,14 +318,14 @@ namespace AssetStudio.GUI
             // 
             modelsOnly.CheckOnClick = true;
             modelsOnly.Name = "modelsOnly";
-            modelsOnly.Size = new System.Drawing.Size(225, 22);
+            modelsOnly.Size = new System.Drawing.Size(212, 26);
             modelsOnly.Text = "仅过滤模型";
             modelsOnly.CheckedChanged += modelsOnly_CheckedChanged;
             // 
             // toolStripSeparator11
             // 
             toolStripSeparator11.Name = "toolStripSeparator11";
-            toolStripSeparator11.Size = new System.Drawing.Size(222, 6);
+            toolStripSeparator11.Size = new System.Drawing.Size(209, 6);
             // 
             // displayInfo
             // 
@@ -328,7 +333,7 @@ namespace AssetStudio.GUI
             displayInfo.CheckOnClick = true;
             displayInfo.CheckState = System.Windows.Forms.CheckState.Checked;
             displayInfo.Name = "displayInfo";
-            displayInfo.Size = new System.Drawing.Size(225, 22);
+            displayInfo.Size = new System.Drawing.Size(212, 26);
             displayInfo.Text = "显示资产信息";
             displayInfo.ToolTipText = "切换显示每个资产信息的叠加层，例如图像大小、格式、音频比特率等。";
             displayInfo.CheckedChanged += displayAssetInfo_Check;
@@ -339,7 +344,7 @@ namespace AssetStudio.GUI
             enableResolveDependencies.CheckOnClick = true;
             enableResolveDependencies.CheckState = System.Windows.Forms.CheckState.Checked;
             enableResolveDependencies.Name = "enableResolveDependencies";
-            enableResolveDependencies.Size = new System.Drawing.Size(225, 22);
+            enableResolveDependencies.Size = new System.Drawing.Size(212, 26);
             enableResolveDependencies.Text = "启用解决依赖关系";
             enableResolveDependencies.ToolTipText = "切换加载资产的行为。\r\n禁用此选项以在没有依赖项的情况下加载文件。";
             enableResolveDependencies.CheckedChanged += enableResolveDependencies_CheckedChanged;
@@ -348,7 +353,7 @@ namespace AssetStudio.GUI
             // 
             allowDuplicates.CheckOnClick = true;
             allowDuplicates.Name = "allowDuplicates";
-            allowDuplicates.Size = new System.Drawing.Size(225, 22);
+            allowDuplicates.Size = new System.Drawing.Size(212, 26);
             allowDuplicates.Text = "允许重复";
             allowDuplicates.ToolTipText = "切换导出资产的行为。\r\n启用此选项以允许导出具有重复名称的资产。";
             allowDuplicates.CheckedChanged += allowDuplicates_CheckedChanged;
@@ -357,7 +362,7 @@ namespace AssetStudio.GUI
             // 
             skipContainer.CheckOnClick = true;
             skipContainer.Name = "skipContainer";
-            skipContainer.Size = new System.Drawing.Size(225, 22);
+            skipContainer.Size = new System.Drawing.Size(212, 26);
             skipContainer.Text = "跳过容器恢复";
             skipContainer.ToolTipText = "跳过容器恢复步骤。\n处理大量文件时可提高加载速度。";
             skipContainer.CheckedChanged += skipContainer_CheckedChanged;
@@ -365,61 +370,59 @@ namespace AssetStudio.GUI
             // toolStripSeparator12
             // 
             toolStripSeparator12.Name = "toolStripSeparator12";
-            toolStripSeparator12.Size = new System.Drawing.Size(222, 6);
+            toolStripSeparator12.Size = new System.Drawing.Size(209, 6);
             // 
             // toolStripMenuItem14
             // 
             toolStripMenuItem14.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { specifyUnityVersion });
             toolStripMenuItem14.Name = "toolStripMenuItem14";
-            toolStripMenuItem14.Size = new System.Drawing.Size(225, 22);
+            toolStripMenuItem14.Size = new System.Drawing.Size(212, 26);
             toolStripMenuItem14.Text = "指定Unity版本";
             // 
             // specifyUnityVersion
             // 
-            specifyUnityVersion.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             specifyUnityVersion.Name = "specifyUnityVersion";
-            specifyUnityVersion.Size = new System.Drawing.Size(100, 23);
+            specifyUnityVersion.Size = new System.Drawing.Size(100, 27);
             // 
             // specifyUnityCNKey
             // 
             specifyUnityCNKey.Name = "specifyUnityCNKey";
-            specifyUnityCNKey.Size = new System.Drawing.Size(225, 22);
+            specifyUnityCNKey.Size = new System.Drawing.Size(212, 26);
             specifyUnityCNKey.Text = "指定UnityCN密钥";
             specifyUnityCNKey.Click += specifyUnityCNKey_Click;
             // 
             // toolStripSeparator13
             // 
             toolStripSeparator13.Name = "toolStripSeparator13";
-            toolStripSeparator13.Size = new System.Drawing.Size(222, 6);
+            toolStripSeparator13.Size = new System.Drawing.Size(209, 6);
             // 
             // toolStripMenuItem18
             // 
             toolStripMenuItem18.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { specifyGame });
             toolStripMenuItem18.Name = "toolStripMenuItem18";
-            toolStripMenuItem18.Size = new System.Drawing.Size(225, 22);
+            toolStripMenuItem18.Size = new System.Drawing.Size(212, 26);
             toolStripMenuItem18.Text = "指定游戏";
             // 
             // specifyGame
             // 
             specifyGame.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             specifyGame.Name = "specifyGame";
-            specifyGame.Size = new System.Drawing.Size(121, 23);
-            //
+            specifyGame.Size = new System.Drawing.Size(121, 28);
+            // 
             // AutoDetectMultipleBundle
-            //
+            // 
             AutoDetectMultipleBundle.CheckOnClick = true;
             AutoDetectMultipleBundle.Name = "AutoDetectMultipleBundle";
-            AutoDetectMultipleBundle.Size = new System.Drawing.Size(225, 23);
+            AutoDetectMultipleBundle.Size = new System.Drawing.Size(212, 26);
             AutoDetectMultipleBundle.Text = "自动检测多个包";
             AutoDetectMultipleBundle.ToolTipText = "当同一个文件中有多个包时启用此功能。";
             AutoDetectMultipleBundle.CheckedChanged += autoDetectMultipleBundle_CheckedChanged;
-            
             // 
             // toolStripMenuItem19
             // 
             toolStripMenuItem19.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { specifyAIVersion });
             toolStripMenuItem19.Name = "toolStripMenuItem19";
-            toolStripMenuItem19.Size = new System.Drawing.Size(225, 22);
+            toolStripMenuItem19.Size = new System.Drawing.Size(212, 26);
             toolStripMenuItem19.Text = "指定AI版本";
             toolStripMenuItem19.DropDownOpening += toolStripMenuItem19_DropDownOpening;
             // 
@@ -428,78 +431,78 @@ namespace AssetStudio.GUI
             specifyAIVersion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             specifyAIVersion.Items.AddRange(new object[] { "None" });
             specifyAIVersion.Name = "specifyAIVersion";
-            specifyAIVersion.Size = new System.Drawing.Size(121, 23);
+            specifyAIVersion.Size = new System.Drawing.Size(121, 28);
             // 
             // showExpOpt
             // 
             showExpOpt.Name = "showExpOpt";
-            showExpOpt.Size = new System.Drawing.Size(225, 22);
+            showExpOpt.Size = new System.Drawing.Size(212, 26);
             showExpOpt.Text = "导出选项";
             showExpOpt.Click += showExpOpt_Click;
             // 
             // modelToolStripMenuItem
             // 
-            modelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { exportAllObjectssplitToolStripMenuItem1, exportSelectedObjectsToolStripMenuItem, exportSelectedObjectsWithAnimationClipToolStripMenuItem, toolStripSeparator1, exportSelectedObjectsmergeToolStripMenuItem, exportSelectedObjectsmergeWithAnimationClipToolStripMenuItem, toolStripSeparator9, exportSelectedNodessplitToolStripMenuItem, exportSelectedNodessplitSelectedAnimationClipsToolStripMenuItem });
+            modelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { exportAllObjectssplitToolStripMenuItem1, exportSelectedObjectsToolStripMenuItem, exportSelectedObjectsWithAnimationClipToolStripMenuItem, toolStripSeparator1, exportSelectedObjectsmergeToolStripMenuItem, exportSelectedObjectsmergeWithAnimationClipToolStripMenuItem, toolStripSeparator9, exportSelectedNodessplitToolStripMenuItem, exportSelectedNodessplitSelectedAnimationClipsToolStripMenuItem, exportSpineToolStripMenuItem });
             modelToolStripMenuItem.Name = "modelToolStripMenuItem";
-            modelToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
+            modelToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
             modelToolStripMenuItem.Text = "模型";
             // 
             // exportAllObjectssplitToolStripMenuItem1
             // 
             exportAllObjectssplitToolStripMenuItem1.Name = "exportAllObjectssplitToolStripMenuItem1";
-            exportAllObjectssplitToolStripMenuItem1.Size = new System.Drawing.Size(382, 22);
+            exportAllObjectssplitToolStripMenuItem1.Size = new System.Drawing.Size(362, 26);
             exportAllObjectssplitToolStripMenuItem1.Text = "导出所有对象（拆分）";
             exportAllObjectssplitToolStripMenuItem1.Click += exportAllObjectssplitToolStripMenuItem1_Click;
             // 
             // exportSelectedObjectsToolStripMenuItem
             // 
             exportSelectedObjectsToolStripMenuItem.Name = "exportSelectedObjectsToolStripMenuItem";
-            exportSelectedObjectsToolStripMenuItem.Size = new System.Drawing.Size(382, 22);
+            exportSelectedObjectsToolStripMenuItem.Size = new System.Drawing.Size(362, 26);
             exportSelectedObjectsToolStripMenuItem.Text = "导出选定对象（拆分）";
             exportSelectedObjectsToolStripMenuItem.Click += exportSelectedObjectsToolStripMenuItem_Click;
             // 
             // exportSelectedObjectsWithAnimationClipToolStripMenuItem
             // 
             exportSelectedObjectsWithAnimationClipToolStripMenuItem.Name = "exportSelectedObjectsWithAnimationClipToolStripMenuItem";
-            exportSelectedObjectsWithAnimationClipToolStripMenuItem.Size = new System.Drawing.Size(382, 22);
+            exportSelectedObjectsWithAnimationClipToolStripMenuItem.Size = new System.Drawing.Size(362, 26);
             exportSelectedObjectsWithAnimationClipToolStripMenuItem.Text = "导出选定对象（拆分）+ 选定的动画剪辑";
             exportSelectedObjectsWithAnimationClipToolStripMenuItem.Click += exportObjectswithAnimationClipMenuItem_Click;
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new System.Drawing.Size(379, 6);
+            toolStripSeparator1.Size = new System.Drawing.Size(359, 6);
             // 
             // exportSelectedObjectsmergeToolStripMenuItem
             // 
             exportSelectedObjectsmergeToolStripMenuItem.Name = "exportSelectedObjectsmergeToolStripMenuItem";
-            exportSelectedObjectsmergeToolStripMenuItem.Size = new System.Drawing.Size(382, 22);
+            exportSelectedObjectsmergeToolStripMenuItem.Size = new System.Drawing.Size(362, 26);
             exportSelectedObjectsmergeToolStripMenuItem.Text = "导出选定对象（合并）";
             exportSelectedObjectsmergeToolStripMenuItem.Click += exportSelectedObjectsmergeToolStripMenuItem_Click;
             // 
             // exportSelectedObjectsmergeWithAnimationClipToolStripMenuItem
             // 
             exportSelectedObjectsmergeWithAnimationClipToolStripMenuItem.Name = "exportSelectedObjectsmergeWithAnimationClipToolStripMenuItem";
-            exportSelectedObjectsmergeWithAnimationClipToolStripMenuItem.Size = new System.Drawing.Size(382, 22);
+            exportSelectedObjectsmergeWithAnimationClipToolStripMenuItem.Size = new System.Drawing.Size(362, 26);
             exportSelectedObjectsmergeWithAnimationClipToolStripMenuItem.Text = "导出选定对象（合并）+ 选定的动画剪辑";
             exportSelectedObjectsmergeWithAnimationClipToolStripMenuItem.Click += exportSelectedObjectsmergeWithAnimationClipToolStripMenuItem_Click;
             // 
             // toolStripSeparator9
             // 
             toolStripSeparator9.Name = "toolStripSeparator9";
-            toolStripSeparator9.Size = new System.Drawing.Size(379, 6);
+            toolStripSeparator9.Size = new System.Drawing.Size(359, 6);
             // 
             // exportSelectedNodessplitToolStripMenuItem
             // 
             exportSelectedNodessplitToolStripMenuItem.Name = "exportSelectedNodessplitToolStripMenuItem";
-            exportSelectedNodessplitToolStripMenuItem.Size = new System.Drawing.Size(382, 22);
+            exportSelectedNodessplitToolStripMenuItem.Size = new System.Drawing.Size(362, 26);
             exportSelectedNodessplitToolStripMenuItem.Text = "导出选定节点（拆分）";
             exportSelectedNodessplitToolStripMenuItem.Click += exportSelectedNodessplitToolStripMenuItem_Click;
             // 
             // exportSelectedNodessplitSelectedAnimationClipsToolStripMenuItem
             // 
             exportSelectedNodessplitSelectedAnimationClipsToolStripMenuItem.Name = "exportSelectedNodessplitSelectedAnimationClipsToolStripMenuItem";
-            exportSelectedNodessplitSelectedAnimationClipsToolStripMenuItem.Size = new System.Drawing.Size(382, 22);
+            exportSelectedNodessplitSelectedAnimationClipsToolStripMenuItem.Size = new System.Drawing.Size(362, 26);
             exportSelectedNodessplitSelectedAnimationClipsToolStripMenuItem.Text = "导出选定节点（拆分）+ 选定的动画剪辑";
             exportSelectedNodessplitSelectedAnimationClipsToolStripMenuItem.Click += exportSelectedNodessplitSelectedAnimationClipsToolStripMenuItem_Click;
             // 
@@ -507,72 +510,72 @@ namespace AssetStudio.GUI
             // 
             exportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { exportAllAssetsMenuItem, exportSelectedAssetsMenuItem, exportFilteredAssetsMenuItem, toolStripSeparator3, exportAnimatorWithSelectedAnimationClipToolStripMenuItem, toolStripSeparator4, toolStripMenuItem2, toolStripMenuItem3, toolStripMenuItem16, toolStripSeparator2, toolStripMenuItem10, sceneHierarchy });
             exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            exportToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
+            exportToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
             exportToolStripMenuItem.Text = "导出";
             // 
             // exportAllAssetsMenuItem
             // 
             exportAllAssetsMenuItem.Name = "exportAllAssetsMenuItem";
-            exportAllAssetsMenuItem.Size = new System.Drawing.Size(266, 22);
+            exportAllAssetsMenuItem.Size = new System.Drawing.Size(261, 26);
             exportAllAssetsMenuItem.Text = "所有资产";
             exportAllAssetsMenuItem.Click += exportAllAssetsMenuItem_Click;
             // 
             // exportSelectedAssetsMenuItem
             // 
             exportSelectedAssetsMenuItem.Name = "exportSelectedAssetsMenuItem";
-            exportSelectedAssetsMenuItem.Size = new System.Drawing.Size(266, 22);
+            exportSelectedAssetsMenuItem.Size = new System.Drawing.Size(261, 26);
             exportSelectedAssetsMenuItem.Text = "选定的资产";
             exportSelectedAssetsMenuItem.Click += exportSelectedAssetsMenuItem_Click;
             // 
             // exportFilteredAssetsMenuItem
             // 
             exportFilteredAssetsMenuItem.Name = "exportFilteredAssetsMenuItem";
-            exportFilteredAssetsMenuItem.Size = new System.Drawing.Size(266, 22);
+            exportFilteredAssetsMenuItem.Size = new System.Drawing.Size(261, 26);
             exportFilteredAssetsMenuItem.Text = "已过滤的资产";
             exportFilteredAssetsMenuItem.Click += exportFilteredAssetsMenuItem_Click;
             // 
             // toolStripSeparator3
             // 
             toolStripSeparator3.Name = "toolStripSeparator3";
-            toolStripSeparator3.Size = new System.Drawing.Size(263, 6);
+            toolStripSeparator3.Size = new System.Drawing.Size(258, 6);
             // 
             // exportAnimatorWithSelectedAnimationClipToolStripMenuItem
             // 
             exportAnimatorWithSelectedAnimationClipToolStripMenuItem.Name = "exportAnimatorWithSelectedAnimationClipToolStripMenuItem";
-            exportAnimatorWithSelectedAnimationClipToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
+            exportAnimatorWithSelectedAnimationClipToolStripMenuItem.Size = new System.Drawing.Size(261, 26);
             exportAnimatorWithSelectedAnimationClipToolStripMenuItem.Text = "动画师 + 选定的动画剪辑";
             exportAnimatorWithSelectedAnimationClipToolStripMenuItem.Click += exportAnimatorwithAnimationClipMenuItem_Click;
             // 
             // toolStripSeparator4
             // 
             toolStripSeparator4.Name = "toolStripSeparator4";
-            toolStripSeparator4.Size = new System.Drawing.Size(263, 6);
+            toolStripSeparator4.Size = new System.Drawing.Size(258, 6);
             // 
             // toolStripMenuItem2
             // 
             toolStripMenuItem2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripMenuItem4, toolStripMenuItem5, toolStripMenuItem6 });
             toolStripMenuItem2.Name = "toolStripMenuItem2";
-            toolStripMenuItem2.Size = new System.Drawing.Size(266, 22);
+            toolStripMenuItem2.Size = new System.Drawing.Size(261, 26);
             toolStripMenuItem2.Text = "原始";
             // 
             // toolStripMenuItem4
             // 
             toolStripMenuItem4.Name = "toolStripMenuItem4";
-            toolStripMenuItem4.Size = new System.Drawing.Size(152, 22);
+            toolStripMenuItem4.Size = new System.Drawing.Size(182, 26);
             toolStripMenuItem4.Text = "所有资产";
             toolStripMenuItem4.Click += toolStripMenuItem4_Click;
             // 
             // toolStripMenuItem5
             // 
             toolStripMenuItem5.Name = "toolStripMenuItem5";
-            toolStripMenuItem5.Size = new System.Drawing.Size(152, 22);
+            toolStripMenuItem5.Size = new System.Drawing.Size(182, 26);
             toolStripMenuItem5.Text = "选定的资产";
             toolStripMenuItem5.Click += toolStripMenuItem5_Click;
             // 
             // toolStripMenuItem6
             // 
             toolStripMenuItem6.Name = "toolStripMenuItem6";
-            toolStripMenuItem6.Size = new System.Drawing.Size(152, 22);
+            toolStripMenuItem6.Size = new System.Drawing.Size(182, 26);
             toolStripMenuItem6.Text = "已过滤的资产";
             toolStripMenuItem6.Click += toolStripMenuItem6_Click;
             // 
@@ -580,27 +583,27 @@ namespace AssetStudio.GUI
             // 
             toolStripMenuItem3.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripMenuItem7, toolStripMenuItem8, toolStripMenuItem9 });
             toolStripMenuItem3.Name = "toolStripMenuItem3";
-            toolStripMenuItem3.Size = new System.Drawing.Size(266, 22);
+            toolStripMenuItem3.Size = new System.Drawing.Size(261, 26);
             toolStripMenuItem3.Text = "转储";
             // 
             // toolStripMenuItem7
             // 
             toolStripMenuItem7.Name = "toolStripMenuItem7";
-            toolStripMenuItem7.Size = new System.Drawing.Size(152, 22);
+            toolStripMenuItem7.Size = new System.Drawing.Size(182, 26);
             toolStripMenuItem7.Text = "所有资产";
             toolStripMenuItem7.Click += toolStripMenuItem7_Click;
             // 
             // toolStripMenuItem8
             // 
             toolStripMenuItem8.Name = "toolStripMenuItem8";
-            toolStripMenuItem8.Size = new System.Drawing.Size(152, 22);
+            toolStripMenuItem8.Size = new System.Drawing.Size(182, 26);
             toolStripMenuItem8.Text = "选定的资产";
             toolStripMenuItem8.Click += toolStripMenuItem8_Click;
             // 
             // toolStripMenuItem9
             // 
             toolStripMenuItem9.Name = "toolStripMenuItem9";
-            toolStripMenuItem9.Size = new System.Drawing.Size(152, 22);
+            toolStripMenuItem9.Size = new System.Drawing.Size(182, 26);
             toolStripMenuItem9.Text = "已过滤的资产";
             toolStripMenuItem9.Click += toolStripMenuItem9_Click;
             // 
@@ -608,67 +611,67 @@ namespace AssetStudio.GUI
             // 
             toolStripMenuItem16.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripMenuItem17, toolStripMenuItem24, toolStripMenuItem25 });
             toolStripMenuItem16.Name = "toolStripMenuItem16";
-            toolStripMenuItem16.Size = new System.Drawing.Size(266, 22);
+            toolStripMenuItem16.Size = new System.Drawing.Size(261, 26);
             toolStripMenuItem16.Text = "JSON";
             // 
             // toolStripMenuItem17
             // 
             toolStripMenuItem17.Name = "toolStripMenuItem17";
-            toolStripMenuItem17.Size = new System.Drawing.Size(152, 22);
+            toolStripMenuItem17.Size = new System.Drawing.Size(182, 26);
             toolStripMenuItem17.Text = "所有资产";
             toolStripMenuItem17.Click += toolStripMenuItem17_Click;
             // 
             // toolStripMenuItem24
             // 
             toolStripMenuItem24.Name = "toolStripMenuItem24";
-            toolStripMenuItem24.Size = new System.Drawing.Size(152, 22);
+            toolStripMenuItem24.Size = new System.Drawing.Size(182, 26);
             toolStripMenuItem24.Text = "选定的资产";
             toolStripMenuItem24.Click += toolStripMenuItem24_Click;
             // 
             // toolStripMenuItem25
             // 
             toolStripMenuItem25.Name = "toolStripMenuItem25";
-            toolStripMenuItem25.Size = new System.Drawing.Size(152, 22);
+            toolStripMenuItem25.Size = new System.Drawing.Size(182, 26);
             toolStripMenuItem25.Text = "已过滤的资产";
             toolStripMenuItem25.Click += toolStripMenuItem25_Click;
             // 
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new System.Drawing.Size(263, 6);
+            toolStripSeparator2.Size = new System.Drawing.Size(258, 6);
             // 
             // toolStripMenuItem10
             // 
             toolStripMenuItem10.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripMenuItem11, toolStripMenuItem12, toolStripMenuItem13 });
             toolStripMenuItem10.Name = "toolStripMenuItem10";
-            toolStripMenuItem10.Size = new System.Drawing.Size(266, 22);
+            toolStripMenuItem10.Size = new System.Drawing.Size(261, 26);
             toolStripMenuItem10.Text = "资产列表导出为XML";
             // 
             // toolStripMenuItem11
             // 
             toolStripMenuItem11.Name = "toolStripMenuItem11";
-            toolStripMenuItem11.Size = new System.Drawing.Size(152, 22);
+            toolStripMenuItem11.Size = new System.Drawing.Size(182, 26);
             toolStripMenuItem11.Text = "所有资产";
             toolStripMenuItem11.Click += toolStripMenuItem11_Click;
             // 
             // toolStripMenuItem12
             // 
             toolStripMenuItem12.Name = "toolStripMenuItem12";
-            toolStripMenuItem12.Size = new System.Drawing.Size(152, 22);
+            toolStripMenuItem12.Size = new System.Drawing.Size(182, 26);
             toolStripMenuItem12.Text = "选定的资产";
             toolStripMenuItem12.Click += toolStripMenuItem12_Click;
             // 
             // toolStripMenuItem13
             // 
             toolStripMenuItem13.Name = "toolStripMenuItem13";
-            toolStripMenuItem13.Size = new System.Drawing.Size(152, 22);
+            toolStripMenuItem13.Size = new System.Drawing.Size(182, 26);
             toolStripMenuItem13.Text = "已过滤的资产";
             toolStripMenuItem13.Click += toolStripMenuItem13_Click;
             // 
             // sceneHierarchy
             // 
             sceneHierarchy.Name = "sceneHierarchy";
-            sceneHierarchy.Size = new System.Drawing.Size(266, 22);
+            sceneHierarchy.Size = new System.Drawing.Size(261, 26);
             sceneHierarchy.Text = "场景层次结构";
             sceneHierarchy.Click += sceneHierarchy_Click;
             // 
@@ -676,7 +679,7 @@ namespace AssetStudio.GUI
             // 
             filterTypeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { allToolStripMenuItem });
             filterTypeToolStripMenuItem.Name = "filterTypeToolStripMenuItem";
-            filterTypeToolStripMenuItem.Size = new System.Drawing.Size(72, 20);
+            filterTypeToolStripMenuItem.Size = new System.Drawing.Size(83, 24);
             filterTypeToolStripMenuItem.Text = "过滤类型";
             // 
             // allToolStripMenuItem
@@ -685,15 +688,15 @@ namespace AssetStudio.GUI
             allToolStripMenuItem.CheckOnClick = true;
             allToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             allToolStripMenuItem.Name = "allToolStripMenuItem";
-            allToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            allToolStripMenuItem.Size = new System.Drawing.Size(122, 26);
             allToolStripMenuItem.Text = "全部";
             allToolStripMenuItem.Click += typeToolStripMenuItem_Click;
             // 
             // debugMenuItem
             // 
-            debugMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripMenuItem15, exportClassStructuresMenuItem, enableConsole, clearConsoleToolStripMenuItem, enableFileLogging, loggedEventsMenuItem, openLogFileToolStripMenuItem});
+            debugMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripMenuItem15, exportClassStructuresMenuItem, enableConsole, clearConsoleToolStripMenuItem, enableFileLogging, loggedEventsMenuItem, openLogFileToolStripMenuItem });
             debugMenuItem.Name = "debugMenuItem";
-            debugMenuItem.Size = new System.Drawing.Size(54, 20);
+            debugMenuItem.Size = new System.Drawing.Size(53, 24);
             debugMenuItem.Text = "调试";
             // 
             // toolStripMenuItem15
@@ -702,14 +705,14 @@ namespace AssetStudio.GUI
             toolStripMenuItem15.CheckOnClick = true;
             toolStripMenuItem15.CheckState = System.Windows.Forms.CheckState.Checked;
             toolStripMenuItem15.Name = "toolStripMenuItem15";
-            toolStripMenuItem15.Size = new System.Drawing.Size(191, 22);
+            toolStripMenuItem15.Size = new System.Drawing.Size(182, 26);
             toolStripMenuItem15.Text = "显示错误信息";
             toolStripMenuItem15.Click += toolStripMenuItem15_Click;
             // 
             // exportClassStructuresMenuItem
             // 
             exportClassStructuresMenuItem.Name = "exportClassStructuresMenuItem";
-            exportClassStructuresMenuItem.Size = new System.Drawing.Size(191, 22);
+            exportClassStructuresMenuItem.Size = new System.Drawing.Size(182, 26);
             exportClassStructuresMenuItem.Text = "导出类结构";
             exportClassStructuresMenuItem.Click += exportClassStructuresMenuItem_Click;
             // 
@@ -719,14 +722,14 @@ namespace AssetStudio.GUI
             enableConsole.CheckOnClick = true;
             enableConsole.CheckState = System.Windows.Forms.CheckState.Checked;
             enableConsole.Name = "enableConsole";
-            enableConsole.Size = new System.Drawing.Size(191, 22);
+            enableConsole.Size = new System.Drawing.Size(182, 26);
             enableConsole.Text = "启用控制台";
             enableConsole.CheckedChanged += enableConsole_CheckedChanged;
             // 
             // clearConsoleToolStripMenuItem
             // 
             clearConsoleToolStripMenuItem.Name = "clearConsoleToolStripMenuItem";
-            clearConsoleToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            clearConsoleToolStripMenuItem.Size = new System.Drawing.Size(182, 26);
             clearConsoleToolStripMenuItem.Text = "清除控制台";
             clearConsoleToolStripMenuItem.Click += clearConsoleToolStripMenuItem_Click;
             // 
@@ -736,110 +739,133 @@ namespace AssetStudio.GUI
             enableFileLogging.CheckOnClick = true;
             enableFileLogging.CheckState = System.Windows.Forms.CheckState.Checked;
             enableFileLogging.Name = "enableFileLogging";
-            enableFileLogging.Size = new System.Drawing.Size(191, 22);
+            enableFileLogging.Size = new System.Drawing.Size(182, 26);
             enableFileLogging.Text = "启用文件日志";
             enableFileLogging.CheckedChanged += enableFileLogging_CheckedChanged;
-            // 
-            // openLogFileToolStripMenuItem
-            // 
-            openLogFileToolStripMenuItem.Name = "openLogFileToolStripMenuItem";
-            openLogFileToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            openLogFileToolStripMenuItem.Text = "打开日志文件";
-            openLogFileToolStripMenuItem.Click += openLogFile;
             // 
             // loggedEventsMenuItem
             // 
             loggedEventsMenuItem.Name = "loggedEventsMenuItem";
-            loggedEventsMenuItem.Size = new System.Drawing.Size(191, 22);
+            loggedEventsMenuItem.Size = new System.Drawing.Size(182, 26);
             loggedEventsMenuItem.Text = "记录的事件";
-            loggedEventsMenuItem.DropDown.Closing += loggedEventsMenuItem_DropDownClosing;
             loggedEventsMenuItem.DropDownClosed += loggedEventsMenuItem_DropDownClosed;
+            // 
+            // openLogFileToolStripMenuItem
+            // 
+            openLogFileToolStripMenuItem.Name = "openLogFileToolStripMenuItem";
+            openLogFileToolStripMenuItem.Size = new System.Drawing.Size(182, 26);
+            openLogFileToolStripMenuItem.Text = "打开日志文件";
+            openLogFileToolStripMenuItem.Click += openLogFile;
             // 
             // miscToolStripMenuItem
             // 
             miscToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { MapNameComboBox, buildMapToolStripMenuItem, buildBothToolStripMenuItem, clearMapToolStripMenuItem, toolStripSeparator7, assetMapNameTextBox, buildAssetMapToolStripMenuItem, assetMapTypeMenuItem, toolStripSeparator8, loadAIToolStripMenuItem, loadCABMapToolStripMenuItem, assetBrowserToolStripMenuItem });
             miscToolStripMenuItem.Name = "miscToolStripMenuItem";
-            miscToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+            miscToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
             miscToolStripMenuItem.Text = "杂项";
             miscToolStripMenuItem.DropDownOpening += miscToolStripMenuItem_DropDownOpening;
             // 
             // MapNameComboBox
             // 
             MapNameComboBox.Name = "MapNameComboBox";
-            MapNameComboBox.Size = new System.Drawing.Size(121, 23);
+            MapNameComboBox.Size = new System.Drawing.Size(121, 28);
             MapNameComboBox.ToolTipText = "在此输入地图名称";
             // 
             // buildMapToolStripMenuItem
             // 
             buildMapToolStripMenuItem.Name = "buildMapToolStripMenuItem";
-            buildMapToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            buildMapToolStripMenuItem.Size = new System.Drawing.Size(195, 26);
             buildMapToolStripMenuItem.Text = "构建地图";
             buildMapToolStripMenuItem.Click += buildMapToolStripMenuItem_Click;
             // 
             // buildBothToolStripMenuItem
             // 
             buildBothToolStripMenuItem.Name = "buildBothToolStripMenuItem";
-            buildBothToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            buildBothToolStripMenuItem.Size = new System.Drawing.Size(195, 26);
             buildBothToolStripMenuItem.Text = "同时构建";
             buildBothToolStripMenuItem.Click += buildBothToolStripMenuItem_Click;
             // 
             // clearMapToolStripMenuItem
             // 
             clearMapToolStripMenuItem.Name = "clearMapToolStripMenuItem";
-            clearMapToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            clearMapToolStripMenuItem.Size = new System.Drawing.Size(195, 26);
             clearMapToolStripMenuItem.Text = "清除地图";
             clearMapToolStripMenuItem.Click += clearMapToolStripMenuItem_Click;
             // 
             // toolStripSeparator7
             // 
             toolStripSeparator7.Name = "toolStripSeparator7";
-            toolStripSeparator7.Size = new System.Drawing.Size(178, 6);
+            toolStripSeparator7.Size = new System.Drawing.Size(192, 6);
             // 
             // assetMapNameTextBox
             // 
             assetMapNameTextBox.Name = "assetMapNameTextBox";
-            assetMapNameTextBox.Size = new System.Drawing.Size(100, 23);
+            assetMapNameTextBox.Size = new System.Drawing.Size(100, 27);
             assetMapNameTextBox.ToolTipText = "在此输入资产映射的名称";
             // 
             // buildAssetMapToolStripMenuItem
             // 
             buildAssetMapToolStripMenuItem.Name = "buildAssetMapToolStripMenuItem";
-            buildAssetMapToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            buildAssetMapToolStripMenuItem.Size = new System.Drawing.Size(195, 26);
             buildAssetMapToolStripMenuItem.Text = "构建资产映射";
             buildAssetMapToolStripMenuItem.Click += buildAssetMapToolStripMenuItem_Click;
             // 
             // assetMapTypeMenuItem
             // 
             assetMapTypeMenuItem.Name = "assetMapTypeMenuItem";
-            assetMapTypeMenuItem.Size = new System.Drawing.Size(181, 22);
+            assetMapTypeMenuItem.Size = new System.Drawing.Size(195, 26);
             assetMapTypeMenuItem.Text = "资产映射类型";
             assetMapTypeMenuItem.DropDownItemClicked += assetMapTypeMenuItem_DropDownItemClicked;
             // 
             // toolStripSeparator8
             // 
             toolStripSeparator8.Name = "toolStripSeparator8";
-            toolStripSeparator8.Size = new System.Drawing.Size(178, 6);
+            toolStripSeparator8.Size = new System.Drawing.Size(192, 6);
             // 
             // loadAIToolStripMenuItem
             // 
             loadAIToolStripMenuItem.Name = "loadAIToolStripMenuItem";
-            loadAIToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            loadAIToolStripMenuItem.Size = new System.Drawing.Size(195, 26);
             loadAIToolStripMenuItem.Text = "加载AI";
             loadAIToolStripMenuItem.Click += loadAIToolStripMenuItem_Click;
             // 
             // loadCABMapToolStripMenuItem
             // 
             loadCABMapToolStripMenuItem.Name = "loadCABMapToolStripMenuItem";
-            loadCABMapToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            loadCABMapToolStripMenuItem.Size = new System.Drawing.Size(195, 26);
             loadCABMapToolStripMenuItem.Text = "加载CAB映射";
             loadCABMapToolStripMenuItem.Click += loadCABMapToolStripMenuItem_Click;
             // 
             // assetBrowserToolStripMenuItem
             // 
             assetBrowserToolStripMenuItem.Name = "assetBrowserToolStripMenuItem";
-            assetBrowserToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            assetBrowserToolStripMenuItem.Size = new System.Drawing.Size(195, 26);
             assetBrowserToolStripMenuItem.Text = "资产浏览器";
             assetBrowserToolStripMenuItem.Click += loadAssetMapToolStripMenuItem_Click;
+            // 
+            // luaToolStripMenuItem
+            // 
+            luaToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { enableLuaScripts, luaTemplates });
+            luaToolStripMenuItem.Name = "luaToolStripMenuItem";
+            luaToolStripMenuItem.Size = new System.Drawing.Size(48, 24);
+            luaToolStripMenuItem.Text = "Lua";
+            // 
+            // enableLuaScripts
+            // 
+            enableLuaScripts.CheckOnClick = true;
+            enableLuaScripts.Name = "enableLuaScripts";
+            enableLuaScripts.Size = new System.Drawing.Size(177, 26);
+            enableLuaScripts.Text = "启用Lua脚本";
+            enableLuaScripts.ToolTipText = "启用通过Lua脚本处理文件";
+            enableLuaScripts.CheckedChanged += enableLua_CheckedChanged;
+            // 
+            // luaTemplates
+            // 
+            luaTemplates.Name = "luaTemplates";
+            luaTemplates.Size = new System.Drawing.Size(177, 26);
+            luaTemplates.Text = "加载Lua模板";
+            luaTemplates.ToolTipText = "加载Lua模板";
+            luaTemplates.Click += loadLuaTemplate_Click;
             // 
             // assetHelpersToolStripMenuItem
             // 
@@ -865,7 +891,7 @@ namespace AssetStudio.GUI
             // 
             splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            splitContainer1.Location = new System.Drawing.Point(0, 24);
+            splitContainer1.Location = new System.Drawing.Point(0, 28);
             splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -879,7 +905,7 @@ namespace AssetStudio.GUI
             splitContainer1.Panel2.Controls.Add(tabControl2);
             splitContainer1.Panel2.Controls.Add(statusStrip1);
             splitContainer1.Panel2MinSize = 400;
-            splitContainer1.Size = new System.Drawing.Size(1264, 657);
+            splitContainer1.Size = new System.Drawing.Size(1264, 653);
             splitContainer1.SplitterDistance = 482;
             splitContainer1.TabIndex = 2;
             splitContainer1.TabStop = false;
@@ -894,7 +920,7 @@ namespace AssetStudio.GUI
             tabControl1.Name = "tabControl1";
             tabControl1.Padding = new System.Drawing.Point(17, 3);
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new System.Drawing.Size(480, 635);
+            tabControl1.Size = new System.Drawing.Size(480, 631);
             tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             tabControl1.TabIndex = 0;
             tabControl1.Selected += tabPageSelected;
@@ -903,9 +929,9 @@ namespace AssetStudio.GUI
             // 
             tabPage1.Controls.Add(sceneTreeView);
             tabPage1.Controls.Add(treeSearch);
-            tabPage1.Location = new System.Drawing.Point(4, 24);
+            tabPage1.Location = new System.Drawing.Point(4, 29);
             tabPage1.Name = "tabPage1";
-            tabPage1.Size = new System.Drawing.Size(472, 607);
+            tabPage1.Size = new System.Drawing.Size(472, 598);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "场景层次结构";
             tabPage1.UseVisualStyleBackColor = true;
@@ -915,9 +941,9 @@ namespace AssetStudio.GUI
             sceneTreeView.CheckBoxes = true;
             sceneTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             sceneTreeView.HideSelection = false;
-            sceneTreeView.Location = new System.Drawing.Point(0, 23);
+            sceneTreeView.Location = new System.Drawing.Point(0, 27);
             sceneTreeView.Name = "sceneTreeView";
-            sceneTreeView.Size = new System.Drawing.Size(472, 584);
+            sceneTreeView.Size = new System.Drawing.Size(472, 571);
             sceneTreeView.TabIndex = 1;
             sceneTreeView.AfterCheck += sceneTreeView_AfterCheck;
             // 
@@ -928,7 +954,7 @@ namespace AssetStudio.GUI
             treeSearch.Location = new System.Drawing.Point(0, 0);
             treeSearch.Name = "treeSearch";
             treeSearch.PlaceholderText = "搜索（按Ctrl检查结果，按Shift搜索全部，按Alt搜索父节点）";
-            treeSearch.Size = new System.Drawing.Size(472, 23);
+            treeSearch.Size = new System.Drawing.Size(472, 27);
             treeSearch.TabIndex = 0;
             treeSearch.TextChanged += treeSearch_TextChanged;
             treeSearch.KeyDown += treeSearch_KeyDown;
@@ -937,9 +963,9 @@ namespace AssetStudio.GUI
             // 
             tabPage2.Controls.Add(assetListView);
             tabPage2.Controls.Add(listSearch);
-            tabPage2.Location = new System.Drawing.Point(4, 24);
+            tabPage2.Location = new System.Drawing.Point(4, 29);
             tabPage2.Name = "tabPage2";
-            tabPage2.Size = new System.Drawing.Size(472, 607);
+            tabPage2.Size = new System.Drawing.Size(472, 602);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "资产列表";
             tabPage2.UseVisualStyleBackColor = true;
@@ -950,9 +976,9 @@ namespace AssetStudio.GUI
             assetListView.Dock = System.Windows.Forms.DockStyle.Fill;
             assetListView.FullRowSelect = true;
             assetListView.GridLines = true;
-            assetListView.Location = new System.Drawing.Point(0, 23);
+            assetListView.Location = new System.Drawing.Point(0, 27);
             assetListView.Name = "assetListView";
-            assetListView.Size = new System.Drawing.Size(472, 584);
+            assetListView.Size = new System.Drawing.Size(472, 575);
             assetListView.TabIndex = 1;
             assetListView.UseCompatibleStateImageBehavior = false;
             assetListView.View = System.Windows.Forms.View.Details;
@@ -993,16 +1019,16 @@ namespace AssetStudio.GUI
             listSearch.Location = new System.Drawing.Point(0, 0);
             listSearch.Name = "listSearch";
             listSearch.PlaceholderText = "搜索";
-            listSearch.Size = new System.Drawing.Size(472, 23);
+            listSearch.Size = new System.Drawing.Size(472, 27);
             listSearch.TabIndex = 0;
             listSearch.KeyPress += listSearch_KeyPress;
             // 
             // tabPage3
             // 
             tabPage3.Controls.Add(classesListView);
-            tabPage3.Location = new System.Drawing.Point(4, 24);
+            tabPage3.Location = new System.Drawing.Point(4, 29);
             tabPage3.Name = "tabPage3";
-            tabPage3.Size = new System.Drawing.Size(472, 607);
+            tabPage3.Size = new System.Drawing.Size(472, 602);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "资产类别";
             tabPage3.UseVisualStyleBackColor = true;
@@ -1015,7 +1041,7 @@ namespace AssetStudio.GUI
             classesListView.Location = new System.Drawing.Point(0, 0);
             classesListView.MultiSelect = false;
             classesListView.Name = "classesListView";
-            classesListView.Size = new System.Drawing.Size(472, 607);
+            classesListView.Size = new System.Drawing.Size(472, 602);
             classesListView.TabIndex = 0;
             classesListView.UseCompatibleStateImageBehavior = false;
             classesListView.View = System.Windows.Forms.View.Details;
@@ -1037,7 +1063,7 @@ namespace AssetStudio.GUI
             // 
             progressbarPanel.Controls.Add(progressBar1);
             progressbarPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            progressbarPanel.Location = new System.Drawing.Point(0, 635);
+            progressbarPanel.Location = new System.Drawing.Point(0, 631);
             progressbarPanel.Name = "progressbarPanel";
             progressbarPanel.Padding = new System.Windows.Forms.Padding(1, 3, 1, 1);
             progressbarPanel.Size = new System.Drawing.Size(480, 20);
@@ -1060,16 +1086,16 @@ namespace AssetStudio.GUI
             tabControl2.Location = new System.Drawing.Point(0, 0);
             tabControl2.Name = "tabControl2";
             tabControl2.SelectedIndex = 0;
-            tabControl2.Size = new System.Drawing.Size(776, 633);
+            tabControl2.Size = new System.Drawing.Size(776, 625);
             tabControl2.TabIndex = 4;
             tabControl2.SelectedIndexChanged += tabControl2_SelectedIndexChanged;
             // 
             // tabPage4
             // 
             tabPage4.Controls.Add(previewPanel);
-            tabPage4.Location = new System.Drawing.Point(4, 24);
+            tabPage4.Location = new System.Drawing.Point(4, 29);
             tabPage4.Name = "tabPage4";
-            tabPage4.Size = new System.Drawing.Size(768, 605);
+            tabPage4.Size = new System.Drawing.Size(768, 592);
             tabPage4.TabIndex = 0;
             tabPage4.Text = "预览";
             tabPage4.UseVisualStyleBackColor = true;
@@ -1089,7 +1115,7 @@ namespace AssetStudio.GUI
             previewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             previewPanel.Location = new System.Drawing.Point(0, 0);
             previewPanel.Name = "previewPanel";
-            previewPanel.Size = new System.Drawing.Size(768, 605);
+            previewPanel.Size = new System.Drawing.Size(768, 592);
             previewPanel.TabIndex = 1;
             previewPanel.Resize += preview_Resize;
             // 
@@ -1100,7 +1126,7 @@ namespace AssetStudio.GUI
             assetInfoLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             assetInfoLabel.Location = new System.Drawing.Point(4, 7);
             assetInfoLabel.Name = "assetInfoLabel";
-            assetInfoLabel.Size = new System.Drawing.Size(0, 15);
+            assetInfoLabel.Size = new System.Drawing.Size(0, 20);
             assetInfoLabel.TabIndex = 0;
             // 
             // FMODpanel
@@ -1119,7 +1145,7 @@ namespace AssetStudio.GUI
             FMODpanel.Dock = System.Windows.Forms.DockStyle.Fill;
             FMODpanel.Location = new System.Drawing.Point(0, 0);
             FMODpanel.Name = "FMODpanel";
-            FMODpanel.Size = new System.Drawing.Size(768, 605);
+            FMODpanel.Size = new System.Drawing.Size(768, 592);
             FMODpanel.TabIndex = 2;
             FMODpanel.Visible = false;
             // 
@@ -1129,7 +1155,7 @@ namespace AssetStudio.GUI
             FMODcopyright.ForeColor = System.Drawing.SystemColors.ControlLight;
             FMODcopyright.Location = new System.Drawing.Point(214, 337);
             FMODcopyright.Name = "FMODcopyright";
-            FMODcopyright.Size = new System.Drawing.Size(316, 15);
+            FMODcopyright.Size = new System.Drawing.Size(352, 20);
             FMODcopyright.TabIndex = 9;
             FMODcopyright.Text = "音频引擎由Firelight Technologies的FMOD提供。";
             // 
@@ -1139,7 +1165,7 @@ namespace AssetStudio.GUI
             FMODinfoLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             FMODinfoLabel.Location = new System.Drawing.Point(269, 235);
             FMODinfoLabel.Name = "FMODinfoLabel";
-            FMODinfoLabel.Size = new System.Drawing.Size(0, 15);
+            FMODinfoLabel.Size = new System.Drawing.Size(0, 20);
             FMODinfoLabel.TabIndex = 8;
             // 
             // FMODtimerLabel
@@ -1148,7 +1174,7 @@ namespace AssetStudio.GUI
             FMODtimerLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             FMODtimerLabel.Location = new System.Drawing.Point(460, 235);
             FMODtimerLabel.Name = "FMODtimerLabel";
-            FMODtimerLabel.Size = new System.Drawing.Size(78, 15);
+            FMODtimerLabel.Size = new System.Drawing.Size(111, 20);
             FMODtimerLabel.TabIndex = 7;
             FMODtimerLabel.Text = "0:00.0 / 0:00.0";
             // 
@@ -1158,7 +1184,7 @@ namespace AssetStudio.GUI
             FMODstatusLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             FMODstatusLabel.Location = new System.Drawing.Point(213, 235);
             FMODstatusLabel.Name = "FMODstatusLabel";
-            FMODstatusLabel.Size = new System.Drawing.Size(51, 15);
+            FMODstatusLabel.Size = new System.Drawing.Size(54, 20);
             FMODstatusLabel.TabIndex = 6;
             FMODstatusLabel.Text = "已停止";
             // 
@@ -1180,7 +1206,7 @@ namespace AssetStudio.GUI
             FMODvolumeBar.LargeChange = 2;
             FMODvolumeBar.Location = new System.Drawing.Point(460, 280);
             FMODvolumeBar.Name = "FMODvolumeBar";
-            FMODvolumeBar.Size = new System.Drawing.Size(104, 45);
+            FMODvolumeBar.Size = new System.Drawing.Size(104, 56);
             FMODvolumeBar.TabIndex = 4;
             FMODvolumeBar.TickStyle = System.Windows.Forms.TickStyle.Both;
             FMODvolumeBar.Value = 8;
@@ -1235,7 +1261,7 @@ namespace AssetStudio.GUI
             fontPreviewBox.Location = new System.Drawing.Point(0, 0);
             fontPreviewBox.Name = "fontPreviewBox";
             fontPreviewBox.ReadOnly = true;
-            fontPreviewBox.Size = new System.Drawing.Size(768, 605);
+            fontPreviewBox.Size = new System.Drawing.Size(768, 592);
             fontPreviewBox.TabIndex = 0;
             fontPreviewBox.Text = resources.GetString("fontPreviewBox.Text");
             fontPreviewBox.Visible = false;
@@ -1252,7 +1278,7 @@ namespace AssetStudio.GUI
             glControl.Location = new System.Drawing.Point(0, 0);
             glControl.Name = "glControl";
             glControl.Profile = OpenTK.Windowing.Common.ContextProfile.Core;
-            glControl.Size = new System.Drawing.Size(768, 605);
+            glControl.Size = new System.Drawing.Size(768, 592);
             glControl.TabIndex = 4;
             glControl.Visible = false;
             glControl.Load += glControl_Load;
@@ -1265,19 +1291,32 @@ namespace AssetStudio.GUI
             // textPreviewBox
             // 
             textPreviewBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            textPreviewBox.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            textPreviewBox.Font = new System.Drawing.Font("Consolas", 9.75F);
             textPreviewBox.Location = new System.Drawing.Point(0, 0);
             textPreviewBox.Multiline = true;
             textPreviewBox.Name = "textPreviewBox";
             textPreviewBox.ReadOnly = true;
             textPreviewBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            textPreviewBox.Size = new System.Drawing.Size(768, 605);
+            textPreviewBox.Size = new System.Drawing.Size(768, 592);
             textPreviewBox.TabIndex = 2;
             textPreviewBox.Visible = false;
             textPreviewBox.WordWrap = false;
-            //
+            // 
+            // classTextBox
+            // 
+            classTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            classTextBox.Location = new System.Drawing.Point(0, 0);
+            classTextBox.Multiline = true;
+            classTextBox.Name = "classTextBox";
+            classTextBox.ReadOnly = true;
+            classTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            classTextBox.Size = new System.Drawing.Size(768, 592);
+            classTextBox.TabIndex = 3;
+            classTextBox.Visible = false;
+            classTextBox.WordWrap = false;
+            // 
             // imgPreviewBox
-            //
+            // 
             imgPreviewBox.Location = new System.Drawing.Point(0, 0);
             imgPreviewBox.Name = "imgPreviewBox";
             imgPreviewBox.Size = new System.Drawing.Size(768, 605);
@@ -1289,25 +1328,12 @@ namespace AssetStudio.GUI
             imgPreviewBox.MouseUp += imgPreviewBox_MouseUp;
             imgPreviewBox.MouseWheel += imgPreviewBox_MouseWheel;
             // 
-            // classTextBox
-            // 
-            classTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            classTextBox.Location = new System.Drawing.Point(0, 0);
-            classTextBox.Multiline = true;
-            classTextBox.Name = "classTextBox";
-            classTextBox.ReadOnly = true;
-            classTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            classTextBox.Size = new System.Drawing.Size(768, 605);
-            classTextBox.TabIndex = 3;
-            classTextBox.Visible = false;
-            classTextBox.WordWrap = false;
-            // 
             // tabPage5
             // 
             tabPage5.Controls.Add(dumpTextBox);
-            tabPage5.Location = new System.Drawing.Point(4, 24);
+            tabPage5.Location = new System.Drawing.Point(4, 29);
             tabPage5.Name = "tabPage5";
-            tabPage5.Size = new System.Drawing.Size(768, 605);
+            tabPage5.Size = new System.Drawing.Size(768, 596);
             tabPage5.TabIndex = 1;
             tabPage5.Text = "转储";
             tabPage5.UseVisualStyleBackColor = true;
@@ -1320,16 +1346,17 @@ namespace AssetStudio.GUI
             dumpTextBox.Name = "dumpTextBox";
             dumpTextBox.ReadOnly = true;
             dumpTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            dumpTextBox.Size = new System.Drawing.Size(768, 605);
+            dumpTextBox.Size = new System.Drawing.Size(768, 596);
             dumpTextBox.TabIndex = 0;
             dumpTextBox.WordWrap = false;
             // 
             // statusStrip1
             // 
+            statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusLabel1 });
-            statusStrip1.Location = new System.Drawing.Point(0, 633);
+            statusStrip1.Location = new System.Drawing.Point(0, 625);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new System.Drawing.Size(776, 22);
+            statusStrip1.Size = new System.Drawing.Size(776, 26);
             statusStrip1.TabIndex = 2;
             statusStrip1.Text = "状态条1";
             // 
@@ -1337,7 +1364,7 @@ namespace AssetStudio.GUI
             // 
             toolStripStatusLabel1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            toolStripStatusLabel1.Size = new System.Drawing.Size(761, 17);
+            toolStripStatusLabel1.Size = new System.Drawing.Size(761, 20);
             toolStripStatusLabel1.Spring = true;
             toolStripStatusLabel1.Text = "准备就绪";
             toolStripStatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1359,26 +1386,26 @@ namespace AssetStudio.GUI
             contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { copyToolStripMenuItem, exportSelectedAssetsToolStripMenuItem, exportAnimatorwithselectedAnimationClipMenuItem, goToSceneHierarchyToolStripMenuItem, showOriginalFileToolStripMenuItem });
             contextMenuStrip1.Name = "contextMenuStrip1";
-            contextMenuStrip1.Size = new System.Drawing.Size(304, 114);
+            contextMenuStrip1.Size = new System.Drawing.Size(278, 124);
             // 
             // copyToolStripMenuItem
             // 
             copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            copyToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
+            copyToolStripMenuItem.Size = new System.Drawing.Size(277, 24);
             copyToolStripMenuItem.Text = "复制文本";
             copyToolStripMenuItem.Click += copyToolStripMenuItem_Click;
             // 
             // exportSelectedAssetsToolStripMenuItem
             // 
             exportSelectedAssetsToolStripMenuItem.Name = "exportSelectedAssetsToolStripMenuItem";
-            exportSelectedAssetsToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
+            exportSelectedAssetsToolStripMenuItem.Size = new System.Drawing.Size(277, 24);
             exportSelectedAssetsToolStripMenuItem.Text = "导出选定资产";
             exportSelectedAssetsToolStripMenuItem.Click += exportSelectedAssetsToolStripMenuItem_Click;
             // 
             // exportAnimatorwithselectedAnimationClipMenuItem
             // 
             exportAnimatorwithselectedAnimationClipMenuItem.Name = "exportAnimatorwithselectedAnimationClipMenuItem";
-            exportAnimatorwithselectedAnimationClipMenuItem.Size = new System.Drawing.Size(303, 22);
+            exportAnimatorwithselectedAnimationClipMenuItem.Size = new System.Drawing.Size(277, 24);
             exportAnimatorwithselectedAnimationClipMenuItem.Text = "导出动画师 + 选定的动画剪辑";
             exportAnimatorwithselectedAnimationClipMenuItem.Visible = false;
             exportAnimatorwithselectedAnimationClipMenuItem.Click += exportAnimatorwithAnimationClipMenuItem_Click;
@@ -1386,7 +1413,7 @@ namespace AssetStudio.GUI
             // goToSceneHierarchyToolStripMenuItem
             // 
             goToSceneHierarchyToolStripMenuItem.Name = "goToSceneHierarchyToolStripMenuItem";
-            goToSceneHierarchyToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
+            goToSceneHierarchyToolStripMenuItem.Size = new System.Drawing.Size(277, 24);
             goToSceneHierarchyToolStripMenuItem.Text = "转到场景层次结构";
             goToSceneHierarchyToolStripMenuItem.Visible = false;
             goToSceneHierarchyToolStripMenuItem.Click += goToSceneHierarchyToolStripMenuItem_Click;
@@ -1394,34 +1421,31 @@ namespace AssetStudio.GUI
             // showOriginalFileToolStripMenuItem
             // 
             showOriginalFileToolStripMenuItem.Name = "showOriginalFileToolStripMenuItem";
-            showOriginalFileToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
+            showOriginalFileToolStripMenuItem.Size = new System.Drawing.Size(277, 24);
             showOriginalFileToolStripMenuItem.Text = "显示原始文件";
             showOriginalFileToolStripMenuItem.Visible = false;
             showOriginalFileToolStripMenuItem.Click += showOriginalFileToolStripMenuItem_Click;
             // 
-            // luaToolStripMenuItem
+            // exportSpineToolStripMenuItem
             // 
-            luaToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { enableLuaScripts, luaTemplates });
-            luaToolStripMenuItem.Name = "luaToolStripMenuItem";
-            luaToolStripMenuItem.Size = new System.Drawing.Size(48, 24);
-            luaToolStripMenuItem.Text = "Lua";
+            exportSpineToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { exportAllToolStripMenuItem, exportSelectionToolStripMenuItem });
+            exportSpineToolStripMenuItem.Name = "exportSpineToolStripMenuItem";
+            exportSpineToolStripMenuItem.Size = new System.Drawing.Size(362, 26);
+            exportSpineToolStripMenuItem.Text = "导出Spine动画";
             // 
-            // enableLuaScripts
+            // exportAllToolStripMenuItem
             // 
-            enableLuaScripts.CheckOnClick = true;
-            enableLuaScripts.Name = "enableLuaScripts";
-            enableLuaScripts.Size = new System.Drawing.Size(250, 26);
-            enableLuaScripts.ToolTipText = "启用通过Lua脚本处理文件";
-            enableLuaScripts.Text = "启用Lua脚本";
-            enableLuaScripts.CheckedChanged += enableLua_CheckedChanged;
+            exportAllToolStripMenuItem.Name = "exportAllToolStripMenuItem";
+            exportAllToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            exportAllToolStripMenuItem.Text = "导出所有";
+            exportAllToolStripMenuItem.Click += exportAllToolStripMenuItem_Click;
             // 
-            // luaTemplates
+            // exportSelectionToolStripMenuItem
             // 
-            luaTemplates.Name = "loadLuaTemplate";
-            luaTemplates.Size = new System.Drawing.Size(250, 26);
-            luaTemplates.ToolTipText = "加载Lua模板";
-            luaTemplates.Text = "加载Lua模板";
-            luaTemplates.Click += loadLuaTemplate_Click;
+            exportSelectionToolStripMenuItem.Name = "exportSelectionToolStripMenuItem";
+            exportSelectionToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            exportSelectionToolStripMenuItem.Text = "导出选中";
+            exportSelectionToolStripMenuItem.Click += exportSelectionToolStripMenuItem_Click;
             // 
             // MainForm
             // 
@@ -1461,6 +1485,7 @@ namespace AssetStudio.GUI
             FMODpanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)FMODprogressBar).EndInit();
             ((System.ComponentModel.ISupportInitialize)FMODvolumeBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)imgPreviewBox).EndInit();
             tabPage5.ResumeLayout(false);
             tabPage5.PerformLayout();
             statusStrip1.ResumeLayout(false);
@@ -1620,6 +1645,9 @@ namespace AssetStudio.GUI
         private System.Windows.Forms.ToolStripMenuItem enableLuaScripts;
         private System.Windows.Forms.ToolStripMenuItem luaTemplates;
         private System.Windows.Forms.ToolStripMenuItem openLogFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportSpineToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportAllToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportSelectionToolStripMenuItem;
     }
 }
 

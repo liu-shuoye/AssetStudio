@@ -5,9 +5,11 @@ using System.Text;
 
 namespace AssetStudio
 {
+    /// <summary> 名称对象 </summary>
     public class NamedObject : EditorExtension
     {
-        public string m_Name;
+        /// <summary> 名称 </summary>
+        protected string m_Name;
 
         public override string Name => m_Name;
 

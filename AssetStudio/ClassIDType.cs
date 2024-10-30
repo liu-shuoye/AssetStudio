@@ -8,6 +8,7 @@ namespace AssetStudio
     {
         UnknownType = -1,
         Object = 0,
+        /// <summary> 游戏对象 </summary>
         GameObject = 1,
         Component = 2,
         LevelGameManager = 3,
@@ -24,20 +25,25 @@ namespace AssetStudio
         EditorExtension = 18,
         Physics2DSettings = 19,
         Camera = 20,
+        /// <summary> 材质 </summary>
         Material = 21,
         MeshRenderer = 23,
         Renderer = 25,
         ParticleRenderer = 26,
         Texture = 27,
+        /// <summary> 纹理 </summary>
         Texture2D = 28,
         OcclusionCullingSettings = 29,
         GraphicsSettings = 30,
         MeshFilter = 33,
         OcclusionPortal = 41,
+        /// <summary> 模型 </summary>
         Mesh = 43,
         Skybox = 45,
         QualitySettings = 47,
+        /// <summary> Shader 材质 </summary>
         Shader = 48,
+        /// <summary> 文本文件 </summary>
         TextAsset = 49,
         Rigidbody2D = 50,
         Physics2DManager = 51,
@@ -89,6 +95,7 @@ namespace AssetStudio
         BaseAnimationTrack = 110,
         /// <summary> 旧版动画 </summary>
         Animation = 111,
+        /// <summary> 脚本 </summary>
         MonoBehaviour = 114,
         MonoScript = 115,
         MonoManager = 116,
@@ -128,6 +135,7 @@ namespace AssetStudio
         NetworkView = 148,
         NetworkManager = 149,
         PreloadData = 150,
+        /// <summary> 影片纹理 </summary>
         MovieTexture = 152,
         ConfigurableJoint = 153,
         TerrainCollider = 154,
@@ -173,6 +181,7 @@ namespace AssetStudio
         NavMeshObstacle = 208,
         SortingGroup = 210,
         SpriteRenderer = 212,
+        /// <summary> 精灵图 </summary>
         Sprite = 213,
         CachedSpriteAtlas = 214,
         ReflectionProbe = 215,
@@ -232,6 +241,7 @@ namespace AssetStudio
         AvatarMask = 319,
         PlayableDirector = 320,
         VideoPlayer = 328,
+        /// <summary> 视频片段 </summary>
         VideoClip = 329,
         ParticleSystemForceField = 330,
         SpriteMask = 331,
@@ -304,6 +314,7 @@ namespace AssetStudio
         LODLevel = 1205,
         MiHoYoLodMeshGroup = 1206,
         MiHoYoInstanceColor = 1207,
+        /// <summary> 米哈游数据 </summary>
         MiHoYoBinData = 1208,
         IndexObject = 1210,
         MiHoYoTextureStreamingPreloader = 1211,

@@ -23,8 +23,10 @@ namespace AssetStudio
 
         private static string BaseFolder = "";
         private static Dictionary<string, Entry> CABMap = new Dictionary<string, Entry>(StringComparer.OrdinalIgnoreCase);
+
         ///  <summary> 依赖文件的缓存文件路径与偏移量 </summary>
         private static Dictionary<string, HashSet<long>> Offsets = new Dictionary<string, HashSet<long>>();
+
         private static AssetsManager assetsManager = new AssetsManager() { SkipProcess = true, ResolveDependencies = false };
 
         public record Entry
@@ -75,6 +77,7 @@ namespace AssetStudio
                 offsets = list.ToArray();
                 return true;
             }
+
             offsets = Array.Empty<long>();
             return false;
         }
@@ -99,13 +102,16 @@ namespace AssetStudio
                         Offsets[fullPath].Add(entry.Offset);
                         Logger.Verbose($"已将 {fullPath} 添加到偏移量，偏移量为 {entry.Offset}");
                     }
+
                     foreach (var dep in entry.Dependencies)
                     {
                         if (!cabs.Contains(dep))
                             cabs.Add(dep);
                     }
+
                     continue;
                 }
+
                 Logger.Warning($"未找到 {cab}，请检查 CABMap 是否正确和完整！");
             }
         }
@@ -131,6 +137,7 @@ namespace AssetStudio
                     AddCABOffsets(files, cabs);
                 }
             }
+
             Logger.Verbose($"依赖解析完成，原始 {files.Length} 个文件将全部加载，{Offsets.Count - files.Length} 个依赖项将从缓存偏移量中加载。");
             return Offsets.Keys.ToArray();
         }
@@ -147,6 +154,7 @@ namespace AssetStudio
                 Logger.Info("正在解析依赖关系...");
                 files = ProcessFiles(files);
             }
+
             return files;
         }
 
@@ -178,13 +186,16 @@ namespace AssetStudio
         private static IEnumerable<string> LoadFiles(string[] files)
         {
             string msg;
-            
+
             var path = Path.GetDirectoryName(Path.GetFullPath(files[0]));
             ImportHelper.MergeSplitAssets(path);
             var toReadFile = ImportHelper.ProcessingSplitFiles(files.ToList());
 
             var filesList = new List<string>(toReadFile);
-            for (int i = filesList.Count - 1; i >= 0; i--)
+            var count = filesList.Count;
+            // 计数器
+            var num = 0;
+            for (var i = count - 1; i >= 0; i--)
             {
                 var file = filesList[i];
                 assetsManager.LoadFiles(file);
@@ -197,12 +208,14 @@ namespace AssetStudio
                 {
                     filesList.Remove(file);
                     msg = $"已移除 {Path.GetFileName(file)}，未找到资源";
+                    num++;
                 }
 
-                Logger.Info($"[{filesList.Count - i + 1}/{filesList.Count}] {msg}");
-                Progress.Report(i + 1, filesList.Count);
+                Logger.Info($"[{filesList.Count - i + 1}/{count}] {msg}");
+                Progress.Report(count - i + 1, count);
                 assetsManager.Clear();
             }
+            Logger.Info($"一共{count}个文件，加载了 {filesList.Count} 个文件，已移除 {num} 个文件");
         }
 
         private static void BuildCABMap(string file, ref int collision)
@@ -215,6 +228,7 @@ namespace AssetStudio
                     Logger.Info("构建CAB映射已取消！！");
                     return;
                 }
+
                 var entry = new Entry()
                 {
                     Path = relativePath,
@@ -227,6 +241,7 @@ namespace AssetStudio
                     collision++;
                     continue;
                 }
+
                 CABMap.Add(assetsFile.fileName, entry);
             }
         }
@@ -315,6 +330,7 @@ namespace AssetStudio
                 {
                     dependencies.Add(reader.ReadString());
                 }
+
                 var entry = new Entry()
                 {
                     Path = path,
@@ -323,7 +339,7 @@ namespace AssetStudio
                 };
                 CABMap.Add(cab, entry);
             }
-        } 
+        }
 
         public static async Task BuildAssetMap(string[] files, string mapName, Game game, string savePath, ExportListType exportListType, ClassIDType[] typeFilters = null, Regex[] nameFilters = null, Regex[] containerFilters = null)
         {
@@ -342,11 +358,10 @@ namespace AssetStudio
 
                 await ExportAssetsMap(assets, game, mapName, savePath, exportListType);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Logger.Warning($"AssetMap 未能构建，{e}");
             }
-            
         }
 
         private static void BuildAssetMap(string file, List<AssetEntry> assets, ClassIDType[] typeFilters = null, Regex[] nameFilters = null, Regex[] containerFilters = null)
@@ -365,6 +380,7 @@ namespace AssetStudio
                         Logger.Info("构建资产映射已取消！！");
                         return;
                     }
+
                     var objectReader = new ObjectReader(assetsFile.reader, assetsFile, objInfo, assetsManager.Game);
                     var obj = new Object(objectReader);
                     var asset = new AssetEntry()
@@ -382,19 +398,19 @@ namespace AssetStudio
                         {
                             case ClassIDType.AssetBundle when ClassIDType.AssetBundle.CanParse():
                                 var assetBundle = new AssetBundle(objectReader);
-                                foreach (var m_Container in assetBundle.m_Container)
+                                foreach (var m_Container in assetBundle.Container)
                                 {
-                                    var preloadIndex = m_Container.Value.preloadIndex;
-                                    var preloadSize = m_Container.Value.preloadSize;
+                                    var preloadIndex = m_Container.Value.PreloadIndex;
+                                    var preloadSize = m_Container.Value.PreloadSize;
                                     var preloadEnd = preloadIndex + preloadSize;
                                     for (int k = preloadIndex; k < preloadEnd; k++)
                                     {
-                                        containers.Add((assetBundle.m_PreloadTable[k], m_Container.Key));
+                                        containers.Add((assetBundle.PreloadTable[k], m_Container.Key));
                                     }
                                 }
 
                                 obj = null;
-                                asset.Name = assetBundle.m_Name;
+                                asset.Name = assetBundle.Name;
                                 exportable = ClassIDType.AssetBundle.CanExport();
                                 break;
                             case ClassIDType.GameObject when ClassIDType.GameObject.CanParse():
@@ -432,6 +448,7 @@ namespace AssetStudio
                                 {
                                     mihoyoBinDataNames.Add((index.Value.Object, index.Key));
                                 }
+
                                 asset.Name = "IndexObject";
                                 exportable = ClassIDType.IndexObject.CanExport();
                                 break;
@@ -465,17 +482,20 @@ namespace AssetStudio
                             .Append(e);
                         Logger.Error(sb.ToString());
                     }
+
                     if (obj != null)
                     {
                         objectAssetItemDic.Add(obj, asset);
                         assetsFile.AddObject(obj);
                     }
+
                     if (exportable)
                     {
                         matches.Add(asset);
                     }
                 }
             }
+
             foreach ((var pptr, var asset) in animators)
             {
                 if (pptr.TryGet<GameObject>(out var gameObject))
@@ -483,6 +503,7 @@ namespace AssetStudio
                     asset.Name = gameObject.m_Name;
                 }
             }
+
             foreach ((var pptr, var name) in mihoyoBinDataNames)
             {
                 if (pptr.TryGet<MiHoYoBinData>(out var miHoYoBinData))
@@ -496,6 +517,7 @@ namespace AssetStudio
                     else asset.Name = $"BinFile #{asset.PathID}";
                 }
             }
+
             foreach ((var pptr, var container) in containers)
             {
                 if (pptr.TryGet(out var obj))
@@ -520,82 +542,82 @@ namespace AssetStudio
             switch (mapType)
             {
                 case ExportListType.MessagePack:
+                {
+                    using var stream = File.OpenRead(mapName);
+                    var assetMap = MessagePackSerializer.Deserialize<AssetMap>(stream, MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray));
+                    foreach (var entry in assetMap.AssetEntries)
                     {
-                        using var stream = File.OpenRead(mapName);
-                        var assetMap = MessagePackSerializer.Deserialize<AssetMap>(stream, MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray));
-                        foreach(var entry in assetMap.AssetEntries)
+                        var isNameMatch = nameFilter.Length == 0 || nameFilter.Any(x => x.IsMatch(entry.Name));
+                        var isContainerMatch = containerFilter.Length == 0 || containerFilter.Any(x => x.IsMatch(entry.Container));
+                        var isTypeMatch = typeFilter.Length == 0 || typeFilter.Any(x => x == entry.Type);
+                        if (isNameMatch && isContainerMatch && isTypeMatch)
                         {
-                            var isNameMatch = nameFilter.Length == 0 || nameFilter.Any(x => x.IsMatch(entry.Name));
-                            var isContainerMatch = containerFilter.Length == 0 || containerFilter.Any(x => x.IsMatch(entry.Container));
-                            var isTypeMatch = typeFilter.Length == 0 || typeFilter.Any(x => x == entry.Type);
-                            if (isNameMatch && isContainerMatch && isTypeMatch)
-                            {
-                                matches.Add(entry.Source);
-                            }
+                            matches.Add(entry.Source);
                         }
                     }
+                }
 
                     break;
                 case ExportListType.XML:
+                {
+                    using var stream = File.OpenRead(mapName);
+                    using var reader = XmlReader.Create(stream);
+                    reader.ReadToFollowing("Assets");
+                    reader.ReadToFollowing("Asset");
+                    do
                     {
-                        using var stream = File.OpenRead(mapName);
-                        using var reader = XmlReader.Create(stream);
-                        reader.ReadToFollowing("Assets");
-                        reader.ReadToFollowing("Asset");
-                        do
+                        reader.ReadToFollowing("Name");
+                        var name = reader.ReadInnerXml();
+
+                        var isNameMatch = nameFilter.Length == 0 || nameFilter.Any(x => x.IsMatch(name));
+
+                        reader.ReadToFollowing("Container");
+                        var container = reader.ReadInnerXml();
+
+                        var isContainerMatch = containerFilter.Length == 0 || containerFilter.Any(x => x.IsMatch(container));
+
+                        reader.ReadToFollowing("Type");
+                        var type = reader.ReadInnerXml();
+
+                        var isTypeMatch = typeFilter.Length == 0 || typeFilter.Any(x => x.ToString().Equals(type, StringComparison.OrdinalIgnoreCase));
+
+                        reader.ReadToFollowing("PathID");
+                        var pathID = reader.ReadInnerXml();
+
+                        reader.ReadToFollowing("Source");
+                        var source = reader.ReadInnerXml();
+
+                        if (isNameMatch && isContainerMatch && isTypeMatch)
                         {
-                            reader.ReadToFollowing("Name");
-                            var name = reader.ReadInnerXml();
+                            matches.Add(source);
+                        }
 
-                            var isNameMatch = nameFilter.Length == 0 || nameFilter.Any(x => x.IsMatch(name));
-
-                            reader.ReadToFollowing("Container");
-                            var container = reader.ReadInnerXml();
-
-                            var isContainerMatch = containerFilter.Length == 0 || containerFilter.Any(x => x.IsMatch(container));
-
-                            reader.ReadToFollowing("Type");
-                            var type = reader.ReadInnerXml();
-
-                            var isTypeMatch = typeFilter.Length == 0 || typeFilter.Any(x => x.ToString().Equals(type, StringComparison.OrdinalIgnoreCase));
-
-                            reader.ReadToFollowing("PathID");
-                            var pathID = reader.ReadInnerXml();
-
-                            reader.ReadToFollowing("Source");
-                            var source = reader.ReadInnerXml();
-
-                            if (isNameMatch && isContainerMatch && isTypeMatch)
-                            {
-                                matches.Add(source);
-                            }
-
-                            reader.ReadEndElement();
-                        } while (reader.ReadToNextSibling("Asset"));
-                    }
+                        reader.ReadEndElement();
+                    } while (reader.ReadToNextSibling("Asset"));
+                }
 
                     break;
                 case ExportListType.JSON:
+                {
+                    using var stream = File.OpenRead(mapName);
+                    using var file = new StreamReader(stream);
+                    using var reader = new JsonTextReader(file);
+
+                    var serializer = new JsonSerializer() { Formatting = Newtonsoft.Json.Formatting.Indented };
+                    serializer.Converters.Add(new StringEnumConverter());
+
+                    var entries = serializer.Deserialize<List<AssetEntry>>(reader);
+                    foreach (var entry in entries)
                     {
-                        using var stream = File.OpenRead(mapName);
-                        using var file = new StreamReader(stream);
-                        using var reader = new JsonTextReader(file);
-
-                        var serializer = new JsonSerializer() { Formatting = Newtonsoft.Json.Formatting.Indented };
-                        serializer.Converters.Add(new StringEnumConverter());
-
-                        var entries = serializer.Deserialize<List<AssetEntry>>(reader);
-                        foreach (var entry in entries)
+                        var isNameMatch = nameFilter.Length == 0 || nameFilter.Any(x => x.IsMatch(entry.Name));
+                        var isContainerMatch = containerFilter.Length == 0 || containerFilter.Any(x => x.IsMatch(entry.Container));
+                        var isTypeMatch = typeFilter.Length == 0 || typeFilter.Any(x => x == entry.Type);
+                        if (isNameMatch && isContainerMatch && isTypeMatch)
                         {
-                            var isNameMatch = nameFilter.Length == 0 || nameFilter.Any(x => x.IsMatch(entry.Name));
-                            var isContainerMatch = containerFilter.Length == 0 || containerFilter.Any(x => x.IsMatch(entry.Container));
-                            var isTypeMatch = typeFilter.Length == 0 || typeFilter.Any(x => x == entry.Type);
-                            if (isNameMatch && isContainerMatch && isTypeMatch)
-                            {
-                                matches.Add(entry.Source);
-                            }
+                            matches.Add(entry.Source);
                         }
                     }
+                }
 
                     break;
             }
@@ -628,6 +650,7 @@ namespace AssetStudio
                         }
                     }
                 }
+
                 Logger.Info("已更新！！");
             }
         }
@@ -669,9 +692,11 @@ namespace AssetStudio
                             writer.WriteElementString("Source", asset.Source);
                             writer.WriteEndElement();
                         }
+
                         writer.WriteEndElement();
                         writer.WriteEndDocument();
                     }
+
                     if (exportListType.HasFlag(ExportListType.JSON))
                     {
                         filename = Path.Combine(savePath, $"{name}.json");
@@ -680,6 +705,7 @@ namespace AssetStudio
                         serializer.Converters.Add(new StringEnumConverter());
                         serializer.Serialize(file, toExportAssets);
                     }
+
                     if (exportListType.HasFlag(ExportListType.MessagePack))
                     {
                         filename = Path.Combine(savePath, $"{name}.map");
@@ -696,6 +722,7 @@ namespace AssetStudio
                 }
             });
         }
+
         public static async Task BuildBoth(string[] files, string mapName, string baseFolder, Game game, string savePath, ExportListType exportListType, ClassIDType[] typeFilters = null, Regex[] nameFilters = null, Regex[] containerFilters = null)
         {
             Logger.Info($"同时构建中...");
@@ -705,7 +732,7 @@ namespace AssetStudio
             BaseFolder = baseFolder;
             assetsManager.Game = game;
             var assets = new List<AssetEntry>();
-            foreach(var file in LoadFiles(files))
+            foreach (var file in LoadFiles(files))
             {
                 BuildCABMap(file, ref collision);
                 BuildAssetMap(file, assets, typeFilters, nameFilters, containerFilters);

@@ -1,18 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
+﻿using System.Text;
 
 namespace AssetStudio
 {
+    /// <summary> 文本资源 </summary>
     public sealed class TextAsset : NamedObject
     {
-        public byte[] m_Script;
+        /// <summary> 文本内容 </summary>
+        private readonly byte[] _content;
+
+        public string Text => Encoding.UTF8.GetString(_content);
+
+        public byte[] Data => _content;
 
         public TextAsset(ObjectReader reader) : base(reader)
         {
-            m_Script = reader.ReadUInt8Array();
+            _content = reader.ReadUInt8Array();
         }
     }
 }

@@ -233,6 +233,7 @@ namespace AssetStudio.GUI
             }
 
             Properties.Settings.Default.Save();
+            Logger.Error($"___保存数据___{_openDirectoryBackup},{_openFileDirectoryBackup},{_saveDirectoryBackup},{_saveAssetMapDirectoryBackup}");
         }
 
         private void MainForm_DragEnter(object sender, DragEventArgs e)
@@ -273,21 +274,19 @@ namespace AssetStudio.GUI
         private async void loadFile_Click(object sender, EventArgs e)
         {
             openFileDialog1.InitialDirectory = _openFileDirectoryBackup;
-            if (openFileDialog1.ShowDialog(this) == DialogResult.OK)
+            if (openFileDialog1.ShowDialog(this) != DialogResult.OK) return;
+            var paths = openFileDialog1.FileNames;
+            ResetForm();
+            _openFileDirectoryBackup = Path.GetDirectoryName(paths[0]);
+            assetsManager.SpecifyUnityVersion = specifyUnityVersion.Text;
+            assetsManager.Game = Studio.Game;
+            if (paths.Length == 1 && File.Exists(paths[0]) && Path.GetExtension(paths[0]) == ".txt")
             {
-                var paths = openFileDialog1.FileNames;
-                ResetForm();
-                _openFileDirectoryBackup = Path.GetDirectoryName(paths[0]);
-                assetsManager.SpecifyUnityVersion = specifyUnityVersion.Text;
-                assetsManager.Game = Studio.Game;
-                if (paths.Length == 1 && File.Exists(paths[0]) && Path.GetExtension(paths[0]) == ".txt")
-                {
-                    paths = File.ReadAllLines(paths[0]);
-                }
-
-                await Task.Run(() => assetsManager.LoadFiles(paths));
-                BuildAssetStructures();
+                paths = File.ReadAllLines(paths[0]);
             }
+
+            await Task.Run(() => assetsManager.LoadFiles(paths));
+            BuildAssetStructures();
         }
 
         /// <summary> 加载文件夹 </summary>
@@ -828,8 +827,8 @@ namespace AssetStudio.GUI
             {
                 visibleAssets.Sort((x, y) =>
                 {
-                    long pathID_X = x.m_PathID;
-                    long pathID_Y = y.m_PathID;
+                    long pathID_X = x.PathID;
+                    long pathID_Y = y.PathID;
                     return reverseSort ? pathID_Y.CompareTo(pathID_X) : pathID_X.CompareTo(pathID_Y);
                 });
             }
@@ -1169,8 +1168,8 @@ namespace AssetStudio.GUI
             result = channel.getFrequency(out var frequency);
             if (ERRCHECK(result)) return;
 
-            FMODinfoLabel.Text = frequency + " Hz";
-            FMODtimerLabel.Text = $"0:0.0 / {FMODlenms / 1000 / 60}:{FMODlenms / 1000 % 60}.{FMODlenms / 10 % 100}";
+            FMODinfoLabel.Text = frequency + @" Hz";
+            FMODtimerLabel.Text = $@"0:0.0 / {FMODlenms / 1000 / 60}:{FMODlenms / 1000 % 60}.{FMODlenms / 10 % 100}";
         }
 
         private void PreviewShader(Shader m_Shader)
@@ -1187,7 +1186,7 @@ namespace AssetStudio.GUI
 
         private void PreviewTextAsset(TextAsset m_TextAsset)
         {
-            var text = Encoding.UTF8.GetString(m_TextAsset.m_Script);
+            var text = m_TextAsset.Text;
             text = text.Replace("\n", "\r\n").Replace("\0", "");
             PreviewText(text);
         }
@@ -1917,6 +1916,7 @@ namespace AssetStudio.GUI
             }
         }
 
+        /// <summary> 导出所有资产 </summary>
         private void exportAllAssetsMenuItem_Click(object sender, EventArgs e)
         {
             ExportAssets(ExportFilter.All, ExportType.Convert);
@@ -1992,6 +1992,7 @@ namespace AssetStudio.GUI
             ExportAssetsList(ExportFilter.Filtered);
         }
 
+        /// <summary> 导出所有对象（拆分） </summary>
         private void exportAllObjectssplitToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             if (sceneTreeView.Nodes.Count > 0)
@@ -2011,6 +2012,7 @@ namespace AssetStudio.GUI
             }
         }
 
+        /// <summary> 获取选中的资产 </summary>
         private List<AssetItem> GetSelectedAssets()
         {
             var selectedAssets = new List<AssetItem>(assetListView.SelectedIndices.Count);
@@ -2086,32 +2088,28 @@ namespace AssetStudio.GUI
             assetListView.EndUpdate();
         }
 
+        /// <summary> 导出资源 </summary>
         private async void ExportAssets(ExportFilter type, ExportType exportType)
         {
             if (exportableAssets.Count > 0)
             {
-                var saveFolderDialog = new OpenFolderDialog();
-                saveFolderDialog.InitialFolder = _saveDirectoryBackup;
-                if (saveFolderDialog.ShowDialog(this) == DialogResult.OK)
+                var saveFolderDialog = new OpenFolderDialog
                 {
-                    timer.Stop();
-                    _saveDirectoryBackup = saveFolderDialog.Folder;
-                    List<AssetItem> toExportAssets = null;
-                    switch (type)
-                    {
-                        case ExportFilter.All:
-                            toExportAssets = exportableAssets;
-                            break;
-                        case ExportFilter.Selected:
-                            toExportAssets = GetSelectedAssets();
-                            break;
-                        case ExportFilter.Filtered:
-                            toExportAssets = visibleAssets;
-                            break;
-                    }
+                    InitialFolder = _saveDirectoryBackup
+                };
+                if (saveFolderDialog.ShowDialog(this) != DialogResult.OK) return;
+                timer.Stop();
+                _saveDirectoryBackup = saveFolderDialog.Folder;
+                // 获取要导出的资产
+                var toExportAssets = type switch
+                {
+                    ExportFilter.All => exportableAssets,
+                    ExportFilter.Selected => GetSelectedAssets(),
+                    ExportFilter.Filtered => visibleAssets,
+                    _ => null
+                };
 
-                    await Studio.ExportAssets(saveFolderDialog.Folder, toExportAssets, exportType, Properties.Settings.Default.openAfterExport);
-                }
+                await Studio.ExportAssets(saveFolderDialog.Folder, toExportAssets, exportType, Properties.Settings.Default.openAfterExport);
             }
             else
             {
@@ -2484,6 +2482,7 @@ namespace AssetStudio.GUI
             openFolderDialog.Title = "选择游戏文件夹";
             if (openFolderDialog.ShowDialog(this) == DialogResult.OK)
             {
+                _openDirectoryBackup = openFolderDialog.Folder;
                 Logger.Info("扫描文件...");
                 var files = Directory.GetFiles(openFolderDialog.Folder, "*.*", SearchOption.AllDirectories).ToArray();
                 Logger.Info($"找到 {files.Length} 个文件。");
@@ -3303,5 +3302,19 @@ namespace AssetStudio.GUI
                 }
             }
         }
+
+        #region Spine动画
+
+        /// <summary> 导出所有Spine动画 </summary>
+        private void exportAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+        }
+
+        /// <summary> 导出选中的Spine动画 </summary>
+        private void exportSelectionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+        }
+
+        #endregion
     }
 }

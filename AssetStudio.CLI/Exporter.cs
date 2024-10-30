@@ -86,7 +86,7 @@ namespace AssetStudio.CLI
             }
             if (!TryExportFile(exportPath, item, extension, out var exportFullPath))
                 return false;
-            File.WriteAllBytes(exportFullPath, m_TextAsset.m_Script);
+            File.WriteAllBytes(exportFullPath, m_TextAsset.Data);
             return true;
         }
 
@@ -173,7 +173,7 @@ namespace AssetStudio.CLI
             if (!TryExportFile(exportPath, item, ".obj", out var exportFullPath))
                 return false;
             var sb = new StringBuilder();
-            sb.AppendLine("g " + m_Mesh.m_Name);
+            sb.AppendLine("g " + m_Mesh.Name);
             #region Vertices
             if (m_Mesh.m_Vertices == null || m_Mesh.m_Vertices.Length == 0)
             {
@@ -231,7 +231,7 @@ namespace AssetStudio.CLI
             int sum = 0;
             for (var i = 0; i < m_Mesh.m_SubMeshes.Count; i++)
             {
-                sb.AppendLine($"g {m_Mesh.m_Name}_{i}");
+                sb.AppendLine($"g {m_Mesh.Name}_{i}");
                 int indexCount = (int)m_Mesh.m_SubMeshes[i].indexCount;
                 var end = sum + indexCount / 3;
                 for (int f = sum; f < end; f++)

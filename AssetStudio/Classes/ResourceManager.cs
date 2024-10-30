@@ -2,17 +2,18 @@
 
 namespace AssetStudio
 {
+    /// <summary> 资源管理器 </summary>
     public class ResourceManager : Object
     {
-        public List<KeyValuePair<string, PPtr<Object>>> m_Container;
+        public List<KeyValuePair<string, PPtr<Object>>> Container;
 
         public ResourceManager(ObjectReader reader) : base(reader)
         {
-            var m_ContainerSize = reader.ReadInt32();
-            m_Container = new List<KeyValuePair<string, PPtr<Object>>>();
-            for (int i = 0; i < m_ContainerSize; i++)
+            var mContainerSize = reader.ReadInt32();
+            Container = new List<KeyValuePair<string, PPtr<Object>>>();
+            for (int i = 0; i < mContainerSize; i++)
             {
-                m_Container.Add(new KeyValuePair<string, PPtr<Object>>(reader.ReadAlignedString(), new PPtr<Object>(reader)));
+                Container.Add(new KeyValuePair<string, PPtr<Object>>(reader.ReadAlignedString(), new PPtr<Object>(reader)));
             }
         }
     }

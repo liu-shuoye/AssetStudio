@@ -15,12 +15,10 @@ namespace AssetStudio
     public class AssetsManager
     {
         private Game _game;
+
         public Game Game
         {
-            get
-            {
-                return _game;
-            }
+            get { return _game; }
             set
             {
                 _game = value;
@@ -40,13 +38,14 @@ namespace AssetStudio
                 }
             }
         }
+
         private bool _enableLuaScript = false;
 
         /// <summary> 是否启用Lua脚本 </summary>
         public bool EnableLuaScript
         {
-            get => _enableLuaScript; 
-            set 
+            get => _enableLuaScript;
+            set
             {
                 _enableLuaScript = value;
                 if (value)
@@ -55,41 +54,53 @@ namespace AssetStudio
                 }
             }
         }
+
         private Lua luaEnvironment = new Lua();
+
         /// <summary> Lua脚本 </summary>
         public string LuaScript = "";
+
         public bool Silent = false;
+
         /// <summary> 是否跳过解析 </summary>
         public bool SkipProcess = false;
+
         /// 是否解析依赖关系
-        public bool ResolveDependencies = false;        
+        public bool ResolveDependencies = false;
+
         public string SpecifyUnityVersion;
+
         /// <summary> 取消令牌 </summary>
         public CancellationTokenSource tokenSource = new CancellationTokenSource();
+
         /// <summary> 所有的资源文件 </summary>
         public List<SerializedFile> assetsFileList = new List<SerializedFile>();
 
         internal Dictionary<string, int> assetsFileIndexCache = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
         /// <summary> resource 资源文件读取器 </summary>
         internal Dictionary<string, BinaryReader> resourceFileReaders = new Dictionary<string, BinaryReader>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary> 导入的文件列表 </summary>
         internal List<string> importFiles = new List<string>();
+
         /// <summary> 导入文件的哈希列表 </summary>
         internal HashSet<string> importFilesHash = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         /// <summary> 不存在的文件 </summary>
         internal HashSet<string> noexistFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         /// <summary> 资源文件列表哈希表 </summary>
         internal HashSet<string> assetsFileListHash = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        
+
         /// <summary> 是否自动检测多包 </summary>
         public bool autoDetectMultipleBundle = false;
-        
+
         public void SetSpecifyUnityVersion(string version)
         {
             SpecifyUnityVersion = version;
         }
-        
+
         public void SetGame(string game)
         {
             Game = GameManager.GetGame(game);
@@ -99,7 +110,7 @@ namespace AssetStudio
         {
             UnityCN.SetKey(new UnityCN.Entry(Name, Key));
         }
-        
+
         private void InitLuaEnv()
         {
             var luaMethods = new LuaMethods();
@@ -108,6 +119,7 @@ namespace AssetStudio
             {
                 luaEnvironment.RegisterFunction(method.Name, luaMethods, method);
             }
+
             luaEnvironment.RegisterFunction("SetUnityVersion", this, GetType().GetMethod("SetSpecifyUnityVersion"));
             luaEnvironment.RegisterFunction("SetGame", this, GetType().GetMethod("SetGame"));
             luaEnvironment.RegisterFunction("SetUnityCNKey", this, GetType().GetMethod("SetUnityCNKey"));
@@ -116,24 +128,20 @@ namespace AssetStudio
         /// <summary> 加载文件 </summary>
         public void LoadFiles(params string[] files)
         {
-
             var path = Path.GetDirectoryName(Path.GetFullPath(files[0]));
             MergeSplitAssets(path);
             var toReadFile = ProcessingSplitFiles(files.ToList());
             if (ResolveDependencies)
                 toReadFile = AssetsHelper.ProcessDependencies(toReadFile);
             Load(toReadFile);
-            
         }
 
         public void LoadFolder(string path)
         {
-
             MergeSplitAssets(path, true);
             var files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).ToList();
             var toReadFile = ProcessingSplitFiles(files);
             Load(toReadFile);
-            
         }
 
         /// <summary> 加载文件 </summary>
@@ -147,7 +155,7 @@ namespace AssetStudio
             }
 
             Progress.Reset();
-            //use a for loop because list size can change
+            // 使用 for 循环，因为列表大小可以更改
             for (var i = 0; i < importFiles.Count; i++)
             {
                 LoadFile(importFiles[i]);
@@ -197,6 +205,7 @@ namespace AssetStudio
                     Logger.Error($"使用 lua 读取文件 {fullName} 时出错", e);
                 }
             }
+
             reader = reader.PreProcessing(Game, autoDetectMultipleBundle);
             LoadFile(reader);
         }
@@ -268,6 +277,7 @@ namespace AssetStudio
                                         sharedFilePath = findFiles[0];
                                     }
                                 }
+
                                 if (File.Exists(sharedFilePath))
                                 {
                                     importFiles.Add(sharedFilePath);
@@ -310,6 +320,7 @@ namespace AssetStudio
                     {
                         assetsFile.SetVersion(unityVersion);
                     }
+
                     CheckStrippedVersion(assetsFile);
                     assetsFileList.Add(assetsFile);
                     assetsFileListHash.Add(assetsFile.fileName);
@@ -331,15 +342,19 @@ namespace AssetStudio
             {
                 Logger.Info("正在加载 " + reader.FullPath);
             }
+
             try
             {
+                // 读取AssetBundle
                 var bundleFile = new BundleFile(reader, Game);
+                
                 foreach (var file in bundleFile.fileList)
                 {
-                    var dummyPath = Path.Combine(Path.GetDirectoryName(reader.FullPath), file.fileName);
+                    var dummyPath = Path.Combine(Path.GetDirectoryName(reader.FullPath) ?? string.Empty, file.fileName);
                     var subReader = new FileReader(dummyPath, file.stream);
                     if (subReader.FileType == FileType.AssetsFile)
                     {
+                        // 加载内存中的Assets文件
                         LoadAssetsFromMemory(subReader, originalPath ?? reader.FullPath, bundleFile.m_Header.unityRevision, originalOffset);
                     }
                     else
@@ -355,11 +370,12 @@ namespace AssetStudio
             }
             catch (Exception e)
             {
-                var str = $"Error while reading bundle file {reader.FullPath}";
+                var str = $"读取 bundle 文件时出错 {reader.FullPath}";
                 if (originalPath != null)
                 {
-                    str += $" from {Path.GetFileName(originalPath)}";
+                    str += $" 从 {Path.GetFileName(originalPath)}";
                 }
+
                 Logger.Error(str, e);
             }
             finally
@@ -376,7 +392,7 @@ namespace AssetStudio
                 var webFile = new WebFile(reader);
                 foreach (var file in webFile.fileList)
                 {
-                    var dummyPath = Path.Combine(Path.GetDirectoryName(reader.FullPath), file.fileName);
+                    var dummyPath = Path.Combine(Path.GetDirectoryName(reader.FullPath) ?? string.Empty, file.fileName);
                     var subReader = new FileReader(dummyPath, file.stream);
                     switch (subReader.FileType)
                     {
@@ -451,6 +467,7 @@ namespace AssetStudio
                                     entryStream.CopyTo(splitStream);
                                 }
                             }
+
                             splitStream.Seek(0, SeekOrigin.Begin);
                             FileReader entryReader = new FileReader(basePath, splitStream);
                             entryReader = entryReader.PreProcessing(Game);
@@ -463,7 +480,7 @@ namespace AssetStudio
                     }
 
                     Logger.Verbose("加载所有条目");
-                    Logger.Verbose($"找到 {archive.Entries.Count} 个条目。"); 
+                    Logger.Verbose($"找到 {archive.Entries.Count} 个条目。");
                     foreach (ZipArchiveEntry entry in archive.Entries)
                     {
                         try
@@ -475,6 +492,7 @@ namespace AssetStudio
                             {
                                 entryStream.CopyTo(streamReader);
                             }
+
                             streamReader.Position = 0;
 
                             FileReader entryReader = new FileReader(dummyPath, streamReader);
@@ -503,6 +521,7 @@ namespace AssetStudio
                 reader.Dispose();
             }
         }
+
         private void LoadBlockFile(FileReader reader)
         {
             Logger.Info("正在加载 " + reader.FullPath);
@@ -529,7 +548,7 @@ namespace AssetStudio
                             LoadMhyFile(subReader, reader.FullPath, offset, false);
                             break;
                     }
-                }    
+                }
             }
             catch (Exception e)
             {
@@ -540,6 +559,7 @@ namespace AssetStudio
                 reader.Dispose();
             }
         }
+
         private void LoadBlkFile(FileReader reader)
         {
             Logger.Info("正在加载 " + reader.FullPath);
@@ -577,12 +597,14 @@ namespace AssetStudio
                 reader.Dispose();
             }
         }
+
         private void LoadMhyFile(FileReader reader, string originalPath = null, long originalOffset = 0, bool log = true)
         {
             if (log)
             {
                 Logger.Info("正在加载 " + reader.FullPath);
             }
+
             try
             {
                 var mhyFile = new MhyFile(reader, (Mhy)Game);
@@ -613,6 +635,7 @@ namespace AssetStudio
                 {
                     str += $" from {Path.GetFileName(originalPath)}";
                 }
+
                 Logger.Error(str, e);
             }
             finally
@@ -620,13 +643,14 @@ namespace AssetStudio
                 reader.Dispose();
             }
         }
-        
+
         private void LoadBlbFile(FileReader reader, string originalPath = null, long originalOffset = 0, bool log = true)
         {
             if (log)
             {
                 Logger.Info("正在加载 " + reader.FullPath);
             }
+
             try
             {
                 var blbFile = new BlbFile(reader, reader.FullPath);
@@ -652,6 +676,7 @@ namespace AssetStudio
                 {
                     str += $" from {Path.GetFileName(originalPath)}";
                 }
+
                 Logger.Error(str, e);
             }
             finally
@@ -667,6 +692,7 @@ namespace AssetStudio
             {
                 throw new Exception("Unity 版本已被剥离，请在选项中设置版本");
             }
+
             if (!string.IsNullOrEmpty(SpecifyUnityVersion))
             {
                 assetsFile.SetVersion(SpecifyUnityVersion);
@@ -682,12 +708,14 @@ namespace AssetStudio
                 assetsFile.Objects.Clear();
                 assetsFile.reader.Close();
             }
+
             assetsFileList.Clear();
 
             foreach (var resourceFileReader in resourceFileReaders)
             {
                 resourceFileReader.Value.Close();
             }
+
             resourceFileReaders.Clear();
 
             assetsFileIndexCache.Clear();
@@ -716,6 +744,7 @@ namespace AssetStudio
                         Logger.Info("读取资产已取消！！");
                         return;
                     }
+
                     var objectReader = new ObjectReader(assetsFile.reader, assetsFile, objectInfo, Game);
                     try
                     {
@@ -785,6 +814,7 @@ namespace AssetStudio
                         Logger.Info("处理资产已取消！！");
                         return;
                     }
+
                     if (obj is GameObject m_GameObject)
                     {
                         Logger.Verbose($"文件 {m_GameObject.assetsFile.fileName} 中具有 {m_GameObject.m_PathID} 的游戏对象包含 {m_GameObject.m_Components.Count} 个组件，尝试获取它们...");
@@ -797,27 +827,27 @@ namespace AssetStudio
                                     case Transform m_Transform:
                                         Logger.Verbose($"从文件 {m_Transform.assetsFile.fileName} 获取的变换组件 {m_Transform.m_PathID}，正在分配到游戏对象组件...");
                                         m_GameObject.m_Transform = m_Transform;
-                                            break;
+                                        break;
                                     case MeshRenderer m_MeshRenderer:
                                         Logger.Verbose($"从文件 {m_MeshRenderer.assetsFile.fileName} 获取的网格渲染器组件 {m_MeshRenderer.m_PathID}，正在分配到游戏对象组件...");
                                         m_GameObject.m_MeshRenderer = m_MeshRenderer;
-                                            break;
+                                        break;
                                     case MeshFilter m_MeshFilter:
                                         Logger.Verbose($"从文件 {m_MeshFilter.assetsFile.fileName} 获取的网格过滤器组件 {m_MeshFilter.m_PathID}，正在分配到游戏对象组件...");
                                         m_GameObject.m_MeshFilter = m_MeshFilter;
-                                            break;
+                                        break;
                                     case SkinnedMeshRenderer m_SkinnedMeshRenderer:
                                         Logger.Verbose($"从文件 {m_SkinnedMeshRenderer.assetsFile.fileName} 获取的蒙皮网格渲染器组件 {m_SkinnedMeshRenderer.m_PathID}，正在分配到游戏对象组件...");
                                         m_GameObject.m_SkinnedMeshRenderer = m_SkinnedMeshRenderer;
-                                            break;
+                                        break;
                                     case Animator m_Animator:
                                         Logger.Verbose($"从文件 {m_Animator.assetsFile.fileName} 获取的动画器组件 {m_Animator.m_PathID}，正在分配到游戏对象组件...");
                                         m_GameObject.m_Animator = m_Animator;
-                                            break;
+                                        break;
                                     case Animation m_Animation:
                                         Logger.Verbose($"从文件 {m_Animation.assetsFile.fileName} 获取的动画组件 {m_Animation.m_PathID}，正在分配到游戏对象组件...");
                                         m_GameObject.m_Animation = m_Animation;
-                                            break;
+                                        break;
                                 }
                             }
                         }

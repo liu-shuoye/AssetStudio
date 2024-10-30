@@ -653,13 +653,13 @@ namespace AssetStudio
                 {
                     options.materials.Add(mat);
                 }
-                iMat = ImportedHelpers.FindMaterial(mat.m_Name, MaterialList);
+                iMat = ImportedHelpers.FindMaterial(mat.Name, MaterialList);
                 if (iMat != null)
                 {
                     return iMat;
                 }
                 iMat = new ImportedMaterial();
-                iMat.Name = mat.m_Name;
+                iMat.Name = mat.Name;
                 //default values
                 iMat.Diffuse = new Color(0.8f, 0.8f, 0.8f, 1);
                 iMat.Ambient = new Color(0.2f, 0.2f, 0.2f, 1);
@@ -734,11 +734,11 @@ namespace AssetStudio
                     {
                         texture.Name = textureName;
                     }
-                    else if (ImportedHelpers.FindTexture(m_Texture2D.m_Name + ext, TextureList) != null) //已有相同名字的图片
+                    else if (ImportedHelpers.FindTexture(m_Texture2D.Name + ext, TextureList) != null) //已有相同名字的图片
                     {
                         for (int i = 1; ; i++)
                         {
-                            var name = m_Texture2D.m_Name + $" ({i}){ext}";
+                            var name = m_Texture2D.Name + $" ({i}){ext}";
                             if (ImportedHelpers.FindTexture(name, TextureList) == null)
                             {
                                 texture.Name = name;
@@ -749,7 +749,7 @@ namespace AssetStudio
                     }
                     else
                     {
-                        texture.Name = m_Texture2D.m_Name + ext;
+                        texture.Name = m_Texture2D.Name + ext;
                         textureNameDictionary.Add(m_Texture2D, texture.Name);
                     }
 
@@ -791,7 +791,7 @@ namespace AssetStudio
             foreach (var animationClip in animationClipHashSet)
             {
                 var iAnim = new ImportedKeyframedAnimation();
-                var name = animationClip.m_Name;
+                var name = animationClip.Name;
                 if (AnimationList.Exists(x => x.Name == name))
                 {
                     for (int i = 1; ; i++)
