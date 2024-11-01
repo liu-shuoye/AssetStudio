@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace AssetStudio
+﻿namespace AssetStudio
 {
     /// <summary> 脚本文件 </summary>
     public sealed class MonoBehaviour : Behaviour

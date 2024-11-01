@@ -576,5 +576,53 @@ namespace AssetStudio.GUI.Properties {
                 this["saveAssetMapDirectoryBackup"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool l2dForceBezier {
+            get {
+                return ((bool)(this["l2dForceBezier"]));
+            }
+            set {
+                this["l2dForceBezier"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("MonoBehaviour")]
+        public global::CubismLive2DExtractor.Live2DMotionMode l2dMotionMode {
+            get {
+                return ((global::CubismLive2DExtractor.Live2DMotionMode)(this["l2dMotionMode"]));
+            }
+            set {
+                this["l2dMotionMode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int parallelExportCount {
+            get {
+                return ((int)(this["parallelExportCount"]));
+            }
+            set {
+                this["parallelExportCount"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool parallelExport {
+            get {
+                return ((bool)(this["parallelExport"]));
+            }
+            set {
+                this["parallelExport"] = value;
+            }
+        }
     }
 }
