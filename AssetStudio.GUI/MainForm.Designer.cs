@@ -74,6 +74,9 @@ namespace AssetStudio.GUI
             toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             exportSelectedNodessplitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             exportSelectedNodessplitSelectedAnimationClipsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            exportSpineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            exportAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            exportSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             exportAllAssetsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             exportSelectedAssetsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -180,9 +183,9 @@ namespace AssetStudio.GUI
             exportAnimatorwithselectedAnimationClipMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             goToSceneHierarchyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             showOriginalFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            exportSpineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            exportAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            exportSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            live2DExportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            allModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            selectModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -442,7 +445,7 @@ namespace AssetStudio.GUI
             // 
             // modelToolStripMenuItem
             // 
-            modelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { exportAllObjectssplitToolStripMenuItem1, exportSelectedObjectsToolStripMenuItem, exportSelectedObjectsWithAnimationClipToolStripMenuItem, toolStripSeparator1, exportSelectedObjectsmergeToolStripMenuItem, exportSelectedObjectsmergeWithAnimationClipToolStripMenuItem, toolStripSeparator9, exportSelectedNodessplitToolStripMenuItem, exportSelectedNodessplitSelectedAnimationClipsToolStripMenuItem, exportSpineToolStripMenuItem });
+            modelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { exportAllObjectssplitToolStripMenuItem1, exportSelectedObjectsToolStripMenuItem, exportSelectedObjectsWithAnimationClipToolStripMenuItem, toolStripSeparator1, exportSelectedObjectsmergeToolStripMenuItem, exportSelectedObjectsmergeWithAnimationClipToolStripMenuItem, toolStripSeparator9, exportSelectedNodessplitToolStripMenuItem, exportSelectedNodessplitSelectedAnimationClipsToolStripMenuItem, exportSpineToolStripMenuItem, live2DExportToolStripMenuItem });
             modelToolStripMenuItem.Name = "modelToolStripMenuItem";
             modelToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
             modelToolStripMenuItem.Text = "模型";
@@ -505,6 +508,27 @@ namespace AssetStudio.GUI
             exportSelectedNodessplitSelectedAnimationClipsToolStripMenuItem.Size = new System.Drawing.Size(362, 26);
             exportSelectedNodessplitSelectedAnimationClipsToolStripMenuItem.Text = "导出选定节点（拆分）+ 选定的动画剪辑";
             exportSelectedNodessplitSelectedAnimationClipsToolStripMenuItem.Click += exportSelectedNodessplitSelectedAnimationClipsToolStripMenuItem_Click;
+            // 
+            // exportSpineToolStripMenuItem
+            // 
+            exportSpineToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { exportAllToolStripMenuItem, exportSelectionToolStripMenuItem });
+            exportSpineToolStripMenuItem.Name = "exportSpineToolStripMenuItem";
+            exportSpineToolStripMenuItem.Size = new System.Drawing.Size(362, 26);
+            exportSpineToolStripMenuItem.Text = "导出Spine动画";
+            // 
+            // exportAllToolStripMenuItem
+            // 
+            exportAllToolStripMenuItem.Name = "exportAllToolStripMenuItem";
+            exportAllToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            exportAllToolStripMenuItem.Text = "导出所有";
+            exportAllToolStripMenuItem.Click += exportAllToolStripMenuItem_Click;
+            // 
+            // exportSelectionToolStripMenuItem
+            // 
+            exportSelectionToolStripMenuItem.Name = "exportSelectionToolStripMenuItem";
+            exportSelectionToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            exportSelectionToolStripMenuItem.Text = "导出选中";
+            exportSelectionToolStripMenuItem.Click += exportSelectionToolStripMenuItem_Click;
             // 
             // exportToolStripMenuItem
             // 
@@ -965,7 +989,7 @@ namespace AssetStudio.GUI
             tabPage2.Controls.Add(listSearch);
             tabPage2.Location = new System.Drawing.Point(4, 29);
             tabPage2.Name = "tabPage2";
-            tabPage2.Size = new System.Drawing.Size(472, 602);
+            tabPage2.Size = new System.Drawing.Size(472, 598);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "资产列表";
             tabPage2.UseVisualStyleBackColor = true;
@@ -978,7 +1002,7 @@ namespace AssetStudio.GUI
             assetListView.GridLines = true;
             assetListView.Location = new System.Drawing.Point(0, 27);
             assetListView.Name = "assetListView";
-            assetListView.Size = new System.Drawing.Size(472, 575);
+            assetListView.Size = new System.Drawing.Size(472, 571);
             assetListView.TabIndex = 1;
             assetListView.UseCompatibleStateImageBehavior = false;
             assetListView.View = System.Windows.Forms.View.Details;
@@ -1028,7 +1052,7 @@ namespace AssetStudio.GUI
             tabPage3.Controls.Add(classesListView);
             tabPage3.Location = new System.Drawing.Point(4, 29);
             tabPage3.Name = "tabPage3";
-            tabPage3.Size = new System.Drawing.Size(472, 602);
+            tabPage3.Size = new System.Drawing.Size(472, 598);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "资产类别";
             tabPage3.UseVisualStyleBackColor = true;
@@ -1041,7 +1065,7 @@ namespace AssetStudio.GUI
             classesListView.Location = new System.Drawing.Point(0, 0);
             classesListView.MultiSelect = false;
             classesListView.Name = "classesListView";
-            classesListView.Size = new System.Drawing.Size(472, 602);
+            classesListView.Size = new System.Drawing.Size(472, 598);
             classesListView.TabIndex = 0;
             classesListView.UseCompatibleStateImageBehavior = false;
             classesListView.View = System.Windows.Forms.View.Details;
@@ -1333,7 +1357,7 @@ namespace AssetStudio.GUI
             tabPage5.Controls.Add(dumpTextBox);
             tabPage5.Location = new System.Drawing.Point(4, 29);
             tabPage5.Name = "tabPage5";
-            tabPage5.Size = new System.Drawing.Size(768, 596);
+            tabPage5.Size = new System.Drawing.Size(768, 592);
             tabPage5.TabIndex = 1;
             tabPage5.Text = "转储";
             tabPage5.UseVisualStyleBackColor = true;
@@ -1346,7 +1370,7 @@ namespace AssetStudio.GUI
             dumpTextBox.Name = "dumpTextBox";
             dumpTextBox.ReadOnly = true;
             dumpTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            dumpTextBox.Size = new System.Drawing.Size(768, 596);
+            dumpTextBox.Size = new System.Drawing.Size(768, 592);
             dumpTextBox.TabIndex = 0;
             dumpTextBox.WordWrap = false;
             // 
@@ -1426,26 +1450,26 @@ namespace AssetStudio.GUI
             showOriginalFileToolStripMenuItem.Visible = false;
             showOriginalFileToolStripMenuItem.Click += showOriginalFileToolStripMenuItem_Click;
             // 
-            // exportSpineToolStripMenuItem
+            // live2DExportToolStripMenuItem
             // 
-            exportSpineToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { exportAllToolStripMenuItem, exportSelectionToolStripMenuItem });
-            exportSpineToolStripMenuItem.Name = "exportSpineToolStripMenuItem";
-            exportSpineToolStripMenuItem.Size = new System.Drawing.Size(362, 26);
-            exportSpineToolStripMenuItem.Text = "导出Spine动画";
+            live2DExportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { allModelToolStripMenuItem, selectModelToolStripMenuItem });
+            live2DExportToolStripMenuItem.Name = "live2DExportToolStripMenuItem";
+            live2DExportToolStripMenuItem.Size = new System.Drawing.Size(362, 26);
+            live2DExportToolStripMenuItem.Text = "Live2D模型导出";
             // 
-            // exportAllToolStripMenuItem
+            // allModelToolStripMenuItem
             // 
-            exportAllToolStripMenuItem.Name = "exportAllToolStripMenuItem";
-            exportAllToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            exportAllToolStripMenuItem.Text = "导出所有";
-            exportAllToolStripMenuItem.Click += exportAllToolStripMenuItem_Click;
+            allModelToolStripMenuItem.Name = "allModelToolStripMenuItem";
+            allModelToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            allModelToolStripMenuItem.Text = "所有模型";
+            allModelToolStripMenuItem.Click += allModelToolStripMenuItem_Click;
             // 
-            // exportSelectionToolStripMenuItem
+            // selectModelToolStripMenuItem
             // 
-            exportSelectionToolStripMenuItem.Name = "exportSelectionToolStripMenuItem";
-            exportSelectionToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            exportSelectionToolStripMenuItem.Text = "导出选中";
-            exportSelectionToolStripMenuItem.Click += exportSelectionToolStripMenuItem_Click;
+            selectModelToolStripMenuItem.Name = "selectModelToolStripMenuItem";
+            selectModelToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            selectModelToolStripMenuItem.Text = "选中模型";
+            selectModelToolStripMenuItem.Click += selectModelToolStripMenuItem_Click;
             // 
             // MainForm
             // 
@@ -1648,6 +1672,9 @@ namespace AssetStudio.GUI
         private System.Windows.Forms.ToolStripMenuItem exportSpineToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportSelectionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem live2DExportToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem allModelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem selectModelToolStripMenuItem;
     }
 }
 

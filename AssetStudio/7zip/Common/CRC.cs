@@ -41,7 +41,7 @@ namespace SevenZip
 
 		public uint GetDigest() { return _value ^ 0xFFFFFFFF; }
 
-		static uint CalculateDigest(byte[] data, uint offset, uint size)
+		public static uint CalculateDigest(byte[] data, uint offset, uint size)
 		{
 			CRC crc = new CRC();
 			// crc.Init();

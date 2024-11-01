@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
+using CubismLive2DExtractor;
 using static AssetStudio.GUI.Exporter;
 
 namespace AssetStudio.GUI
@@ -29,14 +30,20 @@ namespace AssetStudio.GUI
         /// <summary> 是否跳过容器恢复 </summary>
         public static bool SkipContainer = false;
 
-        public static AssetsManager assetsManager = new AssetsManager();
-        public static AssemblyLoader assemblyLoader = new AssemblyLoader();
+        public static AssetsManager assetsManager = new();
+        public static AssemblyLoader assemblyLoader = new();
 
         /// <summary>  导出资源列表 </summary>
-        public static List<AssetItem> exportableAssets = new List<AssetItem>();
+        public static List<AssetItem> exportableAssets = new();
 
         /// <summary>  当前显示的资源列表 </summary>
-        public static List<AssetItem> visibleAssets = new List<AssetItem>();
+        public static List<AssetItem> visibleAssets = new();
+
+        /// <summary>  所有 CubismMoc 脚本文件 </summary>
+        public static readonly List<MonoBehaviour> CubismMocMonoBehaviours = new();
+
+        /// <summary> live2d 资源包列表 </summary>
+        private static readonly Dictionary<Object, string> Live2dResourceContainers = new();
 
         /// <summary>  更新状态栏 </summary>
         internal static Action<string> StatusStripUpdate = x => { };
@@ -265,6 +272,7 @@ namespace AssetStudio.GUI
             var mihoyoBinDataNames = new List<(PPtr<Object>, string)>();
             // 构建容器
             var containers = new List<(PPtr<Object>, string)>();
+            Live2dResourceContainers.Clear();
             Progress.Reset();
             foreach (var assetsFile in assetsManager.assetsFileList)
             {
@@ -301,6 +309,21 @@ namespace AssetStudio.GUI
                         case PlayerSettings mPlayerSettings:
                             productName = mPlayerSettings.productName;
                             exportable = ClassIDType.PlayerSettings.CanExport();
+                            break;
+
+                        case MonoBehaviour monoBehaviour when ClassIDType.MonoBehaviour.CanExport():
+                            var assetName = monoBehaviour.m_Name;
+                            if (monoBehaviour.m_Script.TryGet(out var script))
+                            {
+                                assetName = assetName == "" ? script.m_ClassName : assetName;
+                                if (script.m_ClassName == "CubismMoc")
+                                {
+                                    CubismMocMonoBehaviours.Add(monoBehaviour);
+                                }
+                            }
+
+                            assetItem.Text = assetName;
+                            exportable = true;
                             break;
                         case AssetBundle mAssetBundle:
                             if (!SkipContainer)
@@ -346,7 +369,6 @@ namespace AssetStudio.GUI
                         case MiHoYoBinData _ when ClassIDType.MiHoYoBinData.CanExport():
                         case Shader _ when ClassIDType.Shader.CanExport():
                         case Animator _ when ClassIDType.Animator.CanExport():
-                        case MonoBehaviour _ when ClassIDType.MonoBehaviour.CanExport():
                             exportable = true;
                             break;
                     }
@@ -387,7 +409,7 @@ namespace AssetStudio.GUI
 
             if (!SkipContainer)
             {
-                foreach ((var pptr, var container) in containers)
+                foreach (var (pptr, container) in containers)
                 {
                     if (assetsManager.tokenSource.IsCancellationRequested)
                     {
@@ -398,6 +420,15 @@ namespace AssetStudio.GUI
                     if (pptr.TryGet(out var obj))
                     {
                         objectAssetItemDic[obj].Container = container;
+                        switch (obj)
+                        {
+                            case AnimationClip:
+                            case GameObject:
+                            case Texture2D:
+                            case MonoBehaviour:
+                                Live2dResourceContainers[obj] = container;
+                                break;
+                        }
                     }
                 }
 
@@ -1020,6 +1051,145 @@ namespace AssetStudio.GUI
             var info = new ProcessStartInfo(path);
             info.UseShellExecute = true;
             Process.Start(info);
+        }
+
+
+        /// <summary>
+        /// 导出 Live2D
+        /// </summary>
+        /// <param name="exportPath">导出路径</param>
+        /// <param name="selCubismMocMonoBehaviours">选择的CubismMoc脚本文件</param>
+        /// <param name="selClipMotions">选择的动画剪辑文件</param>
+        /// <param name="selFadeMotions">选择的淡化动作文件</param>
+        /// <param name="selFadeLst"></param>
+        public static void ExportLive2D(string exportPath, List<MonoBehaviour> selCubismMocMonoBehaviours = null, List<AnimationClip> selClipMotions = null, List<MonoBehaviour> selFadeMotions = null, MonoBehaviour selFadeLst = null)
+        {
+            var baseDestPath = Path.Combine(exportPath, "Live2DOutput");
+            // 是否将线性运动段计算为贝塞尔曲线段
+            var forceBezier = Properties.Settings.Default.l2dForceBezier;
+            var mocList = selCubismMocMonoBehaviours ?? CubismMocMonoBehaviours;
+            var motionMode = Properties.Settings.Default.l2dMotionMode;
+            if (selClipMotions != null)
+                motionMode = Live2DMotionMode.AnimationClipV2;
+            else if (selFadeMotions != null || selFadeLst != null)
+                motionMode = Live2DMotionMode.MonoBehaviour;
+
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                Logger.Info($"正在搜索 Live2D 文件...");
+
+                var mocPathDict = new Dictionary<MonoBehaviour, (string, string)>();
+                var mocPathList = new List<string>();
+                foreach (var mocMonoBehaviour in CubismMocMonoBehaviours)
+                {
+                    if (!Live2dResourceContainers.TryGetValue(mocMonoBehaviour, out var fullContainerPath))
+                        continue;
+
+                    var pathSepIndex = fullContainerPath.LastIndexOf('/');
+                    var basePath = pathSepIndex > 0
+                        ? fullContainerPath.Substring(0, pathSepIndex)
+                        : fullContainerPath;
+                    mocPathDict.Add(mocMonoBehaviour, (fullContainerPath, basePath));
+                }
+
+                if (mocPathDict.Count == 0)
+                {
+                    Logger.Error("Live2D Cubism 导出错误\r\n找不到任何模型相关文件");
+                    StatusStripUpdate("Live2D导出已取消");
+                    Progress.Reset();
+                    return;
+                }
+
+                var basePathSet = mocPathDict.Values.Select(x => x.Item2).ToHashSet();
+                // 如果所有模型都在一个文件夹中，则使用基础路径
+                var useFullContainerPath = mocPathDict.Count != basePathSet.Count;
+                foreach (var moc in mocList)
+                {
+                    var mocPath = useFullContainerPath
+                        ? mocPathDict[moc].Item1 //fullContainerPath
+                        : mocPathDict[moc].Item2; //basePath
+                    mocPathList.Add(mocPath);
+                }
+
+                mocPathDict.Clear();
+
+                var lookup = Live2dResourceContainers.AsParallel().ToLookup(
+                    x => mocPathList.Find(b => x.Value.Contains(b) && x.Value.Split('/').Any(y => y == b.Substring(b.LastIndexOf('/') + 1))),
+                    x => x.Key
+                );
+
+                if (mocList[0].serializedType?.m_Type == null && !assemblyLoader.Loaded)
+                {
+                    Logger.Warning("可能需要指定程序集文件夹以便正确提取");
+                    SelectAssemblyFolder();
+                }
+
+                var totalModelCount = lookup.LongCount(x => x.Key != null);
+                var modelCounter = 0;
+                var parallelExportCount = Properties.Settings.Default.parallelExportCount <= 0
+                    ? Environment.ProcessorCount - 1
+                    : Math.Min(Properties.Settings.Default.parallelExportCount, Environment.ProcessorCount - 1);
+                parallelExportCount = Properties.Settings.Default.parallelExport ? parallelExportCount : 1;
+                foreach (var assets in lookup)
+                {
+                    var srcContainer = assets.Key;
+                    if (srcContainer == null)
+                        continue;
+                    var container = srcContainer;
+
+                    Logger.Info($"[{modelCounter + 1}/{totalModelCount}] 正在导出 Live2D：\"{srcContainer}\"...");
+                    try
+                    {
+                        var modelName = useFullContainerPath
+                            ? Path.GetFileNameWithoutExtension(container)
+                            : container.Substring(container.LastIndexOf('/') + 1);
+                        container = Path.HasExtension(container)
+                            ? container.Replace(Path.GetExtension(container), "")
+                            : container;
+                        var destPath = Path.Combine(baseDestPath, container) + Path.DirectorySeparatorChar;
+
+                        var modelExtractor = new Live2DExtractor(assets, selClipMotions, selFadeMotions, selFadeLst);
+                        modelExtractor.ExtractCubismModel(destPath, modelName, motionMode, assemblyLoader, forceBezier, parallelExportCount);
+                        modelCounter++;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error($"Live2D 模型导出错误：\"{srcContainer}\"", ex);
+                    }
+
+                    Progress.Report(modelCounter, (int)totalModelCount);
+                }
+
+                Logger.Info($"完成导出 [{modelCounter}/{totalModelCount}] 个 Live2D 模型。");
+                if (modelCounter < totalModelCount)
+                {
+                    var total = (int)totalModelCount;
+                    Progress.Report(total, total);
+                }
+
+                if (Properties.Settings.Default.openAfterExport && modelCounter > 0)
+                {
+                    OpenFolderInExplorer(exportPath);
+                }
+            });
+        }
+        
+        /// <summary> 选择程序集文件夹 </summary>
+        private static void SelectAssemblyFolder()
+        {
+            if (!assemblyLoader.Loaded)
+            {
+                var openFolderDialog = new OpenFolderDialog();
+                openFolderDialog.Title = "选择程序集文件夹";
+                if (openFolderDialog.ShowDialog() == DialogResult.OK)
+                {
+                    assemblyLoader.Load(openFolderDialog.Folder);
+                }
+                else
+                {
+                    assemblyLoader.Loaded = true;
+                }
+            }
         }
     }
 }

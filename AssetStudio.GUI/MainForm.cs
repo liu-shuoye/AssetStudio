@@ -551,16 +551,16 @@ namespace AssetStudio.GUI
                 {
                     case ClassIDType.Texture2D:
                     case ClassIDType.Sprite:
-                    {
-                        if (enablePreview.Checked && imageTexture != null)
                         {
-                            imgPreviewBox.Image = imageTexture.Bitmap;
+                            if (enablePreview.Checked && imageTexture != null)
+                            {
+                                imgPreviewBox.Image = imageTexture.Bitmap;
+                            }
+                            else
+                            {
+                                imgPreviewBox.Image = null;
+                            }
                         }
-                        else
-                        {
-                            imgPreviewBox.Image = null;
-                        }
-                    }
                         break;
                     case ClassIDType.Shader:
                     case ClassIDType.TextAsset:
@@ -572,25 +572,25 @@ namespace AssetStudio.GUI
                         fontPreviewBox.Visible = !fontPreviewBox.Visible;
                         break;
                     case ClassIDType.AudioClip:
-                    {
-                        FMODpanel.Visible = !FMODpanel.Visible;
-
-                        if (sound != null && channel != null)
                         {
-                            var result = channel.isPlaying(out var playing);
-                            if (result == FMOD.RESULT.OK && playing)
+                            FMODpanel.Visible = !FMODpanel.Visible;
+
+                            if (sound != null && channel != null)
                             {
-                                channel.stop();
-                                FMODreset();
+                                var result = channel.isPlaying(out var playing);
+                                if (result == FMOD.RESULT.OK && playing)
+                                {
+                                    channel.stop();
+                                    FMODreset();
+                                }
                             }
-                        }
-                        else if (FMODpanel.Visible)
-                        {
-                            PreviewAsset(lastSelectedItem);
-                        }
+                            else if (FMODpanel.Visible)
+                            {
+                                PreviewAsset(lastSelectedItem);
+                            }
 
-                        break;
-                    }
+                            break;
+                        }
                 }
             }
             else if (lastSelectedItem != null && enablePreview.Checked)
@@ -1972,6 +1972,7 @@ namespace AssetStudio.GUI
             ExportAssets(ExportFilter.Selected, ExportType.JSON);
         }
 
+        /// <summary> 导出已过滤的资产 </summary>
         private void toolStripMenuItem25_Click(object sender, EventArgs e)
         {
             ExportAssets(ExportFilter.Filtered, ExportType.JSON);
@@ -1987,6 +1988,7 @@ namespace AssetStudio.GUI
             ExportAssetsList(ExportFilter.Selected);
         }
 
+        /// <summary> 导出已过滤的资产列表 </summary>
         private void toolStripMenuItem13_Click(object sender, EventArgs e)
         {
             ExportAssetsList(ExportFilter.Filtered);
@@ -3316,5 +3318,43 @@ namespace AssetStudio.GUI
         }
 
         #endregion
+
+        private void allModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (exportableAssets.Count > 0)
+            {
+                if (Studio.CubismMocMonoBehaviours.Count == 0)
+                {
+                    Logger.Info("未找到 Live2D Cubism 模型。");
+                    return;
+                }
+                Live2DExporter();
+            }
+            else
+            {
+                Logger.Info("未加载可导出的资源");
+            }
+        }
+
+        private void selectModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+        
+        
+        private void Live2DExporter(List<MonoBehaviour> selMocs = null, List<AnimationClip> selClipMotions = null, List<MonoBehaviour> selFadeMotions = null, MonoBehaviour selFadeLst = null)
+        {
+            var saveFolderDialog = new OpenFolderDialog();
+            saveFolderDialog.InitialFolder = _saveDirectoryBackup;
+            if (saveFolderDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                timer.Stop();
+                _saveDirectoryBackup = saveFolderDialog.Folder;
+                Progress.Reset();
+                BeginInvoke(new Action(() => { progressBar1.Style = ProgressBarStyle.Marquee; }));
+
+                Studio.ExportLive2D(saveFolderDialog.Folder, selMocs, selClipMotions, selFadeMotions, selFadeLst);
+            }
+        }
     }
 }
