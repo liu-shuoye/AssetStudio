@@ -294,7 +294,6 @@ namespace AssetStudio.GUI
         {
             var openFolderDialog = new OpenFolderDialog();
             openFolderDialog.InitialFolder = _openDirectoryBackup;
-            ;
             if (openFolderDialog.ShowDialog(this) == DialogResult.OK)
             {
                 ResetForm();
@@ -341,6 +340,7 @@ namespace AssetStudio.GUI
             }
         }
 
+        /// <summary> 构建资源树 </summary>
         private async void BuildAssetStructures()
         {
             if (assetsManager.assetsFileList.Count == 0)
@@ -349,7 +349,8 @@ namespace AssetStudio.GUI
                 return;
             }
 
-            (var productName, var treeNodeCollection) = await Task.Run(BuildAssetData);
+            // 构建资源列表
+            var (productName, treeNodeCollection) = await Task.Run(BuildAssetData);
             var typeMap = await Task.Run(BuildClassStructure);
 
             if (string.IsNullOrEmpty(productName))
@@ -3310,6 +3311,15 @@ namespace AssetStudio.GUI
         /// <summary> 导出所有Spine动画 </summary>
         private void exportAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            var saveFolderDialog = new OpenFolderDialog();
+            saveFolderDialog.InitialFolder = _saveDirectoryBackup;
+            if (saveFolderDialog.ShowDialog(this) != DialogResult.OK) return;
+            timer.Stop();
+            _saveDirectoryBackup = saveFolderDialog.Folder;
+            Progress.Reset();
+            BeginInvoke(new Action(() => { progressBar1.Style = ProgressBarStyle.Marquee; }));
+
+            Studio.ExportSpriteAtlasInfo(saveFolderDialog.Folder);
         }
 
         /// <summary> 导出选中的Spine动画 </summary>
