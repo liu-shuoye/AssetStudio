@@ -2448,7 +2448,6 @@ namespace AssetStudio
 
         public AnimationClip(ObjectReader reader) : base(reader)
         {
-            reader.Save(Name);
             if (reader.Game.Type.IsShiningNikki())
             {
                 reader.RelativePosition += 27;
@@ -2666,7 +2665,6 @@ namespace AssetStudio
                 }
             }
 
-            Logger.Info($"读取结束：{reader.RelativePosition}，Position：{reader.Position}");
         }
     }
 }

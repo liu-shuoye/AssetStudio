@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
+using AssetStudio.GUI.Properties;
 using CubismLive2DExtractor;
 using static AssetStudio.GUI.Exporter;
 
@@ -44,6 +45,9 @@ namespace AssetStudio.GUI
 
         /// <summary> live2d 资源包列表 </summary>
         private static readonly Dictionary<Object, string> Live2dResourceContainers = new();
+
+        /// <summary> Sprite 图集拆分数据 </summary>
+        public static readonly Dictionary<Texture2D, SortedDictionary<string, Sprite>> SpriteAtlasSplitData = new();
 
         /// <summary>  更新状态栏 </summary>
         internal static Action<string> StatusStripUpdate = x => { };
@@ -273,6 +277,7 @@ namespace AssetStudio.GUI
             // 构建容器
             var containers = new List<(PPtr<Object>, string)>();
             Live2dResourceContainers.Clear();
+            SpriteAtlasSplitData.Clear();
             Progress.Reset();
             foreach (var assetsFile in assetsManager.assetsFileList)
             {
@@ -359,12 +364,46 @@ namespace AssetStudio.GUI
 
                             exportable = ClassIDType.ResourceManager.CanExport();
                             break;
+                        case Sprite sprite:
+                            if (sprite.m_RD.texture.TryGet(out var texture))
+                            {
+                                if (!SpriteAtlasSplitData.TryGetValue(texture, out var spriteAtlasSplitData))
+                                {
+                                    spriteAtlasSplitData = new SortedDictionary<string, Sprite>();
+                                    SpriteAtlasSplitData.Add(texture, spriteAtlasSplitData);
+                                }
+
+                                if (spriteAtlasSplitData.ContainsKey(sprite.Name))
+                                {
+                                    Logger.Warning($"有冲突的Sprite名称：{sprite.Name}，请检查SpriteAtlas");
+                                }
+
+                                spriteAtlasSplitData[sprite.Name] = sprite;
+                            }
+
+                            if (sprite.m_RD.alphaTexture.TryGet(out var alphaTexture))
+                            {
+                                if (!SpriteAtlasSplitData.TryGetValue(alphaTexture, out var spriteAtlasSplitData))
+                                {
+                                    spriteAtlasSplitData = new SortedDictionary<string, Sprite>();
+                                    SpriteAtlasSplitData.Add(alphaTexture, spriteAtlasSplitData);
+                                }
+
+                                if (spriteAtlasSplitData.ContainsKey(sprite.Name))
+                                {
+                                    Logger.Warning($"有冲突的Sprite名称：{sprite.Name}，请检查SpriteAtlas");
+                                }
+
+                                spriteAtlasSplitData[sprite.Name] = sprite;
+                            }
+
+                            exportable = ClassIDType.Sprite.CanExport();
+                            break;
                         case Mesh _ when ClassIDType.Mesh.CanExport():
                         case TextAsset _ when ClassIDType.TextAsset.CanExport():
                         case AnimationClip _ when ClassIDType.AnimationClip.CanExport():
                         case Font _ when ClassIDType.Font.CanExport():
                         case MovieTexture _ when ClassIDType.MovieTexture.CanExport():
-                        case Sprite _ when ClassIDType.Sprite.CanExport():
                         case Material _ when ClassIDType.Material.CanExport():
                         case MiHoYoBinData _ when ClassIDType.MiHoYoBinData.CanExport():
                         case Shader _ when ClassIDType.Shader.CanExport():
@@ -1053,6 +1092,7 @@ namespace AssetStudio.GUI
             Process.Start(info);
         }
 
+        #region 导出Live2D
 
         /// <summary>
         /// 导出 Live2D
@@ -1066,9 +1106,9 @@ namespace AssetStudio.GUI
         {
             var baseDestPath = Path.Combine(exportPath, "Live2DOutput");
             // 是否将线性运动段计算为贝塞尔曲线段
-            var forceBezier = Properties.Settings.Default.l2dForceBezier;
+            var forceBezier = Settings.Default.l2dForceBezier;
             var mocList = selCubismMocMonoBehaviours ?? CubismMocMonoBehaviours;
-            var motionMode = Properties.Settings.Default.l2dMotionMode;
+            var motionMode = Settings.Default.l2dMotionMode;
             if (selClipMotions != null)
                 motionMode = Live2DMotionMode.AnimationClipV2;
             else if (selFadeMotions != null || selFadeLst != null)
@@ -1126,10 +1166,10 @@ namespace AssetStudio.GUI
 
                 var totalModelCount = lookup.LongCount(x => x.Key != null);
                 var modelCounter = 0;
-                var parallelExportCount = Properties.Settings.Default.parallelExportCount <= 0
+                var parallelExportCount = Settings.Default.parallelExportCount <= 0
                     ? Environment.ProcessorCount - 1
-                    : Math.Min(Properties.Settings.Default.parallelExportCount, Environment.ProcessorCount - 1);
-                parallelExportCount = Properties.Settings.Default.parallelExport ? parallelExportCount : 1;
+                    : Math.Min(Settings.Default.parallelExportCount, Environment.ProcessorCount - 1);
+                parallelExportCount = Settings.Default.parallelExport ? parallelExportCount : 1;
                 foreach (var assets in lookup)
                 {
                     var srcContainer = assets.Key;
@@ -1167,13 +1207,13 @@ namespace AssetStudio.GUI
                     Progress.Report(total, total);
                 }
 
-                if (Properties.Settings.Default.openAfterExport && modelCounter > 0)
+                if (Settings.Default.openAfterExport && modelCounter > 0)
                 {
                     OpenFolderInExplorer(exportPath);
                 }
             });
         }
-        
+
         /// <summary> 选择程序集文件夹 </summary>
         private static void SelectAssemblyFolder()
         {
@@ -1191,5 +1231,21 @@ namespace AssetStudio.GUI
                 }
             }
         }
+
+        #endregion
+
+        #region 导出Sprite图集信息
+
+        /// <summary> 导出Sprite图集拆分信息 </summary>
+        public static void ExportSpriteAtlasInfo(string exportPath)
+        {
+            foreach (var spriteAtlasSplitDataKeyValue in SpriteAtlasSplitData)
+            {
+                var path = Path.Combine(exportPath, $"{spriteAtlasSplitDataKeyValue.Key.Name}.json");
+                ExportSpriteAtlasSplitData(spriteAtlasSplitDataKeyValue.Value, path);
+            }
+        }
+
+        #endregion
     }
 }

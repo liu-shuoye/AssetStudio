@@ -75,23 +75,39 @@ namespace AssetStudio
         }
     }
 
+    /// <summary> 精灵渲染数据 </summary>
     public class SpriteRenderData
     {
+        /// <summary> 精灵纹理 </summary>
         public PPtr<Texture2D> texture;
+        /// <summary> 透明纹理 </summary>
         public PPtr<Texture2D> alphaTexture;
+        /// <summary> 辅助纹理 </summary>
         public List<SecondarySpriteTexture> secondaryTextures;
+        /// <summary> 子网格 </summary>
         public List<SubMesh> m_SubMeshes;
+        /// <summary> 索引 </summary>
         public byte[] m_IndexBuffer;
+        /// <summary> 顶点数据 </summary>
         public VertexData m_VertexData;
+        /// <summary> 顶点 </summary>
         public List<SpriteVertex> vertices;
+        /// <summary> 索引 </summary>
         public ushort[] indices;
+        /// <summary> 绑定矩阵 </summary>
         public Matrix4x4[] m_Bindpose;
         public List<BoneWeights4> m_SourceSkin;
+        /// <summary> 纹理区域 </summary>
         public Rectf textureRect;
+        /// <summary> 纹理区域偏移 </summary>
         public Vector2 textureRectOffset;
+        /// <summary> 贴图区域偏移 </summary>
         public Vector2 atlasRectOffset;
+        /// <summary> 精灵设置 </summary>
         public SpriteSettings settingsRaw;
+        /// <summary> UV变换 </summary>
         public Vector4 uvTransform;
+        /// <summary> 缩放 </summary>
         public float downscaleMultiplier;
 
         public SpriteRenderData(ObjectReader reader)
@@ -175,6 +191,7 @@ namespace AssetStudio
         }
     }
 
+    /// <summary> 矩形 </summary>
     public class Rectf
     {
         public float x;
@@ -191,6 +208,7 @@ namespace AssetStudio
         }
     }
 
+    /// <summary> 精灵图 </summary>
     public sealed class Sprite : NamedObject
     {
         public Rectf m_Rect;

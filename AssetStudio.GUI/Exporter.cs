@@ -25,6 +25,10 @@ namespace AssetStudio.GUI
                     using (var file = File.OpenWrite(exportFullPath))
                     {
                         image.WriteToStream(file, type);
+                        if (Studio.SpriteAtlasSplitData.TryGetValue(m_Texture2D, out var spriteAtlasSplitData))
+                        {
+                            ExportSpriteAtlasSplitData(spriteAtlasSplitData, exportPath.Replace(".png", ".json"));
+                        }
                     }
 
                     return true;
@@ -37,6 +41,26 @@ namespace AssetStudio.GUI
                 File.WriteAllBytes(exportFullPath, m_Texture2D.image_data.GetData());
                 return true;
             }
+        }
+
+        /// <summary>
+        /// 导出Sprite图集拆分数据
+        /// </summary>
+        /// <param name="spriteAtlasSplitData"></param>
+        /// <param name="exportPath"></param>
+        /// <returns></returns>
+        public static bool ExportSpriteAtlasSplitData(SortedDictionary<string, Sprite> spriteAtlasSplitData, string exportPath)
+        {
+            var path = Path.Combine(exportPath);
+            Dictionary<string, Rectf> data = new();
+            foreach (var sprite in spriteAtlasSplitData)
+            {
+                data[sprite.Key] = sprite.Value.m_Rect;
+            }
+
+            var str = JsonConvert.SerializeObject(data);
+            File.WriteAllText(path, str);
+            return true;
         }
 
         public static bool ExportAudioClip(AssetItem item, string exportPath)
