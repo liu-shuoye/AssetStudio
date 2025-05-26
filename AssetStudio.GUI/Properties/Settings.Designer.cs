@@ -624,5 +624,17 @@ namespace AssetStudio.GUI.Properties {
                 this["parallelExport"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool enableAddressesAnalysis {
+            get {
+                return ((bool)(this["enableAddressesAnalysis"]));
+            }
+            set {
+                this["enableAddressesAnalysis"] = value;
+            }
+        }
     }
 }

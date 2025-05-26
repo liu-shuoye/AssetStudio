@@ -68,6 +68,9 @@ namespace AssetStudio
         /// 是否解析依赖关系
         public bool ResolveDependencies = false;
 
+        /// 是否启用地址解析
+        public bool EnableAddressesAnalysis = false;
+
         public string SpecifyUnityVersion;
 
         /// <summary> 取消令牌 </summary>
@@ -76,6 +79,7 @@ namespace AssetStudio
         /// <summary> 所有的资源文件 </summary>
         public List<SerializedFile> assetsFileList = new List<SerializedFile>();
 
+        /// <summary> 资源文件索引缓存 </summary>
         internal Dictionary<string, int> assetsFileIndexCache = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary> resource 资源文件读取器 </summary>
@@ -347,7 +351,7 @@ namespace AssetStudio
             {
                 // 读取AssetBundle
                 var bundleFile = new BundleFile(reader, Game);
-                
+
                 foreach (var file in bundleFile.fileList)
                 {
                     var dummyPath = Path.Combine(Path.GetDirectoryName(reader.FullPath) ?? string.Empty, file.fileName);
@@ -815,69 +819,89 @@ namespace AssetStudio
                         return;
                     }
 
-                    if (obj is GameObject m_GameObject)
+                    switch (obj)
                     {
-                        Logger.Verbose($"文件 {m_GameObject.assetsFile.fileName} 中具有 {m_GameObject.m_PathID} 的游戏对象包含 {m_GameObject.m_Components.Count} 个组件，尝试获取它们...");
-                        foreach (var pptr in m_GameObject.m_Components)
+                        case GameObject gameObject:
                         {
-                            if (pptr.TryGet(out var m_Component))
-                            {
-                                switch (m_Component)
-                                {
-                                    case Transform m_Transform:
-                                        Logger.Verbose($"从文件 {m_Transform.assetsFile.fileName} 获取的变换组件 {m_Transform.m_PathID}，正在分配到游戏对象组件...");
-                                        m_GameObject.m_Transform = m_Transform;
-                                        break;
-                                    case MeshRenderer m_MeshRenderer:
-                                        Logger.Verbose($"从文件 {m_MeshRenderer.assetsFile.fileName} 获取的网格渲染器组件 {m_MeshRenderer.m_PathID}，正在分配到游戏对象组件...");
-                                        m_GameObject.m_MeshRenderer = m_MeshRenderer;
-                                        break;
-                                    case MeshFilter m_MeshFilter:
-                                        Logger.Verbose($"从文件 {m_MeshFilter.assetsFile.fileName} 获取的网格过滤器组件 {m_MeshFilter.m_PathID}，正在分配到游戏对象组件...");
-                                        m_GameObject.m_MeshFilter = m_MeshFilter;
-                                        break;
-                                    case SkinnedMeshRenderer m_SkinnedMeshRenderer:
-                                        Logger.Verbose($"从文件 {m_SkinnedMeshRenderer.assetsFile.fileName} 获取的蒙皮网格渲染器组件 {m_SkinnedMeshRenderer.m_PathID}，正在分配到游戏对象组件...");
-                                        m_GameObject.m_SkinnedMeshRenderer = m_SkinnedMeshRenderer;
-                                        break;
-                                    case Animator m_Animator:
-                                        Logger.Verbose($"从文件 {m_Animator.assetsFile.fileName} 获取的动画器组件 {m_Animator.m_PathID}，正在分配到游戏对象组件...");
-                                        m_GameObject.m_Animator = m_Animator;
-                                        break;
-                                    case Animation m_Animation:
-                                        Logger.Verbose($"从文件 {m_Animation.assetsFile.fileName} 获取的动画组件 {m_Animation.m_PathID}，正在分配到游戏对象组件...");
-                                        m_GameObject.m_Animation = m_Animation;
-                                        break;
-                                }
-                            }
+                            AssetsManager.ProcessGameObject(gameObject);
+
+                            break;
+                        }
+                        case SpriteAtlas spriteAtlas:
+                        {
+                            ProcessSpriteAtlas(spriteAtlas);
+
+                            break;
                         }
                     }
-                    else if (obj is SpriteAtlas m_SpriteAtlas)
+                }
+            }
+        }
+
+        /// <summary>处理精灵图集</summary>
+        private static void ProcessSpriteAtlas(SpriteAtlas spriteAtlas)
+        {
+            if (spriteAtlas.m_RenderDataMap.Count <= 0) return;
+            Logger.Verbose($"文件 {spriteAtlas.assetsFile.fileName} 中具有 {spriteAtlas.m_PathID} 的 SpriteAtlas 包含 {spriteAtlas.m_PackedSprites.Count} 个已打包的精灵，尝试获取它们...");
+            foreach (var m_PackedSprite in spriteAtlas.m_PackedSprites)
+            {
+                if (m_PackedSprite.TryGet(out var m_Sprite))
+                {
+                    if (m_Sprite.m_SpriteAtlas.IsNull)
                     {
-                        if (m_SpriteAtlas.m_RenderDataMap.Count > 0)
+                        Logger.Verbose($"从文件 {m_Sprite.assetsFile.fileName} 获取的精灵 {m_Sprite.m_PathID}，正在分配到父精灵图集...");
+                        m_Sprite.m_SpriteAtlas.Set(spriteAtlas);
+                    }
+                    else
+                    {
+                        m_Sprite.m_SpriteAtlas.TryGet(out var m_SpriteAtlaOld);
+                        if (m_SpriteAtlaOld.m_IsVariant)
                         {
-                            Logger.Verbose($"文件 {m_SpriteAtlas.assetsFile.fileName} 中具有 {m_SpriteAtlas.m_PathID} 的 SpriteAtlas 包含 {m_SpriteAtlas.m_PackedSprites.Count} 个已打包的精灵，尝试获取它们...");
-                            foreach (var m_PackedSprite in m_SpriteAtlas.m_PackedSprites)
-                            {
-                                if (m_PackedSprite.TryGet(out var m_Sprite))
-                                {
-                                    if (m_Sprite.m_SpriteAtlas.IsNull)
-                                    {
-                                        Logger.Verbose($"从文件 {m_Sprite.assetsFile.fileName} 获取的精灵 {m_Sprite.m_PathID}，正在分配到父精灵图集...");
-                                        m_Sprite.m_SpriteAtlas.Set(m_SpriteAtlas);
-                                    }
-                                    else
-                                    {
-                                        m_Sprite.m_SpriteAtlas.TryGet(out var m_SpriteAtlaOld);
-                                        if (m_SpriteAtlaOld.m_IsVariant)
-                                        {
-                                            Logger.Verbose($"文件 {m_Sprite.assetsFile.fileName} 中的精灵 {m_Sprite.m_PathID} 拥有原始精灵图集的变体，正在处理变体并分配到父精灵图集...");
-                                            m_Sprite.m_SpriteAtlas.Set(m_SpriteAtlas);
-                                        }
-                                    }
-                                }
-                            }
+                            Logger.Verbose($"文件 {m_Sprite.assetsFile.fileName} 中的精灵 {m_Sprite.m_PathID} 拥有原始精灵图集的变体，正在处理变体并分配到父精灵图集...");
+                            m_Sprite.m_SpriteAtlas.Set(spriteAtlas);
                         }
+                    }
+                }
+            }
+        }
+
+        /// <summary> 处理游戏对象 </summary>
+        private static void ProcessGameObject(GameObject gameObject)
+        {
+            Logger.Verbose($"文件 {gameObject.assetsFile.fileName} 中具有 {gameObject.m_PathID} 的游戏对象包含 {gameObject.m_Components.Count} 个组件，尝试获取它们...");
+            foreach (var pptr in gameObject.m_Components)
+            {
+                if (pptr.TryGet(out var component))
+                {
+                    switch (component)
+                    {
+                        case Transform transform:
+                            Logger.Verbose($"从文件 {transform.assetsFile.fileName} 获取的变换组件 {transform.m_PathID}，正在分配到游戏对象组件...");
+                            gameObject.m_Transform = transform;
+                            break;
+                        case MeshRenderer meshRenderer:
+                            Logger.Verbose($"从文件 {meshRenderer.assetsFile.fileName} 获取的网格渲染器组件 {meshRenderer.m_PathID}，正在分配到游戏对象组件...");
+                            gameObject.m_MeshRenderer = meshRenderer;
+                            break;
+                        case MeshFilter meshFilter:
+                            Logger.Verbose($"从文件 {meshFilter.assetsFile.fileName} 获取的网格过滤器组件 {meshFilter.m_PathID}，正在分配到游戏对象组件...");
+                            gameObject.m_MeshFilter = meshFilter;
+                            break;
+                        case SkinnedMeshRenderer skinnedMeshRenderer:
+                            Logger.Verbose($"从文件 {skinnedMeshRenderer.assetsFile.fileName} 获取的蒙皮网格渲染器组件 {skinnedMeshRenderer.m_PathID}，正在分配到游戏对象组件...");
+                            gameObject.m_SkinnedMeshRenderer = skinnedMeshRenderer;
+                            break;
+                        case Animator animator:
+                            Logger.Verbose($"从文件 {animator.assetsFile.fileName} 获取的动画器组件 {animator.m_PathID}，正在分配到游戏对象组件...");
+                            gameObject.m_Animator = animator;
+                            break;
+                        case Animation animation:
+                            Logger.Verbose($"从文件 {animation.assetsFile.fileName} 获取的动画组件 {animation.m_PathID}，正在分配到游戏对象组件...");
+                            gameObject.m_Animation = animation;
+                            break;
+                        case MonoBehaviour monoBehaviour:
+                            Logger.Verbose($"从文件 {monoBehaviour.assetsFile.fileName} 获取的脚本组件 {monoBehaviour.m_PathID}，正在分配到游戏对象组件...");
+                            break;
                     }
                 }
             }

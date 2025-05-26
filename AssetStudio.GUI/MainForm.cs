@@ -118,9 +118,11 @@ namespace AssetStudio.GUI
             enableModelPreview.Checked = Properties.Settings.Default.enableModelPreview;
             modelsOnly.Checked = Properties.Settings.Default.modelsOnly;
             enableResolveDependencies.Checked = Properties.Settings.Default.enableResolveDependencies;
+            enableAddressesAnalysis.Checked = Properties.Settings.Default.enableAddressesAnalysis;
             allowDuplicates.Checked = Properties.Settings.Default.allowDuplicates;
             skipContainer.Checked = Properties.Settings.Default.skipContainer;
             assetsManager.ResolveDependencies = enableResolveDependencies.Checked;
+            assetsManager.EnableAddressesAnalysis = enableAddressesAnalysis.Checked;
             SkipContainer = Properties.Settings.Default.skipContainer;
             MiHoYoBinData.Encrypted = Properties.Settings.Default.encrypted;
             MiHoYoBinData.Key = Properties.Settings.Default.key;
@@ -420,6 +422,23 @@ namespace AssetStudio.GUI
             StatusStripUpdate(log);
         }
 
+        /// <summary> 场景层次结构树点击事件 </summary>
+        private void OnTreeViewNodeMouseClick(object sender, TreeNodeMouseClickEventArgs eventArgs)
+        {
+            if (!assetsManager.EnableAddressesAnalysis)
+            {
+                return;
+            }
+
+            if (eventArgs.Node is GameObjectTreeNode gameObjectNode)
+            {
+                var obj = gameObjectNode.gameObject.ToType();
+
+                var str = JsonConvert.SerializeObject(obj, Formatting.Indented);
+                PreviewText(str);
+            }
+        }
+
         private void typeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var typeItem = (ToolStripMenuItem)sender;
@@ -552,16 +571,16 @@ namespace AssetStudio.GUI
                 {
                     case ClassIDType.Texture2D:
                     case ClassIDType.Sprite:
+                    {
+                        if (enablePreview.Checked && imageTexture != null)
                         {
-                            if (enablePreview.Checked && imageTexture != null)
-                            {
-                                imgPreviewBox.Image = imageTexture.Bitmap;
-                            }
-                            else
-                            {
-                                imgPreviewBox.Image = null;
-                            }
+                            imgPreviewBox.Image = imageTexture.Bitmap;
                         }
+                        else
+                        {
+                            imgPreviewBox.Image = null;
+                        }
+                    }
                         break;
                     case ClassIDType.Shader:
                     case ClassIDType.TextAsset:
@@ -573,25 +592,25 @@ namespace AssetStudio.GUI
                         fontPreviewBox.Visible = !fontPreviewBox.Visible;
                         break;
                     case ClassIDType.AudioClip:
+                    {
+                        FMODpanel.Visible = !FMODpanel.Visible;
+
+                        if (sound != null && channel != null)
                         {
-                            FMODpanel.Visible = !FMODpanel.Visible;
-
-                            if (sound != null && channel != null)
+                            var result = channel.isPlaying(out var playing);
+                            if (result == FMOD.RESULT.OK && playing)
                             {
-                                var result = channel.isPlaying(out var playing);
-                                if (result == FMOD.RESULT.OK && playing)
-                                {
-                                    channel.stop();
-                                    FMODreset();
-                                }
+                                channel.stop();
+                                FMODreset();
                             }
-                            else if (FMODpanel.Visible)
-                            {
-                                PreviewAsset(lastSelectedItem);
-                            }
-
-                            break;
                         }
+                        else if (FMODpanel.Visible)
+                        {
+                            PreviewAsset(lastSelectedItem);
+                        }
+
+                        break;
+                    }
                 }
             }
             else if (lastSelectedItem != null && enablePreview.Checked)
@@ -2081,10 +2100,9 @@ namespace AssetStudio.GUI
                 }
 
                 var regex = new Regex(listSearch.Text, RegexOptions.IgnoreCase);
-                visibleAssets = visibleAssets.FindAll(
-                    x => regex.IsMatch(x.Text) ||
-                         regex.IsMatch(x.SubItems[1].Text) ||
-                         regex.IsMatch(x.SubItems[3].Text));
+                visibleAssets = visibleAssets.FindAll(x => regex.IsMatch(x.Text) ||
+                                                           regex.IsMatch(x.SubItems[1].Text) ||
+                                                           regex.IsMatch(x.SubItems[3].Text));
             }
 
             assetListView.VirtualListSize = visibleAssets.Count;
@@ -3329,6 +3347,14 @@ namespace AssetStudio.GUI
 
         #endregion
 
+        private void enableAddressesAnalysis_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.enableAddressesAnalysis = enableAddressesAnalysis.Checked;
+            Properties.Settings.Default.Save();
+            assetsManager.EnableAddressesAnalysis = enableAddressesAnalysis.Checked;
+            Logger.Info($"已启用地址分析功能{assetsManager.EnableAddressesAnalysis}");
+        }
+
         private void allModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (exportableAssets.Count > 0)
@@ -3338,6 +3364,7 @@ namespace AssetStudio.GUI
                     Logger.Info("未找到 Live2D Cubism 模型。");
                     return;
                 }
+
                 Live2DExporter();
             }
             else
@@ -3348,10 +3375,9 @@ namespace AssetStudio.GUI
 
         private void selectModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
         }
-        
-        
+
+
         private void Live2DExporter(List<MonoBehaviour> selMocs = null, List<AnimationClip> selClipMotions = null, List<MonoBehaviour> selFadeMotions = null, MonoBehaviour selFadeLst = null)
         {
             var saveFolderDialog = new OpenFolderDialog();

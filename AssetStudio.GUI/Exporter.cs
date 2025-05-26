@@ -39,6 +39,26 @@ namespace AssetStudio.GUI
             }
         }
 
+        /// <summary>
+        /// 导出Sprite图集拆分数据
+        /// </summary>
+        /// <param name="spriteAtlasSplitData"></param>
+        /// <param name="exportPath"></param>
+        /// <returns></returns>
+        public static bool ExportSpriteAtlasSplitData(SortedDictionary<string, Sprite> spriteAtlasSplitData, string exportPath)
+        {
+            var path = Path.Combine(exportPath);
+            Dictionary<string, Rectf> data = new();
+            foreach (var sprite in spriteAtlasSplitData)
+            {
+                data[sprite.Key] = sprite.Value.m_Rect;
+            }
+
+            var str = JsonConvert.SerializeObject(data);
+            File.WriteAllText(path, str);
+            return true;
+        }
+
         public static bool ExportAudioClip(AssetItem item, string exportPath)
         {
             var m_AudioClip = (AudioClip)item.Asset;
