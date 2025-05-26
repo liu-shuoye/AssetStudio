@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AssetStudio
 {
@@ -14,6 +16,7 @@ namespace AssetStudio
         /// 资源对象在资产文件中的ID。
         /// </summary>
         public int m_FileID;
+
         /// <summary>
         /// 资源对象在资产文件路径中的ID。
         /// </summary>
@@ -23,10 +26,14 @@ namespace AssetStudio
         /// 当前指针关联的序列化文件。
         /// </summary>
         private SerializedFile assetsFile;
+
         /// <summary>
         /// 指针状态索引，默认为-2表示准备状态，-1表示丢失。
         /// </summary>
         private int index = -2;
+
+        private Object gameObject;
+        private static JObject _scriptCitationData;
 
         /// <summary>
         /// 获取指针指向的资源对象的名称。
@@ -37,13 +44,13 @@ namespace AssetStudio
         /// <summary>
         /// 初始化PPtr对象。
         /// </summary>
-        /// <param name="m_FileID">文件ID。</param>
-        /// <param name="m_PathID">路径ID。</param>
+        /// <param name="mFileId">文件ID。</param>
+        /// <param name="mPathId">路径ID。</param>
         /// <param name="assetsFile">关联的序列化文件。</param>
-        public PPtr(int m_FileID,  long m_PathID, SerializedFile assetsFile)
+        public PPtr(int mFileId, long mPathId, SerializedFile assetsFile)
         {
-            this.m_FileID = m_FileID;
-            this.m_PathID = m_PathID;
+            this.m_FileID = mFileId;
+            this.m_PathID = mPathId;
             this.assetsFile = assetsFile;
         }
 
@@ -59,6 +66,27 @@ namespace AssetStudio
         }
 
         /// <summary>
+        /// 读取JSON文件
+        /// </summary>
+        /// <param name="key">JSON文件中的key值</param>
+        /// <returns>JSON文件中的value值</returns>
+        public static JToken Readjson(string key)
+        {
+            var jsonfile = @"D:\Config\fieldHash\scriptCitationData.json"; //JSON文件路径
+            if (_scriptCitationData != null)
+            {
+                return _scriptCitationData.TryGetValue(key, out var field) ? field : null;
+            }
+
+            using StreamReader file = File.OpenText(jsonfile);
+            using JsonTextReader reader = new JsonTextReader(file);
+
+            _scriptCitationData = (JObject)JToken.ReadFrom(reader);
+            var value = _scriptCitationData[key];
+            return value;
+        }
+
+        /// <summary>
         /// 将PPtr对象导出为YAML节点。
         /// </summary>
         /// <param name="version">版本信息。</param>
@@ -67,7 +95,27 @@ namespace AssetStudio
         {
             var node = new YAMLMappingNode();
             node.Style = MappingStyle.Flow;
-            node.Add("fileID", m_FileID);
+            if (assetsFile != null)
+            {
+                // node.Add("Name", Name);
+                var token = Readjson(Name);
+                if (token != null)
+                {
+                    node.Add("fileID", token["fileID"]!.ToString());
+                    node.Add("guid", token["guid"]!.ToString());
+                    node.Add("type", token["type"]!.ToString());
+                }
+                else
+                {
+                    node.Add("fileID", m_FileID);
+                }
+                
+            }
+            else
+            {
+                node.Add("fileID", m_FileID);
+            }
+
             return node;
         }
 
@@ -93,8 +141,8 @@ namespace AssetStudio
 
                 if (index == -2)
                 {
-                    var m_External = assetsFile.m_Externals[m_FileID - 1];
-                    var name = m_External.fileName;
+                    var external = assetsFile.m_Externals[m_FileID - 1];
+                    var name = external.fileName;
                     if (!assetsFileIndexCache.TryGetValue(name, out index))
                     {
                         index = assetsFileList.FindIndex(x => x.fileName.Equals(name, StringComparison.OrdinalIgnoreCase));
@@ -119,6 +167,12 @@ namespace AssetStudio
         /// <returns>是否成功获取资源对象。</returns>
         public bool TryGet(out T result)
         {
+            if (gameObject != null)
+            {
+                result = gameObject as T;
+                return true;
+            }
+
             if (TryGetAssetsFile(out var sourceFile))
             {
                 if (sourceFile.ObjectsDic.TryGetValue(m_PathID, out var obj))
@@ -126,6 +180,7 @@ namespace AssetStudio
                     if (obj is T variable)
                     {
                         result = variable;
+                        gameObject = result;
                         return true;
                     }
                 }
@@ -162,10 +217,10 @@ namespace AssetStudio
         /// <summary>
         /// 设置指针指向的资源对象。
         /// </summary>
-        /// <param name="m_Object">要设置的资源对象。</param>
-        public void Set(T m_Object)
+        /// <param name="mObject">要设置的资源对象。</param>
+        public void Set(T mObject)
         {
-            var name = m_Object.assetsFile.fileName;
+            var name = mObject.assetsFile.fileName;
             if (string.Equals(assetsFile.fileName, name, StringComparison.OrdinalIgnoreCase))
             {
                 m_FileID = 0;
@@ -177,7 +232,7 @@ namespace AssetStudio
                 {
                     assetsFile.m_Externals.Add(new FileIdentifier
                     {
-                        fileName = m_Object.assetsFile.fileName
+                        fileName = mObject.assetsFile.fileName
                     });
                     m_FileID = assetsFile.m_Externals.Count;
                 }
@@ -197,7 +252,7 @@ namespace AssetStudio
                 assetsFileIndexCache.Add(name, index);
             }
 
-            m_PathID = m_Object.m_PathID;
+            m_PathID = mObject.m_PathID;
         }
 
         /// <summary>
@@ -216,5 +271,4 @@ namespace AssetStudio
         /// <returns>如果指针为null，则返回true；否则返回false。</returns>
         public bool IsNull => m_PathID == 0 || m_FileID < 0;
     }
-
 }

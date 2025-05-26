@@ -54,9 +54,14 @@ namespace SevenZip
 			return (CalculateDigest(data, offset, size) == digest);
 		}
 
-        public static uint CalculateDigestAscii(string data)
-        {
-            var bytes = Encoding.ASCII.GetBytes(data);
+		/// <summary>
+		/// 计算给定ASCII字符串的数据摘要。
+		/// </summary>
+		/// <param name="data">要计算摘要的ASCII字符串。</param>
+		/// <returns>返回计算得到的CRC32校验值。</returns>
+		public static uint CalculateDigestAscii(string data)
+		{
+			var bytes = Encoding.ASCII.GetBytes(data);
             return CalculateDigest(bytes, 0, (uint)bytes.Length);
         }
 

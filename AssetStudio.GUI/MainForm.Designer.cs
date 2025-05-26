@@ -970,6 +970,7 @@ namespace AssetStudio.GUI
             sceneTreeView.Size = new System.Drawing.Size(472, 571);
             sceneTreeView.TabIndex = 1;
             sceneTreeView.AfterCheck += sceneTreeView_AfterCheck;
+            sceneTreeView.NodeMouseClick += OnTreeViewNodeMouseClick;
             // 
             // treeSearch
             // 

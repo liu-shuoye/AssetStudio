@@ -138,7 +138,7 @@ namespace AssetStudio
                 }
             }
 
-            Logger.Verbose($"依赖解析完成，原始 {files.Length} 个文件将全部加载，{Offsets.Count - files.Length} 个依赖项将从缓存偏移量中加载。");
+            Logger.Info($"依赖解析完成，原始 {files.Length} 个文件将全部加载，{Offsets.Count - files.Length} 个依赖项将从缓存偏移量中加载。");
             return Offsets.Keys.ToArray();
         }
 

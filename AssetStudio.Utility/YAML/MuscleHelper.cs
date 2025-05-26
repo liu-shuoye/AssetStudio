@@ -2,6 +2,9 @@
 
 namespace AssetStudio
 {
+    /// <summary>
+    /// 人类肌肉类型枚举，用于表示不同类型的肌肉或骨骼在人体模型中的位置。此枚举包括了从基础运动到手指和特殊自由度骨骼的分类。
+    /// </summary>
     public enum HumanoidMuscleType
     {
         Motion = 0,
@@ -14,6 +17,9 @@ namespace AssetStudio
         Last = TDoFBones + TDoFBoneType.Last * 3,
     }
 
+    /// <summary>
+    /// 提供了针对HumanoidMuscleType枚举类型的扩展方法，用于更新肌肉类型以及将肌肉类型转换为属性字符串。
+    /// </summary>
     public static class AnimationMuscleTypeExtensions
     {
         public static HumanoidMuscleType Update(this HumanoidMuscleType _this, int[] version)
@@ -134,6 +140,9 @@ namespace AssetStudio
         Last,
     }
 
+    /// <summary>
+    /// 提供了针对LimbType枚举类型的扩展方法，用于将肢体类型转换为对应的骨骼类型。
+    /// </summary>
     public static class LimbTypeExtensions
     {
         public static BoneType ToBoneType(this LimbType _this)
@@ -155,6 +164,9 @@ namespace AssetStudio
         }
     }
 
+    /// <summary>
+    /// 肌肉类型枚举，用于定义人体模型中各个肌肉或骨骼的具体动作方向。此枚举涵盖了从脊柱到脚趾的多种基本运动方式。
+    /// </summary>
     public enum MuscleType
     {
         SpineFrontBack = 0,
@@ -216,6 +228,9 @@ namespace AssetStudio
         Last,
     }
 
+    /// <summary>
+    /// 提供了针对MuscleType枚举类型的扩展方法，用于更新肌肉类型版本以及将肌肉类型转换为属性字符串。
+    /// </summary>
     public static class MuscleTypeExtensions
     {
         public static MuscleType Update(this MuscleType _this, int[] version)
@@ -382,6 +397,9 @@ namespace AssetStudio
         Last,
     }
 
+    /// <summary>
+    /// 提供了针对BoneType枚举类型的扩展方法，用于更新骨骼类型以及将骨骼类型转换为属性字符串。
+    /// </summary>
     public static class BoneTypeExtensions
     {
         public static BoneType Update(this BoneType _this, int[] version)
@@ -414,6 +432,9 @@ namespace AssetStudio
         EulerRotation = 4,
     }
 
+    /// <summary>
+    /// 提供了针对TransformType枚举类型的扩展方法，用于验证绑定类型的有效性以及获取绑定类型的维度。
+    /// </summary>
     public static class BindingTypeExtensions
     {
         public static bool IsValid(this TransformType _this)
@@ -447,6 +468,9 @@ namespace AssetStudio
         Last,
     }
 
+    /// <summary>
+    /// 为ArmType枚举类型提供扩展方法，用于将手臂类型转换为对应的骨骼类型。
+    /// </summary>
     public static class ArmTypeExtensions
     {
         public static BoneType ToBoneType(this ArmType _this)
@@ -475,6 +499,9 @@ namespace AssetStudio
         Last,
     }
 
+    /// <summary>
+    /// 提供了针对FingerType枚举类型的扩展方法，用于将手指类型转换为属性字符串。
+    /// </summary>
     public static class FingerTypeExtensions
     {
         public static string ToAttributeString(this FingerType _this)
@@ -497,6 +524,9 @@ namespace AssetStudio
         Last,
     }
 
+    /// <summary>
+    /// 提供了针对FingerDoFType枚举类型的扩展方法，用于将手指自由度类型转换为可读的属性字符串。
+    /// </summary>
     public static class FingerDoFTypeExtensions
     {
         public static string ToAttributeString(this FingerDoFType _this)
@@ -544,6 +574,9 @@ namespace AssetStudio
         Last,
     }
 
+    /// <summary>
+    /// 提供了针对TDoFBoneType枚举类型的扩展方法，用于根据版本更新骨骼类型以及将TDoFBoneType转换为BoneType。
+    /// </summary>
     public static class TDoFBoneTypeExtensions
     {
         public static TDoFBoneType Update(this TDoFBoneType _this, int[] version)

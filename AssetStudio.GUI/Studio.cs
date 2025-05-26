@@ -446,6 +446,8 @@ namespace AssetStudio.GUI
                 }
             }
 
+            #region 容器恢复
+
             if (!SkipContainer)
             {
                 foreach (var (pptr, container) in containers)
@@ -477,6 +479,8 @@ namespace AssetStudio.GUI
                     UpdateContainers();
                 }
             }
+
+            #endregion
 
             foreach (var tmp in exportableAssets)
             {

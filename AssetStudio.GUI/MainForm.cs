@@ -420,6 +420,19 @@ namespace AssetStudio.GUI
             StatusStripUpdate(log);
         }
 
+        /// <summary> 场景层次结构树点击事件 </summary>
+        private void OnTreeViewNodeMouseClick(object sender, TreeNodeMouseClickEventArgs eventArgs)
+        {
+            Logger.Error($"————————{eventArgs.Node}");
+            if (eventArgs.Node is GameObjectTreeNode gameObjectNode)
+            {
+                var obj = gameObjectNode.gameObject.ToType();
+
+                var str = JsonConvert.SerializeObject(obj, Formatting.Indented);
+                PreviewText(str);
+            }
+        }
+
         private void typeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var typeItem = (ToolStripMenuItem)sender;

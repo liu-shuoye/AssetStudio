@@ -51,15 +51,15 @@ namespace AssetStudio.GUI
         /// <returns></returns>
         public static bool ExportSpriteAtlasSplitData(SortedDictionary<string, Sprite> spriteAtlasSplitData, string exportPath)
         {
-            var path = Path.Combine(exportPath);
-            Dictionary<string, Rectf> data = new();
-            foreach (var sprite in spriteAtlasSplitData)
-            {
-                data[sprite.Key] = sprite.Value.m_Rect;
-            }
-
-            var str = JsonConvert.SerializeObject(data);
-            File.WriteAllText(path, str);
+            // var path = Path.Combine(exportPath);
+            // Dictionary<string, Rectf> data = new();
+            // foreach (var sprite in spriteAtlasSplitData)
+            // {
+            //     data[sprite.Key] = sprite.Value.m_Rect;
+            // }
+            //
+            // var str = JsonConvert.SerializeObject(data);
+            // File.WriteAllText(path, str);
             return true;
         }
 

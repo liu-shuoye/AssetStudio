@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AssetStudio
 {
@@ -1909,108 +1910,141 @@ namespace AssetStudio
     }
 
 
-    /// <summary> 描述一个动画剪辑。 </summary>
+    /// <summary>
+    /// 表示动画片段中的肌肉常量设置，包含各种姿态、变换、速度等信息以及循环和镜像设置。
+    /// </summary>
     public class ClipMuscleConstant : IYAMLExportable
     {
-        /// 姿势的变化量
+        /// <summary>
+        /// 表示关键帧之间的姿势变化。
+        /// </summary>
         public HumanPose m_DeltaPose;
 
-        /// 起始位置
+        /// <summary>
+        /// 表示动画开始时的变换。
+        /// </summary>
         public XForm m_StartX;
 
-        /// 结束位置
+        /// <summary>
+        /// 动画结束时的变换。
+        /// </summary>
         public XForm m_StopX;
 
-        /// 左脚起始位置
+        /// <summary>
+        /// 左脚起始位置的变换信息。
+        /// </summary>
         public XForm m_LeftFootStartX;
 
-        /// 右脚起始位置
+        /// <summary>
+        /// 右脚的起始位置变换。
+        /// </summary>
         public XForm m_RightFootStartX;
 
-        /// 运动起始位置
+        /// <summary>
+        /// 表示动画开始时的运动变换。
+        /// </summary>
         public XForm m_MotionStartX;
 
-        /// 运动结束位置
+        /// <summary>
+        /// 表示动画片段中运动结束时的变换信息，包括位置、旋转和缩放。
+        /// </summary>
         public XForm m_MotionStopX;
 
-        /// 平均速度
+        /// <summary>
+        /// 表示动画片段中的平均速度。
+        /// </summary>
         public Vector3 m_AverageSpeed;
 
-        /// 动画片段
+        /// <summary>
+        /// 与肌肉常量关联的动画片段。
+        /// </summary>
         public Clip m_Clip;
 
-        /// 起始时间
+        /// <summary>
+        /// 动画片段的开始时间。
+        /// </summary>
         public float m_StartTime;
 
-        /// 结束时间
+        /// <summary>
+        /// 动画停止的时间点。
+        /// </summary>
         public float m_StopTime;
 
-        /// Y轴方向的偏移角度
+        /// <summary>
+        /// Y轴方向的偏移角度。
+        /// </summary>
         public float m_OrientationOffsetY;
 
-        /// 动画层级
+        /// <summary>
+        /// 动画片段的层级。
+        /// </summary>
         public float m_Level;
 
-        /// 循环偏移量
+        /// <summary>
+        /// 动画循环的偏移量。
+        /// </summary>
         public float m_CycleOffset;
 
-        /// 平均角速度
+        /// <summary>
+        /// 动画片段的平均角速度。
+        /// </summary>
         public float m_AverageAngularSpeed;
 
-        /// 索引数组
+        /// <summary>
+        /// 用于存储索引的整数数组，这些索引可能与动画关键帧或其他相关数据有关。
+        /// </summary>
         public int[] m_IndexArray;
 
-        /// 值变化数组
+        /// <summary>
+        /// 保存了动画中关键帧值的变化数组。每个元素代表一个特定时间点上值的变化情况。
+        /// </summary>
         public List<ValueDelta> m_ValueArrayDelta;
 
-        /// 参考姿势值数组
+        /// <summary>
+        /// 表示参考姿态值数组，用于存储动画片段中关键的姿态数据。
+        /// </summary>
         public float[] m_ValueArrayReferencePose;
 
-        /// 镜像标志
+        /// <summary>
+        /// 表示是否启用镜像效果。
+        /// </summary>
         public bool m_Mirror;
 
-        /// 时间循环标志
+        /// <summary>
+        /// 表示动画是否循环播放。
+        /// </summary>
         public bool m_LoopTime;
 
-        /// 循环混合标志
+        /// <summary>
+        /// 表示动画片段是否启用循环混合。
+        /// </summary>
         public bool m_LoopBlend;
 
-        /// 循环方向混合标志
         public bool m_LoopBlendOrientation;
 
-        /// Y轴位置循环混合标志
         public bool m_LoopBlendPositionY;
 
-        /// XZ平面位置循环混合标志
         public bool m_LoopBlendPositionXZ;
 
-        /// 是否从起点开始
         public bool m_StartAtOrigin;
 
-        /// 保持原始方向
         public bool m_KeepOriginalOrientation;
 
-        /// 保持原始Y轴位置
         public bool m_KeepOriginalPositionY;
 
-        /// 保持原始XZ平面位置
         public bool m_KeepOriginalPositionXZ;
 
-        /// 是否从脚高度开始
         public bool m_HeightFromFeet;
 
-        /// 判断是否使用短索引数组
         public static bool HasShortIndexArray(SerializedType type) =>
             type.Match("E708B1872AE48FD688AC012DF4A7A178") ||
             type.Match("055AA41C7639327940F8900103A10356") ||
             type.Match("82E1E738FBDE87C5A8DAE868F0578A4D");
 
-        /// 空构造函数
         public ClipMuscleConstant()
         {
         }
 
-        /// 构造函数，通过ObjectReader对象读取动画常量数据
         public ClipMuscleConstant(ObjectReader reader)
         {
             var version = reader.version;
@@ -2109,7 +2143,7 @@ namespace AssetStudio
 
             reader.AlignStream(); // 对齐流
         }
-        
+
         public static ClipMuscleConstant ParseGI(ObjectReader reader)
         {
             var version = reader.version;
@@ -2181,8 +2215,7 @@ namespace AssetStudio
 
             return clipMuscleConstant;
         }
-        
-        /// 导出为YAML格式
+
         public YAMLNode ExportYAML(int[] version)
         {
             var node = new YAMLMappingNode();
@@ -2205,7 +2238,6 @@ namespace AssetStudio
             return node;
         }
 
-        /// 根据版本返回序列化版本号
         private int ToSerializedVersion(int[] version)
         {
             if (version[0] > 5 || (version[0] == 5 && version[1] >= 6))
@@ -2222,22 +2254,65 @@ namespace AssetStudio
     }
 
 
+    /// <summary>
+    /// 表示泛型绑定，用于在动画剪辑中存储特定路径和属性的绑定信息。此类实现了IYAMLExportable接口，可以将对象导出为YAML格式。
+    /// </summary>
     public class GenericBinding : IYAMLExportable
     {
+        /// <summary>
+        /// 表示当前文件的版本信息，用于兼容不同版本的数据解析。
+        /// </summary>
         public int[] version;
+
+        /// <summary>
+        /// 表示动画属性绑定的路径标识符。这个值用于确定动画曲线在动画剪辑中的具体对象和属性。
+        /// </summary>
         public uint path;
+
+        /// <summary>
+        /// 表示绑定的具体属性，用于区分不同的动画数据类型，如位置、旋转或缩放等。
+        /// </summary>
         public uint attribute;
+
+        /// <summary>
+        /// 绑定到脚本的引用，用于在动画剪辑中指向特定的MonoScript对象。这允许动画数据与特定的脚本逻辑关联。
+        /// </summary>
         public PPtr<Object> script;
+
+        /// <summary>
+        /// 表示绑定对象的类ID类型。
+        /// </summary>
         public ClassIDType typeID;
+
+        /// <summary>
+        /// 表示自定义类型的标识符，用于区分不同的绑定类型。
+        /// </summary>
         public byte customType;
+
+        /// <summary>
+        /// 表示该曲线是否为PPtrCurve类型。如果值为0x01，则表示该曲线是PPtrCurve。
+        /// </summary>
         public byte isPPtrCurve;
+
+        /// <summary>
+        /// 表示当前曲线是否为整数类型。此标志用于区分动画数据中的整数和非整数曲线。
+        /// </summary>
         public byte isIntCurve;
+
+        /// <summary>
+        /// 表示是否序列化引用曲线。此标志用于确定在导出或处理动画数据时，是否包含对特定对象的引用曲线。
+        /// </summary>
         public byte isSerializeReferenceCurve;
+
+        private static Dictionary<string, JObject> _hashData = new();
 
         public GenericBinding()
         {
         }
 
+        /// <summary>
+        /// 表示泛型绑定，用于在动画剪辑中存储特定路径和属性的绑定信息。
+        /// </summary>
         public GenericBinding(ObjectReader reader)
         {
             version = reader.version;
@@ -2266,25 +2341,78 @@ namespace AssetStudio
         public YAMLNode ExportYAML(int[] version)
         {
             var node = new YAMLMappingNode();
-            node.Add(nameof(path), path);
-            node.Add(nameof(attribute), attribute);
+            node.Add(nameof(path), TryResolvePathHash());
+            node.Add(nameof(attribute), TryResolveAttributeHash());
             node.Add(nameof(script), script.ExportYAML(version));
             node.Add("classID", ((int)typeID).ToString());
             node.Add(nameof(customType), customType);
             node.Add(nameof(isPPtrCurve), isPPtrCurve);
             return node;
         }
+
+        /// <summary>
+        /// 读取JSON文件
+        /// </summary>
+        /// <param name="key">JSON文件中的key值</param>
+        /// <returns>JSON文件中的value值</returns>
+        public static string ReadJson(string key, string jsonfile)
+        {
+            if (_hashData.TryGetValue(jsonfile, out JObject hashData))
+            {
+                return hashData.TryGetValue(key, out var field) ? field.ToString() : $"unknown_{key}";
+            }
+
+            using var file = File.OpenText(jsonfile);
+            using var reader = new JsonTextReader(file);
+
+            hashData = (JObject)JToken.ReadFrom(reader);
+            _hashData[jsonfile] = hashData;
+            var value = hashData[key]?.ToString() ?? $"unknown_{key}";
+            return value;
+        }
+
+        public string TryResolveAttributeHash()
+        {
+            const string jsonfile = @"D:\Config\fieldHash\fieldHashData.json"; //JSON文件路径
+
+            return ReadJson(attribute.ToString(), jsonfile);
+        }
+
+        public string TryResolvePathHash()
+        {
+            const string jsonfile = @"D:\Config\fieldHash\pathHashData.json"; //JSON文件路径
+
+            if (path == 0)
+            {
+                return string.Empty;
+            }
+
+            return ReadJson(path.ToString(), jsonfile);
+        }
     }
 
+    /// <summary>
+    /// 表示动画剪辑绑定常量，用于存储和管理动画数据的绑定信息，包括通用绑定和指针曲线映射。
+    /// </summary>
     public class AnimationClipBindingConstant : IYAMLExportable
     {
+        /// <summary>
+        /// 用于存储通用绑定的列表，这些绑定定义了动画数据如何映射到目标对象的属性。
+        /// </summary>
         public List<GenericBinding> genericBindings;
+
+        /// <summary>
+        /// 存储指向Unity资源对象的指针列表，这些指针用于动画剪辑中的特定曲线映射。
+        /// </summary>
         public List<PPtr<Object>> pptrCurveMapping;
 
         public AnimationClipBindingConstant()
         {
         }
 
+        /// <summary>
+        /// 表示动画剪辑绑定常量，用于存储动画数据的绑定信息。
+        /// </summary>
         public AnimationClipBindingConstant(ObjectReader reader)
         {
             int numBindings = reader.ReadInt32();
@@ -2302,6 +2430,11 @@ namespace AssetStudio
             }
         }
 
+        /// <summary>
+        /// 将AnimationClipBindingConstant对象导出为YAML格式。
+        /// </summary>
+        /// <param name="version">版本数组，用于指定导出的YAML格式版本。</param>
+        /// <returns>返回一个表示该对象的YAML节点。</returns>
         public YAMLNode ExportYAML(int[] version)
         {
             var node = new YAMLMappingNode();
@@ -2310,6 +2443,11 @@ namespace AssetStudio
             return node;
         }
 
+        /// <summary>
+        /// 查找并返回指定索引处的GenericBinding对象。
+        /// </summary>
+        /// <param name="index">要查找的绑定的索引。</param>
+        /// <returns>如果找到，返回对应的GenericBinding对象；否则返回null。</returns>
         public GenericBinding FindBinding(int index)
         {
             int curves = 0;
@@ -2347,16 +2485,49 @@ namespace AssetStudio
         }
     }
 
+    /// <summary>
+    /// 代表动画事件，包含触发时间、函数名、数据等信息。
+    /// </summary>
     public class AnimationEvent : IYAMLExportable
     {
+        /// <summary>
+        /// 动画事件触发的时间点。
+        /// </summary>
         public float time;
+
+        /// <summary>
+        /// 动画事件调用的函数名。
+        /// </summary>
         public string functionName;
+
+        /// <summary>
+        /// 与动画事件关联的数据字符串。
+        /// </summary>
         public string data;
+
+        /// <summary>
+        /// 事件关联的对象引用参数。
+        /// </summary>
         public PPtr<Object> objectReferenceParameter;
+
+        /// <summary>
+        /// 浮点参数，用于存储与动画事件相关的浮点数值。
+        /// </summary>
         public float floatParameter;
+
+        /// <summary>
+        /// 整型参数，用于存储与动画事件相关的整数值。
+        /// </summary>
         public int intParameter;
+
+        /// <summary>
+        /// 动画事件的消息选项，用于指定消息传递时的额外配置。
+        /// </summary>
         public int messageOptions;
 
+        /// <summary>
+        /// 代表动画事件，包含触发时间、函数名、数据等信息。
+        /// </summary>
         public AnimationEvent(ObjectReader reader)
         {
             var version = reader.version;
@@ -2374,6 +2545,11 @@ namespace AssetStudio
             messageOptions = reader.ReadInt32();
         }
 
+        /// <summary>
+        /// 将AnimationEvent对象导出为YAML格式。
+        /// </summary>
+        /// <param name="version">Unity版本信息，用于确定导出格式。</param>
+        /// <returns>包含AnimationEvent数据的YAMLNode实例。</returns>
         public YAMLNode ExportYAML(int[] version)
         {
             var node = new YAMLMappingNode();
@@ -2391,61 +2567,131 @@ namespace AssetStudio
     ///  <summary> 动画类型 </summary>
     public enum AnimationType
     {
+        /// <summary>
+        /// 表示动画是传统类型。这种类型的动画通常用于非人形角色或物体，且不包含骨骼绑定信息。
+        /// </summary>
         Legacy = 1,
+
+        /// <summary>
+        /// 表示动画是通用类型。这种类型的动画适用于多种角色或物体，具有较高的灵活性和广泛的适用性。
+        /// </summary>
         Generic = 2,
+
+        /// <summary>
+        /// 表示动画是为人形角色设计的类型。这种类型的动画通常包含了骨骼绑定信息，适用于具有复杂动作和姿态的人形角色。
+        /// </summary>
         Humanoid = 3
     };
 
-    /// <summary> 动画片段 </summary>
+    /// <summary>
+    /// 表示一个动画片段，包含动画数据和相关属性。
+    /// </summary>
     public sealed class AnimationClip : NamedObject
     {
-        ///  <summary> 动画类型 </summary>
+        /// <summary>
+        /// 动画片段的类型，指示动画是传统类型、通用类型还是人形角色类型。
+        /// </summary>
         public AnimationType m_AnimationType;
 
-        //<summary> 是否使用旧版动画剪辑 </summary>
+        /// <summary>
+        /// 表示该动画剪辑是否为旧版（Legacy）格式。
+        /// </summary>
         public bool m_Legacy;
 
-        ///  <summary> 是否压缩 </summary>
+        /// <summary>
+        /// 表示动画剪辑是否被压缩。
+        /// </summary>
         public bool m_Compressed;
 
-        /// <summary> 是否使用高精度曲线 </summary>
+        /// <summary>
+        /// 指示是否使用高质量曲线来提高动画的平滑度和精度。
+        /// </summary>
         public bool m_UseHighQualityCurve;
 
+        /// <summary>
+        /// 代表旋转曲线的列表，用于存储动画中的旋转数据。
+        /// </summary>
         public List<QuaternionCurve> m_RotationCurves;
+
+        /// <summary>
+        /// 存储压缩后的旋转动画曲线列表。
+        /// </summary>
         public List<CompressedAnimationCurve> m_CompressedRotationCurves;
+
+        /// <summary>
+        /// 存储动画剪辑中的欧拉曲线列表，用于表示旋转数据。
+        /// </summary>
         public List<Vector3Curve> m_EulerCurves;
+
+        /// <summary>
+        /// 位置曲线列表，用于存储和控制动画中对象的位置变化。
+        /// </summary>
         public List<Vector3Curve> m_PositionCurves;
+
+        /// <summary>
+        /// 表示动画片段中的缩放曲线集合，用于存储和操作对象在动画过程中的缩放变化。
+        /// </summary>
         public List<Vector3Curve> m_ScaleCurves;
+
+        /// <summary>
+        /// 存储浮点曲线的列表，这些曲线用于定义动画中随时间变化的浮点属性。
+        /// </summary>
         public List<FloatCurve> m_FloatCurves;
+
+        /// <summary>
+        /// 存储指向其他对象的曲线列表，这些曲线用于动画中的引用。
+        /// </summary>
         public List<PPtrCurve> m_PPtrCurves;
 
-        /// <summary> 采样率 </summary>
+        /// <summary>
+        /// 采样率，表示动画每秒的帧数。
+        /// </summary>
         public float m_SampleRate;
 
-        /// <summary> 循环模式 </summary>
+        /// <summary>
+        /// 定义动画剪辑在播放到末尾或开头时的行为。
+        /// </summary>
         public int m_WrapMode;
 
-        /// <summary> 动画片段的边界 </summary>
+        /// <summary>
+        /// 动画剪辑的边界框，用于定义动画中对象的最大范围。
+        /// </summary>
         public AABB m_Bounds;
 
-        /// <summary> 肌肉动画剪辑的大小 </summary>
+        /// <summary>
+        /// 表示肌肉动画片段的大小，用于确定肌肉动画数据占用的空间。
+        /// </summary>
         public uint m_MuscleClipSize;
 
-        /// <summary> 肌肉动画剪辑的常量数据 </summary>
+        /// <summary>
+        /// 与肌肉相关的动画剪辑数据，用于存储和管理角色的肌肉动画信息。
+        /// </summary>
         public ClipMuscleConstant m_MuscleClip;
 
-        /// <summary> 动画剪辑绑定的常量数据 </summary>
+        /// <summary>
+        /// 与动画剪辑关联的绑定常量，用于存储关于如何将动画数据映射到目标对象的信息。
+        /// </summary>
         public AnimationClipBindingConstant m_ClipBindingConstant;
 
-        /// <summary> 动画事件列表 </summary>
+        /// <summary>
+        /// 动画事件列表，包含在动画播放过程中触发的事件。
+        /// </summary>
         public List<AnimationEvent> m_Events;
 
-        /// <summary> 流式传输信息 </summary>
+        /// <summary>
+        /// 动画数据的流信息，包含偏移量、大小和路径等信息。
+        /// </summary>
         public StreamingInfo m_StreamData;
 
-        /// <summary> 是否包含流式传输信息 </summary>
+        /// <summary>
+        /// 表示动画剪辑是否包含流式信息。
+        /// </summary>
         private bool hasStreamingInfo = false;
 
+        /// <summary>
+        /// 表示动画剪辑的类，继承自NamedObject。
+        /// </summary>
+        /// <param name="reader">用于读取动画剪辑数据的对象读取器。</param>
         public AnimationClip(ObjectReader reader) : base(reader)
         {
             if (reader.Game.Type.IsShiningNikki())
@@ -2664,7 +2910,6 @@ namespace AssetStudio
                     aclClip.m_DatabaseData = ms.ToArray();
                 }
             }
-
         }
     }
 }
