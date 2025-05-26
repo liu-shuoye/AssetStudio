@@ -420,6 +420,25 @@ namespace AssetStudio.GUI
             StatusStripUpdate(log);
         }
 
+        /// <summary> 场景层次结构树点击事件 </summary>
+        private void OnTreeViewNodeMouseClick(object sender, TreeNodeMouseClickEventArgs eventArgs)
+        {
+            
+            Logger.Error($"———————ResolveDependencies—{assetsManager.ResolveDependencies}");
+            if (!assetsManager.ResolveDependencies)
+            {
+                return;
+            }
+            
+            if (eventArgs.Node is GameObjectTreeNode gameObjectNode)
+            {
+                var obj = gameObjectNode.gameObject.ToType();
+
+                var str = JsonConvert.SerializeObject(obj, Formatting.Indented);
+                PreviewText(str);
+            }
+        }
+
         private void typeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var typeItem = (ToolStripMenuItem)sender;
@@ -3329,6 +3348,11 @@ namespace AssetStudio.GUI
 
         #endregion
 
+        private void enableAddressesAnalysis_CheckedChanged(object sender, EventArgs e)
+        {
+            assetsManager.EnableAddressesAnalysis = enableAddressesAnalysis.Checked;
+        }
+        
         private void allModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (exportableAssets.Count > 0)

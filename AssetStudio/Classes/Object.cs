@@ -69,7 +69,8 @@ namespace AssetStudio
         {
             if (serializedType?.m_Type != null)
             {
-                return TypeTreeHelper.ReadType(serializedType.m_Type, reader);
+                var dictionary = TypeTreeHelper.ReadType(serializedType.m_Type, reader, assetsFile);
+                return dictionary;
             }
             return null;
         }

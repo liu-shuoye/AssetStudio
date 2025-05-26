@@ -31,6 +31,8 @@ namespace AssetStudio
         /// </summary>
         private int index = -2;
 
+        private Object gameObject;
+
         /// <summary>
         /// 获取指针指向的资源对象的名称。
         /// </summary>
@@ -40,13 +42,13 @@ namespace AssetStudio
         /// <summary>
         /// 初始化PPtr对象。
         /// </summary>
-        /// <param name="m_FileID">文件ID。</param>
-        /// <param name="m_PathID">路径ID。</param>
+        /// <param name="mFileId">文件ID。</param>
+        /// <param name="mPathId">路径ID。</param>
         /// <param name="assetsFile">关联的序列化文件。</param>
-        public PPtr(int m_FileID, long m_PathID, SerializedFile assetsFile)
+        public PPtr(int mFileId, long mPathId, SerializedFile assetsFile)
         {
-            this.m_FileID = m_FileID;
-            this.m_PathID = m_PathID;
+            this.m_FileID = mFileId;
+            this.m_PathID = mPathId;
             this.assetsFile = assetsFile;
         }
 
@@ -110,8 +112,8 @@ namespace AssetStudio
 
                 if (index == -2)
                 {
-                    var m_External = assetsFile.m_Externals[m_FileID - 1];
-                    var name = m_External.fileName;
+                    var external = assetsFile.m_Externals[m_FileID - 1];
+                    var name = external.fileName;
                     if (!assetsFileIndexCache.TryGetValue(name, out index))
                     {
                         index = assetsFileList.FindIndex(x => x.fileName.Equals(name, StringComparison.OrdinalIgnoreCase));
@@ -136,6 +138,12 @@ namespace AssetStudio
         /// <returns>是否成功获取资源对象。</returns>
         public bool TryGet(out T result)
         {
+            if (gameObject != null)
+            {
+                result = gameObject as T;
+                return true;
+            }
+
             if (TryGetAssetsFile(out var sourceFile))
             {
                 if (sourceFile.ObjectsDic.TryGetValue(m_PathID, out var obj))
@@ -143,6 +151,7 @@ namespace AssetStudio
                     if (obj is T variable)
                     {
                         result = variable;
+                        gameObject = result;
                         return true;
                     }
                 }
@@ -179,10 +188,10 @@ namespace AssetStudio
         /// <summary>
         /// 设置指针指向的资源对象。
         /// </summary>
-        /// <param name="m_Object">要设置的资源对象。</param>
-        public void Set(T m_Object)
+        /// <param name="mObject">要设置的资源对象。</param>
+        public void Set(T mObject)
         {
-            var name = m_Object.assetsFile.fileName;
+            var name = mObject.assetsFile.fileName;
             if (string.Equals(assetsFile.fileName, name, StringComparison.OrdinalIgnoreCase))
             {
                 m_FileID = 0;
@@ -194,7 +203,7 @@ namespace AssetStudio
                 {
                     assetsFile.m_Externals.Add(new FileIdentifier
                     {
-                        fileName = m_Object.assetsFile.fileName
+                        fileName = mObject.assetsFile.fileName
                     });
                     m_FileID = assetsFile.m_Externals.Count;
                 }
@@ -214,7 +223,7 @@ namespace AssetStudio
                 assetsFileIndexCache.Add(name, index);
             }
 
-            m_PathID = m_Object.m_PathID;
+            m_PathID = mObject.m_PathID;
         }
 
         /// <summary>
