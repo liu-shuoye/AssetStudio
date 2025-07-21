@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using AssetStudio.Utils;
 
 namespace AssetStudio
 {
@@ -14,6 +15,7 @@ namespace AssetStudio
         /// 资源对象在资产文件中的ID。
         /// </summary>
         public int m_FileID;
+
         /// <summary>
         /// 资源对象在资产文件路径中的ID。
         /// </summary>
@@ -23,6 +25,7 @@ namespace AssetStudio
         /// 当前指针关联的序列化文件。
         /// </summary>
         private SerializedFile assetsFile;
+
         /// <summary>
         /// 指针状态索引，默认为-2表示准备状态，-1表示丢失。
         /// </summary>
@@ -40,7 +43,7 @@ namespace AssetStudio
         /// <param name="m_FileID">文件ID。</param>
         /// <param name="m_PathID">路径ID。</param>
         /// <param name="assetsFile">关联的序列化文件。</param>
-        public PPtr(int m_FileID,  long m_PathID, SerializedFile assetsFile)
+        public PPtr(int m_FileID, long m_PathID, SerializedFile assetsFile)
         {
             this.m_FileID = m_FileID;
             this.m_PathID = m_PathID;
@@ -67,7 +70,21 @@ namespace AssetStudio
         {
             var node = new YAMLMappingNode();
             node.Style = MappingStyle.Flow;
+            if (assetsFile != null)
+            {
+                // node.Add("Name", Name);
+                var token = JsonUtils.ReadJson(Name);
+                if (token != null)
+                {
+                    node.Add("fileID", token["fileID"]!.ToString());
+                    node.Add("guid", token["guid"]!.ToString());
+                    node.Add("type", token["type"]!.ToString());
+                    return node;
+                }
+            }
+
             node.Add("fileID", m_FileID);
+
             return node;
         }
 
@@ -216,5 +233,4 @@ namespace AssetStudio
         /// <returns>如果指针为null，则返回true；否则返回false。</returns>
         public bool IsNull => m_PathID == 0 || m_FileID < 0;
     }
-
 }
