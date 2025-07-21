@@ -11,7 +11,8 @@ public static class JsonUtils
 
 
     private const string PathHashDataFile = @"D:\Config\fieldHash\pathHashData.json"; //JSON文件路径
-    private const string FieldHashDatafile = @"D:\Config\fieldHash\fieldHashData.json"; //JSON文件路径
+    private const string FieldHashDataFile = @"D:\Config\fieldHash\fieldHashData.json"; //JSON文件路径
+    private const string ScriptCitationDataFile = @"D:\Config\fieldHash\scriptCitationData.json"; //JSON文件路径
 
     /// <summary>
     /// 从指定的JSON文件中读取数据并返回一个JObject对象。
@@ -62,7 +63,7 @@ public static class JsonUtils
     /// <returns>如果找到，则返回与哈希值关联的字段名称；如果未找到则返回"unknown_key"形式的字符串，其中key是原始哈希值。</returns>
     public static string GetFieldByHash(long key)
     {
-        return GetJsonValue(key.ToString(), FieldHashDatafile);
+        return GetJsonValue(key.ToString(), FieldHashDataFile);
     }
 
     /// <summary>
@@ -78,5 +79,11 @@ public static class JsonUtils
         }
 
         return GetJsonValue(key.ToString(), PathHashDataFile);
+    }
+
+    public static JToken GetScriptCitationByHash(string key)
+    {
+        var jObject = ReadJson(ScriptCitationDataFile);
+        return jObject?[key];
     }
 }

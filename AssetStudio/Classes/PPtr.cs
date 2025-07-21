@@ -73,7 +73,7 @@ namespace AssetStudio
             if (assetsFile != null)
             {
                 // node.Add("Name", Name);
-                var token = JsonUtils.ReadJson(Name);
+                var token = JsonUtils.GetScriptCitationByHash(Name);
                 if (token != null)
                 {
                     node.Add("fileID", token["fileID"]!.ToString());

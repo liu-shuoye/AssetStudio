@@ -683,6 +683,26 @@ namespace AssetStudio.GUI
                             exportPath = string.IsNullOrEmpty(asset.SourceFile.originalPath) ? Path.Combine(savePath, asset.SourceFile.fileName + "_export") : Path.Combine(savePath, Path.GetFileName(asset.SourceFile.originalPath) + "_export", asset.SourceFile.fileName);
 
                             break;
+                        case AssetGroupOption.Custom: 
+                            if (!string.IsNullOrEmpty(asset.Container))
+                            {
+                                if (Path.HasExtension(asset.Container))
+                                {
+                                    exportPath = Path.Combine(savePath, Path.GetDirectoryName(asset.Container) ?? string.Empty);
+
+                                    exportPath = Path.Combine(exportPath, Path.GetFileNameWithoutExtension(asset.Container));
+                                }
+                                else
+                                {
+                                    exportPath = Path.Combine(savePath, asset.Container);
+                                }
+                            }
+                            else
+                            {
+                                // 如果不存在container，就根据来源导出
+                                goto case AssetGroupOption.BySource;
+                            }
+                            break;
                         default:
                             exportPath = savePath;
                             break;
