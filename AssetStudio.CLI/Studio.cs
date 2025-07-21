@@ -42,6 +42,7 @@ namespace AssetStudio.CLI
                 var fileSavePath = fileOriPath.Replace(path, savePath);
                 extractedCount += ExtractFile(file, fileSavePath);
             }
+
             return extractedCount;
         }
 
@@ -53,6 +54,7 @@ namespace AssetStudio.CLI
                 var fileName = fileNames[i];
                 extractedCount += ExtractFile(fileName, savePath);
             }
+
             return extractedCount;
         }
 
@@ -91,6 +93,7 @@ namespace AssetStudio.CLI
             {
                 Logger.Error($"游戏类型不匹配，预期为 {nameof(Mr0k)}，但得到 {Game.Name} ({Game.GetType().Name})！！");
             }
+
             return 0;
         }
 
@@ -104,6 +107,7 @@ namespace AssetStudio.CLI
                 var extractPath = Path.Combine(savePath, reader.FileName + "_unpacked");
                 return ExtractStreamFile(extractPath, webFile.fileList);
             }
+
             return 0;
         }
 
@@ -135,6 +139,7 @@ namespace AssetStudio.CLI
             {
                 Logger.Error($"游戏类型不匹配，预期为 {nameof(Blk)}，但得到 {Game.Name} ({Game.GetType().Name})！！");
             }
+
             return total;
         }
 
@@ -151,6 +156,7 @@ namespace AssetStudio.CLI
                 var subReader = new FileReader(dummyPath, stream, true);
                 total += ExtractBundleFile(subReader, subSavePath);
             } while (stream.Remaining > 0);
+
             return total;
         }
 
@@ -171,6 +177,7 @@ namespace AssetStudio.CLI
             {
                 Logger.Error($"游戏类型不匹配，预期为 {nameof(Mhy)}，但得到 {Game.Name} ({Game.GetType().Name})！！");
             }
+
             return 0;
         }
 
@@ -185,16 +192,20 @@ namespace AssetStudio.CLI
                 {
                     Directory.CreateDirectory(fileDirectory);
                 }
+
                 if (!File.Exists(filePath))
                 {
                     using (var fileStream = File.Create(filePath))
                     {
                         file.stream.CopyTo(fileStream);
                     }
+
                     extractedCount += 1;
                 }
+
                 file.stream.Dispose();
             }
+
             return extractedCount;
         }
 
@@ -223,6 +234,7 @@ namespace AssetStudio.CLI
                         }
                     }
                 }
+
                 Logger.Info("已更新！！");
             }
         }
@@ -239,6 +251,7 @@ namespace AssetStudio.CLI
                     ProcessAssetData(asset, objectAssetItemDic, mihoyoBinDataNames, containers, ref i);
                 }
             }
+
             foreach ((var pptr, var name) in mihoyoBinDataNames)
             {
                 if (pptr.TryGet<MiHoYoBinData>(out var obj))
@@ -252,6 +265,7 @@ namespace AssetStudio.CLI
                     else assetItem.Text = $"BinFile #{assetItem.m_PathID}";
                 }
             }
+
             if (!SkipContainer)
             {
                 foreach ((var pptr, var container) in containers)
@@ -261,6 +275,7 @@ namespace AssetStudio.CLI
                         objectAssetItemDic[obj].Container = container;
                     }
                 }
+
                 containers.Clear();
                 if (Game.Type.IsGISubGroup())
                 {
@@ -279,7 +294,7 @@ namespace AssetStudio.CLI
             exportableAssets.AddRange(matches);
         }
 
-        public static void ProcessAssetData(Object asset, Dictionary<Object, AssetItem> objectAssetItemDic, List<(PPtr<Object>, string)> mihoyoBinDataNames, List<(PPtr<Object>, string)> containers, ref int i) 
+        public static void ProcessAssetData(Object asset, Dictionary<Object, AssetItem> objectAssetItemDic, List<(PPtr<Object>, string)> mihoyoBinDataNames, List<(PPtr<Object>, string)> containers, ref int i)
         {
             var assetItem = new AssetItem(asset);
             objectAssetItemDic.Add(asset, assetItem);
@@ -351,6 +366,7 @@ namespace AssetStudio.CLI
                     exportable = true;
                     break;
             }
+
             if (assetItem.Text == "")
             {
                 assetItem.Text = assetItem.TypeString + assetItem.UniqueID;
@@ -377,7 +393,7 @@ namespace AssetStudio.CLI
                     case AssetGroupOption.ByContainer: //container path
                         if (!string.IsNullOrEmpty(asset.Container))
                         {
-                            exportPath = Path.HasExtension(asset.Container) ? Path.Combine(savePath, Path.GetDirectoryName(asset.Container)) : Path.Combine(savePath, asset.Container);
+                            exportPath = Path.HasExtension(asset.Container) ? Path.Combine(savePath, Path.GetDirectoryName(asset.Container) ?? string.Empty) : Path.Combine(savePath, asset.Container);
                         }
                         else
                         {
@@ -398,6 +414,7 @@ namespace AssetStudio.CLI
                         exportPath = savePath;
                         break;
                 }
+
                 exportPath += Path.DirectorySeparatorChar;
                 Logger.Info($"[{exportedCount}/{toExportCount}] 正在导出 {asset.TypeString}: {asset.Text}");
                 try
@@ -409,24 +426,28 @@ namespace AssetStudio.CLI
                             {
                                 exportedCount++;
                             }
+
                             break;
                         case ExportType.Dump:
                             if (ExportDumpFile(asset, exportPath))
                             {
                                 exportedCount++;
                             }
+
                             break;
                         case ExportType.Convert:
                             if (ExportConvertFile(asset, exportPath))
                             {
                                 exportedCount++;
                             }
+
                             break;
                         case ExportType.JSON:
                             if (ExportJSONFile(asset, exportPath))
                             {
                                 exportedCount++;
                             }
+
                             break;
                     }
                 }
@@ -473,9 +494,11 @@ namespace AssetStudio.CLI
                             writer.WriteElementString("Source", asset.Source);
                             writer.WriteEndElement();
                         }
+
                         writer.WriteEndElement();
                         writer.WriteEndDocument();
                     }
+
                     break;
                 case ExportListType.JSON:
                     filename = Path.Combine(savePath, $"{exportListName}.json");
@@ -485,6 +508,7 @@ namespace AssetStudio.CLI
                         serializer.Converters.Add(new StringEnumConverter());
                         serializer.Serialize(file, toExportAssets);
                     }
+
                     break;
             }
 
