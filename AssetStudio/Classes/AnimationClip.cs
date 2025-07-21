@@ -2349,11 +2349,19 @@ namespace AssetStudio
         }
 
 
+        /// <summary>
+        /// 尝试解析属性哈希值，并返回对应的字符串表示。
+        /// </summary>
+        /// <returns>属性哈希值对应的字符串。</returns>
         public string TryResolveAttributeHash()
         {
             return JsonUtils.GetFieldByHash(attribute);
         }
 
+        /// <summary>
+        /// 尝试根据哈希值解析并返回路径字符串。
+        /// </summary>
+        /// <returns>如果找到，则返回与哈希值关联的路径字符串；如果未找到或键为0，则返回空字符串。</returns>
         public string TryResolvePathHash()
         {
             return JsonUtils.GetPathByHash(path);

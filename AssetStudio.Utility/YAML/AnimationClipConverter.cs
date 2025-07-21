@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using AssetStudio.Utils;
 using SevenZip;
 
 namespace AssetStudio
@@ -46,6 +47,7 @@ namespace AssetStudio
             converter.ProcessInner();
             return converter;
         }
+
         private void ProcessInner()
         {
             var m_Clip = animationClip.m_MuscleClip.m_Clip;
@@ -63,6 +65,7 @@ namespace AssetStudio
                 lastFrame = Math.Max(lastFrame, lastACLFrame);
                 animationClip.m_Compressed = false;
             }
+
             ProcessStreams(streamedFrames, bindings, tos, m_Clip.m_DenseClip.m_SampleRate);
             ProcessDenses(m_Clip, bindings, tos);
             if (m_Clip.m_ACLClip.IsSet && game.Type.IsSRGroup())
@@ -71,10 +74,12 @@ namespace AssetStudio
                 lastFrame = Math.Max(lastFrame, lastACLFrame);
                 animationClip.m_Compressed = false;
             }
+
             if (m_Clip.m_ConstantClip != null)
             {
                 ProcessConstant(m_Clip, bindings, tos, lastFrame);
             }
+
             CreateCurves();
         }
 
@@ -183,6 +188,7 @@ namespace AssetStudio
                 }
             }
         }
+
         private float ProcessACLClip(Clip clip, AnimationClipBindingConstant bindings, Dictionary<uint, string> tos)
         {
             var acl = clip.m_ACLClip;
@@ -222,6 +228,7 @@ namespace AssetStudio
 
             return times[frameCount - 1];
         }
+
         private void ProcessConstant(Clip clip, AnimationClipBindingConstant bindings, Dictionary<uint, string> tos, float lastFrame)
         {
             var constant = clip.m_ConstantClip;
@@ -278,6 +285,7 @@ namespace AssetStudio
                         FloatCurve curve = new FloatCurve(path, attribute, binding.typeID, binding.script.Cast<MonoScript>());
                         AddFloatKeyframe(curve, time, value);
                     }
+
                     break;
             }
         }
@@ -288,119 +296,119 @@ namespace AssetStudio
             switch (transType)
             {
                 case 1:
+                {
+                    var curve = new Vector3Curve(path);
+                    if (!m_translations.TryGetValue(curve, out List<Keyframe<Vector3>> transCurve))
                     {
-                        var curve = new Vector3Curve(path);
-                        if (!m_translations.TryGetValue(curve, out List<Keyframe<Vector3>> transCurve))
-                        {
-                            transCurve = new List<Keyframe<Vector3>>();
-                            m_translations.Add(curve, transCurve);
-                        }
-
-                        float x = curveValues[offset + 0];
-                        float y = curveValues[offset + 1];
-                        float z = curveValues[offset + 2];
-
-                        float inX = inSlopeValues[0];
-                        float inY = inSlopeValues[1];
-                        float inZ = inSlopeValues[2];
-
-                        float outX = outSlopeValues[0];
-                        float outY = outSlopeValues[1];
-                        float outZ = outSlopeValues[2];
-
-                        Vector3 value = new Vector3(x, y, z);
-                        Vector3 inSlope = new Vector3(inX, inY, inZ);
-                        Vector3 outSlope = new Vector3(outX, outY, outZ);
-                        Keyframe<Vector3> transKey = new Keyframe<Vector3>(time, value, inSlope, outSlope, AnimationClipExtensions.DefaultVector3Weight);
-                        transCurve.Add(transKey);
+                        transCurve = new List<Keyframe<Vector3>>();
+                        m_translations.Add(curve, transCurve);
                     }
+
+                    float x = curveValues[offset + 0];
+                    float y = curveValues[offset + 1];
+                    float z = curveValues[offset + 2];
+
+                    float inX = inSlopeValues[0];
+                    float inY = inSlopeValues[1];
+                    float inZ = inSlopeValues[2];
+
+                    float outX = outSlopeValues[0];
+                    float outY = outSlopeValues[1];
+                    float outZ = outSlopeValues[2];
+
+                    Vector3 value = new Vector3(x, y, z);
+                    Vector3 inSlope = new Vector3(inX, inY, inZ);
+                    Vector3 outSlope = new Vector3(outX, outY, outZ);
+                    Keyframe<Vector3> transKey = new Keyframe<Vector3>(time, value, inSlope, outSlope, AnimationClipExtensions.DefaultVector3Weight);
+                    transCurve.Add(transKey);
+                }
                     break;
                 case 2:
+                {
+                    var curve = new QuaternionCurve(path);
+                    if (!m_rotations.TryGetValue(curve, out List<Keyframe<Quaternion>> rotCurve))
                     {
-                        var curve = new QuaternionCurve(path);
-                        if (!m_rotations.TryGetValue(curve, out List<Keyframe<Quaternion>> rotCurve))
-                        {
-                            rotCurve = new List<Keyframe<Quaternion>>();
-                            m_rotations.Add(curve, rotCurve);
-                        }
-
-                        float x = curveValues[offset + 0];
-                        float y = curveValues[offset + 1];
-                        float z = curveValues[offset + 2];
-                        float w = curveValues[offset + 3];
-
-                        float inX = inSlopeValues[0];
-                        float inY = inSlopeValues[1];
-                        float inZ = inSlopeValues[2];
-                        float inW = inSlopeValues[3];
-
-                        float outX = outSlopeValues[0];
-                        float outY = outSlopeValues[1];
-                        float outZ = outSlopeValues[2];
-                        float outW = outSlopeValues[3];
-
-                        Quaternion value = new Quaternion(x, y, z, w);
-                        Quaternion inSlope = new Quaternion(inX, inY, inZ, inW);
-                        Quaternion outSlope = new Quaternion(outX, outY, outZ, outW);
-                        Keyframe<Quaternion> rotKey = new Keyframe<Quaternion>(time, value, inSlope, outSlope, AnimationClipExtensions.DefaultQuaternionWeight);
-                        rotCurve.Add(rotKey);
+                        rotCurve = new List<Keyframe<Quaternion>>();
+                        m_rotations.Add(curve, rotCurve);
                     }
+
+                    float x = curveValues[offset + 0];
+                    float y = curveValues[offset + 1];
+                    float z = curveValues[offset + 2];
+                    float w = curveValues[offset + 3];
+
+                    float inX = inSlopeValues[0];
+                    float inY = inSlopeValues[1];
+                    float inZ = inSlopeValues[2];
+                    float inW = inSlopeValues[3];
+
+                    float outX = outSlopeValues[0];
+                    float outY = outSlopeValues[1];
+                    float outZ = outSlopeValues[2];
+                    float outW = outSlopeValues[3];
+
+                    Quaternion value = new Quaternion(x, y, z, w);
+                    Quaternion inSlope = new Quaternion(inX, inY, inZ, inW);
+                    Quaternion outSlope = new Quaternion(outX, outY, outZ, outW);
+                    Keyframe<Quaternion> rotKey = new Keyframe<Quaternion>(time, value, inSlope, outSlope, AnimationClipExtensions.DefaultQuaternionWeight);
+                    rotCurve.Add(rotKey);
+                }
                     break;
                 case 3:
+                {
+                    var curve = new Vector3Curve(path);
+                    if (!m_scales.TryGetValue(curve, out List<Keyframe<Vector3>> scaleCurve))
                     {
-                        var curve = new Vector3Curve(path);
-                        if (!m_scales.TryGetValue(curve, out List<Keyframe<Vector3>> scaleCurve))
-                        {
-                            scaleCurve = new List<Keyframe<Vector3>>();
-                            m_scales.Add(curve, scaleCurve);
-                        }
-
-                        float x = curveValues[offset + 0];
-                        float y = curveValues[offset + 1];
-                        float z = curveValues[offset + 2];
-
-                        float inX = inSlopeValues[0];
-                        float inY = inSlopeValues[1];
-                        float inZ = inSlopeValues[2];
-
-                        float outX = outSlopeValues[0];
-                        float outY = outSlopeValues[1];
-                        float outZ = outSlopeValues[2];
-
-                        Vector3 value = new Vector3(x, y, z);
-                        Vector3 inSlope = new Vector3(inX, inY, inZ);
-                        Vector3 outSlope = new Vector3(outX, outY, outZ);
-                        Keyframe<Vector3> scaleKey = new Keyframe<Vector3>(time, value, inSlope, outSlope, AnimationClipExtensions.DefaultVector3Weight);
-                        scaleCurve.Add(scaleKey);
+                        scaleCurve = new List<Keyframe<Vector3>>();
+                        m_scales.Add(curve, scaleCurve);
                     }
+
+                    float x = curveValues[offset + 0];
+                    float y = curveValues[offset + 1];
+                    float z = curveValues[offset + 2];
+
+                    float inX = inSlopeValues[0];
+                    float inY = inSlopeValues[1];
+                    float inZ = inSlopeValues[2];
+
+                    float outX = outSlopeValues[0];
+                    float outY = outSlopeValues[1];
+                    float outZ = outSlopeValues[2];
+
+                    Vector3 value = new Vector3(x, y, z);
+                    Vector3 inSlope = new Vector3(inX, inY, inZ);
+                    Vector3 outSlope = new Vector3(outX, outY, outZ);
+                    Keyframe<Vector3> scaleKey = new Keyframe<Vector3>(time, value, inSlope, outSlope, AnimationClipExtensions.DefaultVector3Weight);
+                    scaleCurve.Add(scaleKey);
+                }
                     break;
                 case 4:
+                {
+                    var curve = new Vector3Curve(path);
+                    if (!m_eulers.TryGetValue(curve, out List<Keyframe<Vector3>> eulerCurve))
                     {
-                        var curve = new Vector3Curve(path);
-                        if (!m_eulers.TryGetValue(curve, out List<Keyframe<Vector3>> eulerCurve))
-                        {
-                            eulerCurve = new List<Keyframe<Vector3>>();
-                            m_eulers.Add(curve, eulerCurve);
-                        }
-
-                        float x = curveValues[offset + 0];
-                        float y = curveValues[offset + 1];
-                        float z = curveValues[offset + 2];
-
-                        float inX = inSlopeValues[0];
-                        float inY = inSlopeValues[1];
-                        float inZ = inSlopeValues[2];
-
-                        float outX = outSlopeValues[0];
-                        float outY = outSlopeValues[1];
-                        float outZ = outSlopeValues[2];
-
-                        Vector3 value = new Vector3(x, y, z);
-                        Vector3 inSlope = new Vector3(inX, inY, inZ);
-                        Vector3 outSlope = new Vector3(outX, outY, outZ);
-                        Keyframe<Vector3> eulerKey = new Keyframe<Vector3>(time, value, inSlope, outSlope, AnimationClipExtensions.DefaultVector3Weight);
-                        eulerCurve.Add(eulerKey);
+                        eulerCurve = new List<Keyframe<Vector3>>();
+                        m_eulers.Add(curve, eulerCurve);
                     }
+
+                    float x = curveValues[offset + 0];
+                    float y = curveValues[offset + 1];
+                    float z = curveValues[offset + 2];
+
+                    float inX = inSlopeValues[0];
+                    float inY = inSlopeValues[1];
+                    float inZ = inSlopeValues[2];
+
+                    float outX = outSlopeValues[0];
+                    float outY = outSlopeValues[1];
+                    float outZ = outSlopeValues[2];
+
+                    Vector3 value = new Vector3(x, y, z);
+                    Vector3 inSlope = new Vector3(inX, inY, inZ);
+                    Vector3 outSlope = new Vector3(outX, outY, outZ);
+                    Keyframe<Vector3> eulerKey = new Keyframe<Vector3>(time, value, inSlope, outSlope, AnimationClipExtensions.DefaultVector3Weight);
+                    eulerCurve.Add(eulerKey);
+                }
                     break;
                 default:
                     throw new NotImplementedException(transType.ToString());
@@ -412,15 +420,15 @@ namespace AssetStudio
             switch (binding.typeID)
             {
                 case ClassIDType.GameObject:
-                    {
-                        AddGameObjectCurve(binding, path, time, value);
-                    }
+                {
+                    AddGameObjectCurve(binding, path, time, value);
+                }
                     break;
 
                 case ClassIDType.MonoBehaviour:
-                    {
-                        AddScriptCurve(binding, path, time, value);
-                    }
+                {
+                    AddScriptCurve(binding, path, time, value);
+                }
                     break;
 
                 default:
@@ -440,7 +448,7 @@ namespace AssetStudio
             else
             {
                 // that means that dev exported animation clip with missing component
-                FloatCurve curve = new FloatCurve(path, MissedPropertyPrefix + binding.attribute, ClassIDType.GameObject, new PPtr<MonoScript>(0, 0, null));
+                FloatCurve curve = new FloatCurve(path, binding.TryResolveAttributeHash(), ClassIDType.GameObject, new PPtr<MonoScript>(0, 0, null));
                 AddFloatKeyframe(curve, time, value);
             }
         }
@@ -448,14 +456,14 @@ namespace AssetStudio
         private void AddScriptCurve(GenericBinding binding, string path, float time, float value)
         {
 #warning TODO:
-            FloatCurve curve = new FloatCurve(path, ScriptPropertyPrefix + binding.attribute, ClassIDType.MonoBehaviour, binding.script.Cast<MonoScript>());
+            FloatCurve curve = new FloatCurve(path, binding.TryResolveAttributeHash(), ClassIDType.MonoBehaviour, binding.script.Cast<MonoScript>());
             AddFloatKeyframe(curve, time, value);
         }
 
         private void AddEngineCurve(GenericBinding binding, string path, float time, float value)
         {
 #warning TODO:
-            FloatCurve curve = new FloatCurve(path, TypeTreePropertyPrefix + binding.attribute, binding.typeID, new PPtr<MonoScript>(0, 0, null));
+            FloatCurve curve = new FloatCurve(path, binding.TryResolveAttributeHash(), binding.typeID, new PPtr<MonoScript>(0, 0, null));
             AddFloatKeyframe(curve, time, value);
         }
 
@@ -505,6 +513,7 @@ namespace AssetStudio
                     }
                 }
             }
+
             throw new Exception($"在任何之前的帧中都没有索引为 {curveID} 的曲线");
         }
 
@@ -519,6 +528,7 @@ namespace AssetStudio
                     return i;
                 }
             }
+
             return i;
         }
 
@@ -528,11 +538,8 @@ namespace AssetStudio
             {
                 return path;
             }
-            else
-            {
-                return UnknownPathPrefix + hash;
-            }
+
+            return JsonUtils.GetPathByHash(hash);
         }
-        
     }
 }
