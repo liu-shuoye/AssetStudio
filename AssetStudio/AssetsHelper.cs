@@ -283,6 +283,7 @@ namespace AssetStudio
                 ParseCABMap(reader);
                 Logger.Verbose($"初始化 CABMap，包含 {CABMap.Count} 个条目。");
                 Logger.Info($"已加载 {mapName}！！");
+                ExportCABDependency(MapName, mapName);
             }
             catch (Exception e)
             {
@@ -720,9 +721,33 @@ namespace AssetStudio
 
                     Logger.Info($"完成 AssetMap 构建，共有 {toExportAssets.Count} 个资产。");
                 }
+
             });
         }
 
+        #region 导出CAB映射依赖关系
+
+        public static void ExportCABDependency(string savePath,string name)
+        {
+            var exportFile = Path.Combine(savePath, $"{name}.json");
+            Logger.Info($"正在加载导出CAB映射依赖关系...到{exportFile}");
+            var dependency = new Dictionary<string, List<string>>();
+            foreach (var (key, entry) in CABMap)
+            {
+                dependency[entry.Path] = new List<string>();
+                foreach (var path in entry.Dependencies)
+                {
+                    var dependencyEntry = CABMap.GetValueOrDefault(path);
+                    dependency[entry.Path].Add(dependencyEntry?.Path ?? path);
+                }
+            }
+            
+            var str = JsonConvert.SerializeObject(dependency);
+            File.WriteAllText(exportFile, str);
+            Logger.Info($"完成CAB映射依赖关系导出...");
+        }
+
+        #endregion
         public static async Task BuildBoth(string[] files, string mapName, string baseFolder, Game game, string savePath, ExportListType exportListType, ClassIDType[] typeFilters = null, Regex[] nameFilters = null, Regex[] containerFilters = null)
         {
             Logger.Info($"同时构建中...");
@@ -743,6 +768,7 @@ namespace AssetStudio
 
             Logger.Info($"地图构建成功！！发现 {collision} 个冲突。");
             await ExportAssetsMap(assets, game, mapName, savePath, exportListType);
+            ExportCABDependency(savePath, mapName);
         }
     }
 }
