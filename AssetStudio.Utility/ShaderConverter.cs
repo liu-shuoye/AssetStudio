@@ -25,12 +25,11 @@ namespace AssetStudio
                 {
                     throw new IOException($"Lz4 解压缩错误，写入 {numWrite} 字节，但预期为 {shader.decompressedSize} 字节");
                 }
-                using (var blobReader = new EndianBinaryReader(new MemoryStream(decompressedBytes), EndianType.LittleEndian))
-                {
-                    var program = new ShaderProgram(blobReader, shader);
-                    program.Read(blobReader, 0);
-                    return header + program.Export(Encoding.UTF8.GetString(shader.m_Script));
-                }
+
+                using var blobReader = new EndianBinaryReader(new MemoryStream(decompressedBytes), EndianType.LittleEndian);
+                var program = new ShaderProgram(blobReader, shader);
+                program.Read(blobReader, 0);
+                return header + program.Export(Encoding.UTF8.GetString(shader.m_Script));
             }
 
             if (shader.compressedBlob != null) //5.5 and up
@@ -65,14 +64,13 @@ namespace AssetStudio
                             throw new IOException($"Lz4 解压缩错误，写入 {numWrite} 字节，但预期为 {decompressedLength} 字节");
                         }
                     }
-                    using (var blobReader = new EndianBinaryReader(new MemoryStream(decompressedBytes), EndianType.LittleEndian))
+
+                    using var blobReader = new EndianBinaryReader(new MemoryStream(decompressedBytes), EndianType.LittleEndian);
+                    if (j == 0)
                     {
-                        if (j == 0)
-                        {
-                            shaderPrograms[i] = new ShaderProgram(blobReader, shader);
-                        }
-                        shaderPrograms[i].Read(blobReader, j);
+                        shaderPrograms[i] = new ShaderProgram(blobReader, shader);
                     }
+                    shaderPrograms[i].Read(blobReader, j);
                 }
             }
 

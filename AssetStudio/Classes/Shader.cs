@@ -103,14 +103,53 @@ namespace AssetStudio
         MainColor = 1 << 8,
     }
 
+    /// <summary>
+    /// 该类用于表示序列化的单个属性。
+    /// 它存储了Shader中某个属性的名称、描述、类型、默认值等信息，并通过从输入流读取数据来初始化这些信息。
+    /// </summary>
     public class SerializedProperty
     {
+        /// <summary>
+        /// 该字符串表示序列化属性的名称。它是识别Shader中特定属性的关键标识符。
+        /// 属性名称用于在Shader代码和编辑器中引用此属性，确保了属性的唯一性和可访问性。
+        /// </summary>
         public string m_Name;
+
+        /// <summary>
+        /// 该字符串提供了序列化属性的描述信息。它用于在Shader编辑器或相关工具中显示关于属性的详细说明，
+        /// 帮助用户理解属性的功能、预期值及其对Shader效果的影响。
+        /// </summary>
         public string m_Description;
+
+        /// <summary>
+        /// 该字符串数组存储了序列化属性的附加属性。这些属性可以包含关于如何在Shader中处理特定属性的额外信息或修饰符。
+        /// 通过m_Attributes，可以定义如颜色空间、默认值类型等特性，增强了属性的功能性和灵活性。
+        /// </summary>
         public string[] m_Attributes;
+
+        /// <summary>
+        /// 该枚举值表示序列化属性的数据类型。它定义了Shader中特定属性可以存储的数据种类。
+        /// 属性类型对于确定如何在Shader代码和编辑器中处理数据至关重要，确保了数据的正确解析与使用。
+        /// </summary>
         public SerializedPropertyType m_Type;
+
+        /// <summary>
+        /// 该枚举值集合表示序列化属性的标志。它用于指定属性的各种行为和特性。
+        /// 通过设置不同的标志，可以控制属性在编辑器中的显示方式、数据处理方式等。
+        /// </summary>
         public SerializedPropertyFlag m_Flags;
+
+        /// <summary>
+        /// 该浮点数组表示序列化属性的默认值。它用于在Shader中为特定属性设置初始值。
+        /// 根据属性类型的不同，m_DefValue可能包含颜色、向量或范围等信息的一个或多个分量。
+        /// 对于某些类型的属性，如Range，数组中的元素还定义了范围的最小值和最大值。
+        /// </summary>
         public float[] m_DefValue;
+
+        /// <summary>
+        /// 该属性表示序列化属性的默认纹理。它用于在Shader中存储和引用默认的纹理资源。
+        /// 默认纹理通常作为属性的初始值，当没有为该属性指定特定纹理时使用。
+        /// </summary>
         public SerializedTextureProperty m_DefTexture;
 
         public SerializedProperty(EndianBinaryReader reader)
@@ -125,8 +164,16 @@ namespace AssetStudio
         }
     }
 
+    /// <summary>
+    /// 该类用于表示序列化的属性集合。
+    /// 它主要用于存储和管理Shader中的多个属性，通过从输入流读取数据来初始化这些属性。
+    /// </summary>
     public class SerializedProperties
     {
+        /// <summary>
+        /// 该列表存储了Shader的所有序列化属性。每个元素都是一个SerializedProperty对象，代表Shader中的一个特定属性。
+        /// 这些属性包含了名称、描述、类型、默认值等信息，对于解析和使用Shader至关重要。
+        /// </summary>
         public List<SerializedProperty> m_Props;
 
         public SerializedProperties(EndianBinaryReader reader)
@@ -780,7 +827,18 @@ namespace AssetStudio
 
     public class SerializedProgram
     {
+        /// <summary>
+        /// 该列表包含序列化的子程序集合，每个子程序代表了Shader的一个可执行部分。
+        /// 子程序可以是顶点着色器、片段着色器、几何着色器等，具体取决于Shader的类型和配置。
+        /// 每个子程序都包含了执行所需的所有参数和资源绑定信息，确保了在不同硬件平台上正确渲染。
+        /// </summary>
         public List<SerializedSubProgram> m_SubPrograms;
+
+        /// <summary>
+        /// 该列表包含了针对不同播放器（平台）的序列化子程序集合，每个子程序集对应一个特定的硬件或软件配置。
+        /// 每个子程序集内部又包含了多个子程序实例，这些实例提供了在特定条件下执行Shader所需的详细信息。
+        /// 通过这种方式，m_PlayerSubPrograms支持了跨平台兼容性，确保Shader可以在多种不同的环境中正确运行。
+        /// </summary>
         public List<List<SerializedPlayerSubProgram>> m_PlayerSubPrograms;
         public uint[][] m_ParameterBlobIndices;
         public SerializedProgramParameters m_CommonParameters;
@@ -841,17 +899,71 @@ namespace AssetStudio
         Grab = 2
     };
 
+    /// <summary>
+    /// 该类用于表示序列化的Shader Pass。
+    /// 它存储了Pass的多种信息，如编辑器数据哈希、平台信息、关键字掩码、名称索引、类型、状态、程序掩码以及各种类型的程序（顶点、片段、几何、外壳、域、光线追踪）等，并通过从输入流读取数据来初始化这些信息。
+    /// </summary>
     public class SerializedPass
     {
+        /// <summary>
+        /// 该列表包含序列化Pass的编辑器数据哈希值。每个哈希值都是一个128位的哈希，用于标识特定的编辑器数据。
+        /// 这些哈希值在Shader的序列化过程中生成，并且用于在编辑器中管理和引用与Shader Pass相关的编辑器数据。
+        /// </summary>
         public List<Hash128> m_EditorDataHash;
+
+        /// <summary>
+        /// 该字节数组表示序列化Shader Pass支持的平台信息。它包含了与特定Pass兼容的不同硬件或软件平台的数据。
+        /// 平台信息对于确保Shader在不同设备上正确运行至关重要，通过此数组可以识别和配置Pass所适用的平台范围。
+        /// </summary>
         public byte[] m_Platforms;
+
+        /// <summary>
+        /// 该数组表示序列化Shader Pass的局部关键字掩码。每个元素都是一个16位无符号整数，用于定义Pass中启用的局部关键字。
+        /// 局部关键字是Shader中特定于某个Pass的关键字，通过这些掩码可以控制哪些局部关键字在当前Pass中被激活或禁用，从而影响着色器的行为和输出。
+        /// </summary>
         public ushort[] m_LocalKeywordMask;
+
+        /// <summary>
+        /// 该字节数组表示序列化Shader Pass的全局关键字掩码。每个元素对应于一个全局关键字的状态，用于确定在编译Shader时是否启用特定的关键字。
+        /// 全局关键字对于控制Shader的行为和特性至关重要，通过此数组可以灵活地管理和配置全局关键字的启用状态。
+        /// </summary>
         public ushort[] m_GlobalKeywordMask;
+
+        /// <summary>
+        /// 该列表存储了名称与索引的键值对，用于在Shader Pass中快速查找和引用特定名称及其对应的索引。
+        /// 每个键值对中的键是一个字符串，代表某个属性或资源的名称；值则是一个整数，表示该名称在Shader数据结构中的位置索引。
+        /// 这种映射关系有助于提高访问效率，特别是在处理大量Shader属性时。
+        /// </summary>
         public List<KeyValuePair<string, int>> m_NameIndices;
+
+        /// <summary>
+        /// 该枚举值定义了序列化通过的类型，用于标识Shader中不同类型的Pass。它对于确定如何处理特定的Pass以及在转换或编译过程中应用哪些规则至关重要。
+        /// Pass类型包括普通Pass、UsePass和GrabPass，每种类型决定了渲染过程中的具体行为和功能。
+        /// </summary>
         public PassType m_Type;
+
+        /// <summary>
+        /// 该对象表示序列化后的Shader状态。它包含了渲染过程中使用的各种配置和设置信息。
+        /// m_State用于存储Shader的状态数据，这些数据对于定义Shader的行为至关重要，包括但不限于着色器程序、材质属性以及渲染状态等。
+        /// </summary>
         public SerializedShaderState m_State;
+
+        /// <summary>
+        /// 该无符号整数用于表示程序掩码，它指定了哪些着色器阶段（如顶点、片段、几何等）在当前Pass中被激活。
+        /// m_ProgramMask 的每一位对应一个特定的着色器阶段，通过设置相应的位可以控制该阶段是否启用。
+        /// </summary>
         public uint m_ProgramMask;
+
+        /// <summary>
+        /// 该对象表示顶点着色器程序。它包含了顶点着色器相关的子程序信息，用于在渲染管线中处理顶点数据。
+        /// 顶点着色器程序是图形渲染过程中不可或缺的一部分，负责将输入的顶点数据转换为屏幕上的坐标位置，同时可以进行如光照计算等操作。
+        /// </summary>
         public SerializedProgram progVertex;
+
+        /// <summary>
+        /// 该对象表示片段着色器程序。它包含了片段着色器相关的子程序信息，这些信息用于描述如何在渲染管线中处理像素级别的操作。
+        /// progFragment 对象是Shader中不可或缺的部分，负责定义材质的最终颜色、纹理混合等视觉效果。
+        /// </summary>
         public SerializedProgram progFragment;
         public SerializedProgram progGeometry;
         public SerializedProgram progHull;
@@ -925,6 +1037,11 @@ namespace AssetStudio
         }
     }
 
+    /// <summary>
+    /// 该类用于表示序列化的标签映射。
+    /// 它存储了一组键值对，每个键值对代表一个标签及其对应的值。
+    /// 通过从输入流读取数据来初始化这些标签信息。
+    /// </summary>
     public class SerializedTagMap
     {
         public List<KeyValuePair<string, string>> tags;
@@ -940,9 +1057,22 @@ namespace AssetStudio
         }
     }
 
+    /// <summary>
+    /// 该类用于表示序列化的子着色器。
+    /// 它存储了子着色器的多个通道（Pass）、标签映射（Tags）以及LOD级别等信息，并通过从输入流读取数据来初始化这些信息。
+    /// </summary>
     public class SerializedSubShader
     {
+        /// <summary>
+        /// 该列表包含了序列化子着色器中的所有通道（Pass）。每个元素都是一个SerializedPass对象，代表了Shader中的一个单独的渲染通道。
+        /// 这些通道定义了如何以及何时在渲染管线中执行特定的绘制操作，包括顶点、片段等不同类型的着色程序及其相关状态设置。
+        /// </summary>
         public List<SerializedPass> m_Passes;
+
+        /// <summary>
+        /// 该字段表示序列化子着色器的标签映射。它是一个SerializedTagMap类型的对象，用于存储Shader中的各种标签信息。
+        /// 这些标签定义了Shader的行为和属性，例如RenderType、Queue等，它们在Unity中控制着Shader的渲染顺序及其它特性。
+        /// </summary>
         public SerializedTagMap m_Tags;
         public int m_LOD;
 
@@ -984,9 +1114,24 @@ namespace AssetStudio
         }
     }
 
+    /// <summary>
+    /// 该类用于表示序列化的Shader对象。
+    /// 它包含了Shader的属性信息、子Shader列表、关键字名称数组、关键字标志字节数组、Shader名称、
+    /// 自定义编辑器名称、回退名称、依赖项列表、渲染管线的自定义编辑器列表以及一个布尔值来指示是否禁用无子Shader的消息。
+    /// </summary>
     public class SerializedShader
     {
+        /// <summary>
+        /// 该变量存储了Shader的属性信息。它是一个SerializedProperties类型的对象，包含了关于Shader的各种属性数据。
+        /// 这些属性数据对于理解和解析Shader的具体配置至关重要，例如其参数、材质属性等。
+        /// </summary>
         public SerializedProperties m_PropInfo;
+
+        /// <summary>
+        /// 该变量存储了Shader的子Shader列表。它是一个包含SerializedSubShader对象的List，每个元素代表一个子Shader。
+        /// 子Shader是Shader的一部分，用于在不同硬件或渲染条件下提供替代的渲染路径。
+        /// 每个子Shader可以定义自己的Passes、Tags以及LOD等属性，从而允许Shader根据当前的渲染环境选择最合适的子Shader进行渲染。
+        /// </summary>
         public List<SerializedSubShader> m_SubShaders;
         public string[] m_KeywordNames;
         public byte[] m_KeywordFlags;
