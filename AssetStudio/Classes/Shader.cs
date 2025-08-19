@@ -1218,19 +1218,72 @@ namespace AssetStudio
         PS5NGGC = 24
     };
 
+    /// <summary>
+    /// 该类用于表示Shader资源，继承自NamedObject。
+    /// 它包含了Shader的二进制脚本、子程序块、解析形式以及与平台相关的编译信息等。
+    /// </summary>
     public class Shader : NamedObject
     {
+        /// <summary>
+        /// 该字节数组包含了Shader的二进制脚本数据。它是Shader资源的核心部分，包含了用于渲染的着色器程序代码。
+        /// 通过此脚本数据，可以解析出Shader的具体实现逻辑，支持在不同平台上进行编译和运行。
+        /// </summary>
         public byte[] m_Script;
-        //5.3 - 5.4
+
+        /// <summary>
+        /// 表示解压缩后的子程序块大小。这个值在Shader对象从5.3到5.4版本的Unity项目中被使用。
+        /// 它用于确定存储在m_SubProgramBlob中的数据解压后应占用的字节数，是进行LZ4解压缩时所需的目标缓冲区大小的重要参数。
+        /// </summary>
         public uint decompressedSize;
+
+        /// <summary>
+        /// 该字节数组表示Shader的子程序块。它包含了编译后的着色器代码，用于在不同平台上执行。
+        /// m_SubProgramBlob经过压缩存储，使用时需要通过特定算法（如LZ4）解压后才能被解析和执行。
+        /// 这个字段对于实现跨平台的Shader支持至关重要，确保了Shader能够在多种设备上正确运行。
+        /// </summary>
         public byte[] m_SubProgramBlob;
-        //5.5 and up
+        /// <summary>
+        /// 该字段表示解析后的Shader形式。它包含了Shader的结构化信息，使得可以更方便地访问和操作Shader的具体内容。
+        /// m_ParsedForm通过解析原始Shader数据生成，提供了对Shader属性、子程序等元素的直接访问方式。
+        /// </summary>
         public SerializedShader m_ParsedForm;
+
+        /// <summary>
+        /// 该数组表示Shader支持的编译平台列表。每个元素都是一个ShaderCompilerPlatform枚举值，
+        /// 用于指定Shader可以被编译和运行的目标平台，如GL、D3D9、PS4等。
+        /// 这对于确保Shader在不同硬件和图形API上的兼容性和性能至关重要。
+        /// </summary>
         public ShaderCompilerPlatform[] platforms;
+
+        /// <summary>
+        /// 该二维数组存储了Shader中各个子程序块的偏移量。每个元素代表一个平台或配置下的偏移信息，
+        /// 用于定位Shader编译结果中的特定部分，以便于在运行时进行正确的解析和使用。
+        /// 偏移量对于从压缩或未压缩的数据块中准确提取子程序至关重要。
+        /// </summary>
         public uint[][] offsets;
+
+        /// <summary>
+        /// 该二维数组存储了每个子程序压缩后的长度信息。这些长度值用于在处理Shader的二进制数据时，确定每个压缩块的具体大小。
+        /// 它对于正确解压和解析Shader中的子程序数据至关重要，确保了在不同平台上能够准确地重建Shader代码。
+        /// </summary>
         public uint[][] compressedLengths;
+
+        /// <summary>
+        /// 该二维数组存储了每个子程序块解压缩后的长度。它用于在处理Shader的二进制数据时，确定每个部分解压后占用的实际字节数。
+        /// 每个元素对应于一个特定平台或阶段下的子程序块解压后的大小，这对于正确解析和重构Shader代码至关重要。
+        /// </summary>
         public uint[][] decompressedLengths;
+
+        /// <summary>
+        /// 该字节数组包含了压缩后的Shader子程序数据。它用于存储在序列化过程中被压缩的Shader代码，以减少存储空间和提高加载效率。
+        /// 在反序列化时，此压缩数据将被解压并转换为可读或可执行的形式。对于特定版本的Unity引擎，可能需要额外处理来正确解析此压缩数据块。
+        /// </summary>
         public byte[] compressedBlob;
+
+        /// <summary>
+        /// 该数组表示Shader中每个阶段的数量。它用于存储如顶点着色器、片段着色器等不同渲染阶段的计数。
+        /// stageCounts中的每个元素对应一个特定的渲染阶段，提供了对Shader内部结构的重要洞察，有助于理解Shader的复杂性和组织方式。
+        /// </summary>
         public uint[] stageCounts;
 
         public override string Name => m_ParsedForm?.m_Name ?? m_Name;

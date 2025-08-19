@@ -181,6 +181,19 @@ namespace AssetStudio
             AlignStream();
             return result;
         }
+        /// <summary> 读取一个以对齐方式存储的字符串 </summary>
+        public string ReadAlignedStringInt16()
+        {
+            var result = "";
+            var length = ReadInt16();
+            if (length > 0 && length <= Remaining)
+            {
+                var stringData = ReadBytes(length);
+                result = Encoding.UTF8.GetString(stringData);
+            }
+            AlignStream();
+            return result;
+        }
 
         /// <summary> 读取一个以空字符结尾的字符串，最大长度可指定 </summary>
         public string ReadStringToNull(int maxLength = 32767)
