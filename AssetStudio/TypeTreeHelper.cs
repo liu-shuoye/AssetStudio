@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace AssetStudio
 {
@@ -68,6 +66,14 @@ namespace AssetStudio
                 case "long long":
                 case "SInt64":
                     value = reader.ReadInt64();
+                    if (varNameStr == "m_PathID" && reader is ObjectReader objectReader)
+                    {
+                        if (objectReader.assetsFile.ObjectsDic.TryGetValue((long)value, out var obj))
+                        {
+                            value = obj.Name;
+                        }
+                    }
+
                     break;
                 case "UInt64":
                 case "unsigned long long":
@@ -181,7 +187,7 @@ namespace AssetStudio
                 var varNameStr = node.m_Name;
                 var readValue = ReadValue(nodes, reader, ref i, assetsFile);
                 dictionary[varNameStr] = readValue;
-                RecoverInfo(assetsFile, varNameStr, readValue, dictionary, reader);
+                RecoverInfo(varNameStr, readValue, dictionary, reader);
             }
 
             var readed = reader.Position - reader.byteStart;
@@ -310,7 +316,7 @@ namespace AssetStudio
                         var name = classmember.m_Name;
                         var objValue = ReadValue(@class, reader, ref j, assetsFile);
                         obj[name] = objValue;
-                        RecoverInfo(assetsFile, name, objValue, obj, reader);
+                        RecoverInfo(name, objValue, obj, reader as ObjectReader);
                     }
 
                     value = obj;
@@ -324,13 +330,11 @@ namespace AssetStudio
         }
 
         /// <summary> 恢复信息 </summary>
-        private static void RecoverInfo(SerializedFile assetsFile, string name, object objValue, OrderedDictionary dictionary, EndianBinaryReader reader)
+        private static void RecoverInfo(string name, object objValue, OrderedDictionary dictionary, ObjectReader reader)
         {
-            
-            if (!assetsFile.assetsManager.EnableAddressesAnalysis)
-            {
-                return;
-            }
+            if (reader == null) return;
+            var assetsFile = reader.assetsFile;
+            if (!assetsFile.assetsManager.EnableAddressesAnalysis) return;
 
             switch (objValue)
             {
